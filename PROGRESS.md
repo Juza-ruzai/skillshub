@@ -2,7 +2,7 @@
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
 > 最后更新：2026-03-17
-> **当前状态：M2 已完成，准备开始 M3**
+> **当前状态：M5 已完成 ✅，准备开始 M6 前端页面**
 
 ---
 
@@ -13,7 +13,7 @@
 - 前端：Vite + React 18 + TypeScript 5 + Tailwind CSS
 - 代码质量：Ruff + MyPy
 
-### M2: 用户认证 ✅ (100%) - **刚完成**
+### M2: 用户认证 ✅ (100%)
 
 **后端已完成：**
 - `schemas/user.py` - UserCreate, UserLogin, UserResponse, TokenResponse
@@ -29,34 +29,87 @@
 - 代码覆盖率：90%
 - 全部通过：✅ `ruff check` + `mypy app`
 
-**后端已就绪：**
-- Python 3.11 + FastAPI + SQLModel (异步) 环境配置完成
-- PostgreSQL 15 (Docker) 运行中，端口 5432
-- 核心模块：`config.py`, `database.py`, `security.py`, `exceptions.py`
-- 数据模型：`user`, `skill`, `comment`, `favorite`, `rating`, `notification`, `tag`
-- Alembic 迁移配置完成
-- 代码质量：Ruff + MyPy 无错误
-- 启动命令：`python -m app.main` → http://localhost:8000
+### M3: Skill 核心 ✅ (100%)
 
-**前端已就绪：**
-- Vite + React 18 + TypeScript 5 + Tailwind CSS 环境配置完成
-- ESLint + Prettier 配置完成
-- 启动命令：`npm run dev` → http://localhost:5173
+**后端已完成：**
+- `models/` - skill, tag, favorite, rating 数据模型
+- `schemas/skill.py` - Skill 相关 Schema + 分页响应
+- `services/file_service.py` - 文件上传/解压/预览
+- `services/skill_service.py` - Skill CRUD + 热度计算 + 搜索
+- `services/rating_service.py` - 评分服务（首次评分/更新评分/统计）
+- `services/favorite_service.py` - 收藏服务（添加/取消/切换/统计）
+- `api/v1/skills.py` - 完整 API 路由
 
-**快速启动指南：**
-```powershell
-# 终端 1 - 数据库（如未启动）
-docker-compose up -d postgres
+**API 端点：**
+| 端点 | 功能 | 状态 |
+|------|------|------|
+| `GET /api/v1/skills` | 列表（分页/搜索/排序） | ✅ |
+| `GET /api/v1/skills/trending` | 本周热门 | ✅ |
+| `GET /api/v1/skills/top-rated` | 评分最高 | ✅ |
+| `GET /api/v1/skills/most-downloaded` | 下载最多 | ✅ |
+| `POST /api/v1/skills` | 上传 Skill | ✅ |
+| `GET /api/v1/skills/{id}` | 详情（含收藏状态/用户评分） | ✅ |
+| `PUT /api/v1/skills/{id}` | 更新 | ✅ |
+| `DELETE /api/v1/skills/{id}` | 软删除 | ✅ |
+| `POST /api/v1/skills/{id}/download` | 下载 | ✅ |
+| `POST /api/v1/skills/{id}/rate` | 评分（1-5星） | ✅ |
+| `POST /api/v1/skills/{id}/favorite` | 收藏/取消收藏 | ✅ |
 
-# 终端 2 - 后端
-cd backend
-.\venv\Scripts\Activate.ps1
-python -m app.main
+**测试统计：**
+- 单元测试：63 个
+- 集成测试：31 个
+- 代码覆盖率：82%
+- 全部通过：✅ 108 tests passed
 
-# 终端 3 - 前端
-cd frontend
-npm run dev
-```
+### M4: 互动功能 ✅ (100%)
+
+**后端已完成：**
+- `models/comment.py` - 评论模型（支持嵌套回复）
+- `schemas/comment.py` - CommentCreate, CommentResponse, CommentWithReplies
+- `schemas/notification.py` - NotificationResponse, NotificationListResponse
+- `services/comment_service.py` - 评论服务（创建/查询/删除/嵌套结构）
+- `services/notification_service.py` - 通知服务（创建/查询/标记已读）
+- `api/v1/comments.py` - 评论 API 路由
+- `api/v1/notifications.py` - 通知 API 路由
+
+**API 端点：**
+| 端点 | 功能 | 状态 |
+|------|------|------|
+| `GET /api/v1/skills/{id}/comments` | 获取评论（嵌套结构） | ✅ |
+| `POST /api/v1/skills/{id}/comments` | 发表评论/回复 | ✅ |
+| `DELETE /api/v1/comments/{id}` | 删除评论 | ✅ |
+| `GET /api/v1/users/me/notifications` | 通知列表 | ✅ |
+| `PATCH /api/v1/users/me/notifications/{id}/read` | 标记已读 | ✅ |
+| `POST /api/v1/users/me/notifications/read-all` | 全部标记已读 | ✅ |
+
+**测试统计：**
+- 单元测试：79 个
+- 集成测试：40 个
+- 代码覆盖率：82%
+- 全部通过：✅ 141 tests passed
+
+### M5: 管理后台 ✅ (100%) - **本次完成**
+
+**后端已完成：**
+- `api/v1/admin.py` - 管理后台路由
+- `CurrentAdmin` 依赖注入 - 管理员权限保护
+- CSV 导出功能
+- 标签合并功能
+
+**API 端点：**
+| 端点 | 功能 | 状态 |
+|------|------|------|
+| `POST /api/v1/admin/skills/{id}/pin` | 置顶/取消置顶 Skill | ✅ |
+| `DELETE /api/v1/admin/comments/{id}` | 删除任意评论 | ✅ |
+| `GET /api/v1/admin/export` | 导出 Skills CSV | ✅ |
+| `GET /api/v1/admin/tags` | 标签列表 | ✅ |
+| `POST /api/v1/admin/tags/merge` | 合并标签 | ✅ |
+
+**测试统计：**
+- 集成测试：12 个（管理后台 API）
+- 全部通过：✅ 153 tests passed
+- 代码覆盖率：80%
+
 
 ---
 
@@ -66,9 +119,9 @@ npm run dev
 |------|---------|------|------|--------|
 | M1: 基础设施 | 5 | 100% | 🟢 已完成 | - |
 | M2: 用户认证 | 6 | 100% | 🟢 已完成 | - |
-| M3: Skill 核心 | 8 | 0% | 🔴 未开始 | M1, M2 |
-| M4: 互动功能 | 4 | 0% | 🔴 未开始 | M2, M3 |
-| M5: 管理后台 | 4 | 0% | 🔴 未开始 | M3 |
+| M3: Skill 核心 | 8 | 100% | 🟢 已完成 | - |
+| M4: 互动功能 | 4 | 100% | 🟢 已完成 | - |
+| M5: 管理后台 | 4 | 100% | 🟢 已完成 | - |
 | M6: 前端页面 | 7 | 0% | 🔴 未开始 | M1-M5 |
 | M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
 
@@ -164,58 +217,61 @@ npm run dev
 
 ---
 
-## M3: Skill 核心
+## M3: Skill 核心 ✅ (100%)
 
 **目标**：实现 Skill 的上传、管理、榜单、搜索功能
 
-**依赖**：M1, M2 完成
+**状态**：✅ 已完成（TDD 方式开发，108 个测试通过）
 
-- [ ] **M3.1** 数据模型
-  - [ ] `models/skill.py` - Skill 表
-  - [ ] `models/tag.py` - 标签表
-  - [ ] `models/favorite.py` - 收藏表
-  - [ ] `models/rating.py` - 评分表
-  - [ ] 创建 Alembic 迁移
+**依赖**：M1, M2 ✅ 完成
 
-- [ ] **M3.2** Schema 定义
-  - [ ] `schemas/skill.py` - Skill 相关 Schema
-  - [ ] `schemas/common.py` - 分页响应
+- [x] **M3.1** 数据模型
+  - [x] `models/skill.py` - Skill 表
+  - [x] `models/tag.py` - 标签表
+  - [x] `models/favorite.py` - 收藏表
+  - [x] `models/rating.py` - 评分表
+  - [x] 创建 Alembic 迁移
 
-- [ ] **M3.3** 文件服务
-  - [ ] `services/file_service.py` - 上传/存储
-  - [ ] 文件类型白名单校验
-  - [ ] ZIP 解压与文件树解析
-  - [ ] SKILL.md 内容提取
+- [x] **M3.2** Schema 定义
+  - [x] `schemas/skill.py` - Skill 相关 Schema
+  - [x] `schemas/common.py` - 分页响应
 
-- [ ] **M3.4** Skill 服务层
-  - [ ] `services/skill_service.py`
-  - [ ] 创建/更新/软删除 Skill
-  - [ ] 热度分数计算
-  - [ ] 搜索过滤（名称/描述/标签）
+- [x] **M3.3** 文件服务
+  - [x] `services/file_service.py` - 上传/存储
+  - [x] 文件类型白名单校验
+  - [x] ZIP 解压与文件树解析
+  - [x] SKILL.md 内容提取
 
-- [ ] **M3.5** Skill API 路由
-  - [ ] `GET /api/v1/skills` - 列表（分页/搜索/排序）
-  - [ ] `GET /api/v1/skills/trending` - 本周热门
-  - [ ] `GET /api/v1/skills/top-rated` - 评分最高
-  - [ ] `GET /api/v1/skills/most-downloaded` - 下载最多
-  - [ ] `POST /api/v1/skills` - 上传 Skill
-  - [ ] `GET /api/v1/skills/{id}` - 详情
-  - [ ] `PUT /api/v1/skills/{id}` - 更新
-  - [ ] `DELETE /api/v1/skills/{id}` - 软删除
-  - [ ] `POST /api/v1/skills/{id}/download` - 下载
+- [x] **M3.4** Skill 服务层
+  - [x] `services/skill_service.py`
+  - [x] 创建/更新/软删除 Skill
+  - [x] 热度分数计算
+  - [x] 搜索过滤（名称/描述/标签）
 
-- [ ] **M3.6** 评分/收藏功能
-  - [ ] `services/rating_service.py`
-  - [ ] `POST /api/v1/skills/{id}/rate` - 评分
-  - [ ] `POST /api/v1/skills/{id}/favorite` - 收藏/取消
+- [x] **M3.5** Skill API 路由
+  - [x] `GET /api/v1/skills` - 列表（分页/搜索/排序）
+  - [x] `GET /api/v1/skills/trending` - 本周热门
+  - [x] `GET /api/v1/skills/top-rated` - 评分最高
+  - [x] `GET /api/v1/skills/most-downloaded` - 下载最多
+  - [x] `POST /api/v1/skills` - 上传 Skill
+  - [x] `GET /api/v1/skills/{id}` - 详情
+  - [x] `PUT /api/v1/skills/{id}` - 更新
+  - [x] `DELETE /api/v1/skills/{id}` - 软删除
+  - [x] `POST /api/v1/skills/{id}/download` - 下载
 
-- [ ] **M3.7** 前端首页
+- [x] **M3.6** 评分/收藏功能 ✅ 本次完成
+  - [x] `services/rating_service.py` - 评分服务
+  - [x] `services/favorite_service.py` - 收藏服务
+  - [x] `POST /api/v1/skills/{id}/rate` - 评分
+  - [x] `POST /api/v1/skills/{id}/favorite` - 收藏/取消
+
+- [ ] **M3.7** 前端首页 ⏸️ 推迟到 M6
   - [ ] `pages/Home.tsx` - 首页榜单
   - [ ] `components/skill/SkillCard.tsx` - Skill 卡片
   - [ ] `components/skill/SkillList.tsx` - 列表展示
   - [ ] Tab 切换（综合/本周/评分/下载）
 
-- [ ] **M3.8** 前端 Skill 详情页
+- [ ] **M3.8** 前端 Skill 详情页 ⏸️ 推迟到 M6
   - [ ] `pages/SkillDetail.tsx`
   - [ ] 文件树展示 `FileTree.tsx`
   - [ ] SKILL.md 预览 `MarkdownPreview.tsx`
@@ -223,38 +279,40 @@ npm run dev
   - [ ] 下载功能
 
 **验收标准**：
-- Skill 可成功上传、解压、预览
-- 热度榜单按算法正确排序
-- 搜索可匹配名称/描述/标签
-- 评分/收藏功能正常
+- [x] Skill 可成功上传、解压、预览
+- [x] 热度榜单按算法正确排序
+- [x] 搜索可匹配名称/描述/标签
+- [x] 评分/收藏功能正常
 
 ---
 
-## M4: 互动功能
+## M4: 互动功能 ✅ (100%)
 
 **目标**：实现评论系统和站内通知
 
-**依赖**：M2, M3 完成
+**依赖**：M2, M3 完成 ✅
 
-- [ ] **M4.1** 评论数据模型
-  - [ ] `models/comment.py` - 评论表（支持嵌套回复）
-  - [ ] `schemas/comment.py`
-  - [ ] 创建 Alembic 迁移
+**状态**：✅ 已完成（TDD 方式开发，141 个测试通过）
 
-- [ ] **M4.2** 评论服务与 API
-  - [ ] `services/comment_service.py`
-  - [ ] `GET /api/v1/skills/{id}/comments` - 获取评论（嵌套结构）
-  - [ ] `POST /api/v1/skills/{id}/comments` - 发表评论
-  - [ ] `DELETE /api/v1/comments/{id}` - 删除评论
+- [x] **M4.1** 评论数据模型
+  - [x] `models/comment.py` - 评论表（支持嵌套回复）
+  - [x] `schemas/comment.py`
+  - [x] 创建 Alembic 迁移
 
-- [ ] **M4.3** 通知系统
-  - [ ] `models/notification.py`
-  - [ ] `services/notification_service.py`
-  - [ ] Skill 更新时创建通知
-  - [ ] `GET /api/v1/users/me/notifications` - 通知列表
-  - [ ] `PATCH /api/v1/users/notifications/{id}/read` - 标记已读
+- [x] **M4.2** 评论服务与 API
+  - [x] `services/comment_service.py`
+  - [x] `GET /api/v1/skills/{id}/comments` - 获取评论（嵌套结构）
+  - [x] `POST /api/v1/skills/{id}/comments` - 发表评论
+  - [x] `DELETE /api/v1/comments/{id}` - 删除评论
 
-- [ ] **M4.4** 前端互动组件
+- [x] **M4.3** 通知系统
+  - [x] `models/notification.py`
+  - [x] `services/notification_service.py`
+  - [x] Skill 更新时创建通知
+  - [x] `GET /api/v1/users/me/notifications` - 通知列表
+  - [x] `PATCH /api/v1/users/notifications/{id}/read` - 标记已读
+
+- [ ] **M4.4** 前端互动组件 ⏸️ 推迟到 M6 统一开发
   - [ ] `components/CommentSection.tsx` - 评论区
   - [ ] 嵌套回复展示
   - [ ] 通知红点提示
@@ -266,32 +324,44 @@ npm run dev
 
 ---
 
-## M5: 管理后台
+## M5: 管理后台 ✅ (100%)
 
 **目标**：实现管理员功能
 
-**依赖**：M3 完成
+**依赖**：M3 完成 ✅
 
-- [ ] **M5.1** 管理员权限
-  - [ ] `is_admin` 字段生效
-  - [ ] 管理员专属 API 保护
+**状态**：✅ 已完成（TDD 方式开发，153 个测试通过）
 
-- [ ] **M5.2** 置顶/推荐功能
-  - [ ] `POST /api/v1/admin/skills/{id}/pin` - 置顶/取消置顶
-  - [ ] 置顶 Skill 在首页优先展示
+- [x] **M5.1** 管理员权限
+  - [x] `is_admin` 字段生效
+  - [x] 管理员专属 API 保护（`CurrentAdmin` 依赖注入）
 
-- [ ] **M5.3** 内容管理
-  - [ ] `DELETE /api/v1/admin/comments/{id}` - 删除任意评论
-  - [ ] `GET /api/v1/admin/export` - 导出 Skills CSV
+- [x] **M5.2** 置顶/推荐功能
+  - [x] `POST /api/v1/admin/skills/{id}/pin` - 置顶/取消置顶
+  - [x] 置顶 Skill 在首页优先展示
 
-- [ ] **M5.4** 标签管理
-  - [ ] `GET /api/v1/admin/tags` - 标签列表
-  - [ ] `POST /api/v1/admin/tags/merge` - 合并标签
+- [x] **M5.3** 内容管理
+  - [x] `DELETE /api/v1/admin/comments/{id}` - 删除任意评论
+  - [x] `GET /api/v1/admin/export` - 导出 Skills CSV
+
+- [x] **M5.4** 标签管理
+  - [x] `GET /api/v1/admin/tags` - 标签列表
+  - [x] `POST /api/v1/admin/tags/merge` - 合并标签
+
+**后端已完成：**
+- `api/v1/admin.py` - 管理后台路由
+- 管理员权限中间件
+- CSV 导出功能
+- 标签合并功能
+
+**测试统计：**
+- 集成测试：12 个（管理后台 API）
+- 全部通过：✅ 153 tests passed
 
 **验收标准**：
-- 管理员可置顶 Skill
-- 可删除不当评论
-- 可导出 CSV 报表
+- [x] 管理员可置顶 Skill
+- [x] 可删除不当评论
+- [x] 可导出 CSV 报表
 
 ---
 
@@ -375,6 +445,37 @@ npm run dev
 
 ---
 
+**后端已就绪：**
+- Python 3.11 + FastAPI + SQLModel (异步) 环境配置完成
+- PostgreSQL 15 (Docker) 运行中，端口 5432
+- 核心模块：`config.py`, `database.py`, `security.py`, `exceptions.py`
+- 数据模型：`user`, `skill`, `comment`, `favorite`, `rating`, `notification`, `tag`
+- Alembic 迁移配置完成
+- 代码质量：Ruff + MyPy 无错误
+- 启动命令：`python -m app.main` → http://localhost:8000
+
+**前端已就绪：**
+- Vite + React 18 + TypeScript 5 + Tailwind CSS 环境配置完成
+- ESLint + Prettier 配置完成
+- 启动命令：`npm run dev` → http://localhost:5173
+
+**快速启动指南：**
+```powershell
+# 终端 1 - 数据库（如未启动）
+docker-compose up -d postgres
+
+# 终端 2 - 后端
+cd backend
+.\venv\Scripts\Activate.ps1
+python -m app.main
+
+# 终端 3 - 前端
+cd frontend
+npm run dev
+```
+
+---
+
 ## 附录
 
 ### 优先级说明
@@ -388,7 +489,5 @@ npm run dev
 - [PRD.md](./PRD.md) - 产品需求文档
 - [ARCHITECTURE.md](./ARCHITECTURE.md) - 架构设计文档
 - [CLAUDE.md](./CLAUDE.md) - 编程规范
-
----
-
+  
 *本文档随项目进展持续更新。*

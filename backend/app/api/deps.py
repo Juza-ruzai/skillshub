@@ -91,6 +91,56 @@ async def get_current_user(
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
+async def get_current_user_optional(
+    request: Request,
+    db: DbDep,
+    bearer: HTTPAuthorizationCredentials | None = Depends(http_bearer),  # noqa: B008
+) -> User | None:
+    """获取当前用户（可选，未登录返回 None）.
+
+    Args:
+        request: HTTP 请求
+        db: 数据库会话
+        bearer: Bearer Token
+
+    Returns:
+        当前用户或 None
+    """
+    token = None
+    if bearer and bearer.credentials:
+        token = bearer.credentials
+    else:
+        token = request.query_params.get("token")
+
+    if not token:
+        return None
+
+    payload = decode_token(token)
+    if not payload:
+        return None
+
+    token_type = payload.get("type")
+    if token_type != "access":
+        return None
+
+    user_id_str = payload.get("sub")
+    if not user_id_str:
+        return None
+
+    try:
+        user_id = UUID(user_id_str)
+    except ValueError:
+        return None
+
+    user_service = UserService(db)
+    user = await user_service.get_user_by_id(user_id)
+
+    return user
+
+
+OptionalCurrentUser = Annotated[User | None, Depends(get_current_user_optional)]
+
+
 async def get_current_admin(current_user: CurrentUser) -> User:
     """获取当前管理员用户.
 

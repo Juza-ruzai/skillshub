@@ -146,7 +146,9 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides[get_session] = override_get_session
 
     transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+    async with AsyncClient(
+        transport=transport, base_url="http://test", follow_redirects=True
+    ) as ac:
         yield ac
 
     # 清理依赖覆盖
@@ -228,4 +230,83 @@ async def test_admin(db_session: AsyncSession) -> dict[str, Any]:
         "email": admin.email,
         "password": "Admin123!",
         "is_admin": admin.is_admin,
+    }
+
+
+@pytest_asyncio.fixture
+async def test_skill(db_session: AsyncSession, test_user: dict) -> dict[str, Any]:
+    """创建测试 Skill."""
+    from uuid import UUID
+
+    from sqlalchemy import select
+
+    from app.models.skill import Skill
+
+    result = await db_session.execute(select(Skill).where(Skill.name == "Test Skill"))
+    existing = result.scalar_one_or_none()
+    if existing:
+        return {
+            "id": str(existing.id),
+            "name": existing.name,
+            "description": existing.description,
+            "author_id": str(existing.author_id),
+        }
+
+    skill = Skill(
+        name="Test Skill",
+        description="A test skill for testing",
+        usage_scenario="Testing",
+        usage_method="Use for tests",
+        file_path="/uploads/skills/test/test.zip",
+        file_size=1024,
+        author_id=UUID(test_user["id"]),
+        tags=["test", "demo"],
+    )
+    db_session.add(skill)
+    await db_session.commit()
+    await db_session.refresh(skill)
+
+    return {
+        "id": str(skill.id),
+        "name": skill.name,
+        "description": skill.description,
+        "author_id": str(skill.author_id),
+    }
+
+
+@pytest_asyncio.fixture
+async def test_comment(db_session: AsyncSession, test_user: dict, test_skill: dict) -> dict[str, Any]:
+    """创建测试评论."""
+    from uuid import UUID
+
+    from sqlalchemy import select
+
+    from app.models.comment import Comment
+
+    result = await db_session.execute(
+        select(Comment).where(Comment.content == "Test comment content")
+    )
+    existing = result.scalar_one_or_none()
+    if existing:
+        return {
+            "id": str(existing.id),
+            "content": existing.content,
+            "skill_id": str(existing.skill_id),
+            "user_id": str(existing.user_id),
+        }
+
+    comment = Comment(
+        content="Test comment content",
+        skill_id=UUID(test_skill["id"]),
+        user_id=UUID(test_user["id"]),
+    )
+    db_session.add(comment)
+    await db_session.commit()
+    await db_session.refresh(comment)
+
+    return {
+        "id": str(comment.id),
+        "content": comment.content,
+        "skill_id": str(comment.skill_id),
+        "user_id": str(comment.user_id),
     }

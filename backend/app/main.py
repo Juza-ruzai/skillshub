@@ -7,7 +7,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from app.api.v1.admin import router as admin_router
 from app.api.v1.auth import router as auth_router
+from app.api.v1.comments import comments_router, skill_comments_router
+from app.api.v1.notifications import router as notifications_router
+from app.api.v1.skills import router as skills_router
 from app.core.config import get_settings
 from app.core.database import init_db
 from app.core.exceptions import OpenClawException
@@ -49,6 +53,21 @@ app.add_middleware(
 
 # 注册 API 路由
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["认证"])
+app.include_router(skills_router, prefix="/api/v1/skills", tags=["Skills"])
+# 评论路由（获取和创建）
+app.include_router(
+    skill_comments_router,
+    prefix="/api/v1/skills/{skill_id}/comments",
+    tags=["评论"],
+)
+# 评论删除路由
+app.include_router(comments_router, prefix="/api/v1/comments", tags=["评论"])
+# 通知路由
+app.include_router(
+    notifications_router, prefix="/api/v1/users/me/notifications", tags=["通知"]
+)
+# 管理后台路由
+app.include_router(admin_router, prefix="/api/v1/admin", tags=["管理后台"])
 
 # 静态文件服务（上传的文件）
 app.mount("/uploads", StaticFiles(directory=str(settings.upload_path)), name="uploads")
