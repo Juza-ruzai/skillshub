@@ -274,7 +274,7 @@ async def merge_tags(
             usage_count=merged_count,
             created_at=datetime.now(UTC),
         )
-        db.add(target_tag_obj)  # type: ignore[arg-type]
+        db.add(target_tag_obj)
     else:
         target_tag_obj.usage_count = (target_tag_obj.usage_count or 0) + merged_count
 

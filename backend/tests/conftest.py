@@ -1,5 +1,7 @@
 """Pytest 测试配置."""
 import asyncio
+import gc
+import os
 from collections.abc import AsyncGenerator, Generator
 from typing import Any
 from uuid import uuid4
@@ -67,8 +69,6 @@ def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
 @pytest_asyncio.fixture(scope="session", autouse=True)
 async def setup_database() -> AsyncGenerator[None, None]:
     """设置测试数据库（创建所有表）."""
-    import os
-
     # 删除旧的数据库文件
     if os.path.exists("test.db"):
         os.remove("test.db")
@@ -98,10 +98,28 @@ async def setup_database() -> AsyncGenerator[None, None]:
 
     yield
 
-    # 清理
+    # 清理：关闭全局会话
+    global _global_session
+    if _global_session is not None:
+        await _global_session.close()
+        _global_session = None
+
+    # 清理：释放引擎
     await test_engine.dispose()
-    if os.path.exists("test.db"):
-        os.remove("test.db")
+
+    # Windows 需要 GC 和延迟来释放文件句柄
+    gc.collect()
+    await asyncio.sleep(0.1)
+
+    # 删除测试数据库文件（带重试）
+    for _ in range(5):
+        try:
+            if os.path.exists("test.db"):
+                os.remove("test.db")
+            break
+        except PermissionError:
+            gc.collect()
+            await asyncio.sleep(0.2)
 
     # 恢复数据库模块
     restore_database_module()
