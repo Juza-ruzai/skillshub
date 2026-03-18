@@ -3,7 +3,7 @@
 > 本文档整合 M2/M3/M4 推迟的前端任务 + M6 原本的任务
 > 采用**分阶段依次开发**模式，每阶段完成后需通过验收标准才可进入下一阶段
 > 最后更新：2026-03-18
-> **当前状态：Phase 3 通用组件开发完成 ✅，准备开始 Phase 4**
+> **当前状态：Phase 4 Skill 组件开发完成 ✅，准备开始 Phase 5**
 
 ---
 
@@ -14,9 +14,46 @@
 | Phase 1: 基础架构 | ✅ 完成 | 34 | lint ✅ type-check ✅ | - |
 | Phase 2: 布局组件 | ✅ 完成 | 24 | lint ✅ type-check ✅ | - |
 | Phase 3: 通用组件 | ✅ 完成 | 38 | lint ✅ type-check ✅ | marked, isomorphic-dompurify |
-| **累计** | **3/10** | **96** | **全部通过** | - |
+| **累计** | **4/10** | **124** | **全部通过** | - |
 
-**下一步：** Phase 4: Skill 组件 (SkillCard, SkillList, SkillForm)
+**下一步：** Phase 5: 认证页面 (Login, Register)
+
+---
+
+### Phase 4: Skill 组件 ✅ (2026-03-18 完成)
+
+**完成内容：**
+- ✅ SkillCard (`src/components/skill/SkillCard.tsx`)
+  - 封面图占位、名称、描述展示
+  - 评分、下载数、收藏数统计
+  - 悬停阴影效果
+  - 点击触发 onClick 回调
+
+- ✅ SkillList (`src/components/skill/SkillList.tsx`)
+  - 响应式网格布局（1/2/3 列）
+  - 加载骨架屏（Loader2 动画）
+  - 空状态展示（emptyText）
+  - 错误状态显示
+  - 支持自定义卡片渲染
+
+- ✅ SkillForm (`src/components/skill/SkillForm.tsx`)
+  - 字段：名称、描述、使用场景、使用方法、标签
+  - 标签输入（回车添加，点击删除）
+  - 表单验证（名称必填且≥3字符，其他必填）
+  - 支持 create/edit 两种模式
+  - create 模式提交后自动清空表单
+
+**测试覆盖：** 22 个单元测试全部通过
+- `SkillCard.test.tsx` - 7 个测试
+- `SkillList.test.tsx` - 6 个测试
+- `SkillForm.test.tsx` - 9 个测试
+
+**代码质量：**
+- `npm run lint` ✅ 无错误
+- `npm run type-check` ✅ 无错误
+- 无 `any` 类型使用
+
+**下一步：** Phase 5: 认证页面 (Login, Register)
 
 ---
 
@@ -155,7 +192,7 @@
 | Phase 1 | 基础架构 | 1 天 | 无 | 🟢 已完成 |
 | Phase 2 | 布局组件 | 1 天 | Phase 1 | 🟢 已完成 |
 | Phase 3 | 通用组件 | 2 天 | Phase 1 | 🟢 已完成 |
-| Phase 4 | Skill 组件 | 2 天 | Phase 2, 3 | 🔴 未开始 |
+| Phase 4 | Skill 组件 | 2 天 | Phase 2, 3 | 🟢 已完成 |
 | Phase 5 | 认证页面 | 1 天 | Phase 1, 2 | 🔴 未开始 |
 | Phase 6 | 首页与搜索 | 2 天 | Phase 4, 5 | 🔴 未开始 |
 | Phase 7 | Skill 详情页 | 2 天 | Phase 3, 4 | 🔴 未开始 |
@@ -443,11 +480,11 @@ interface TagCloudProps {
 **文件**: `src/components/skill/SkillCard.tsx`
 
 **功能清单**:
-- [ ] 展示封面图、名称、描述
-- [ ] 展示评分、下载数、收藏数
-- [ ] 悬停效果
-- [ ] 点击跳转详情页
-- [ ] **移动端**: 适配小屏幕布局
+- [x] 展示封面图、名称、描述
+- [x] 展示评分、下载数、收藏数
+- [x] 悬停效果
+- [x] 点击跳转详情页
+- [x] **移动端**: 适配小屏幕布局
 
 **Props 定义**:
 ```typescript
@@ -462,9 +499,9 @@ interface SkillCardProps {
 **文件**: `src/components/skill/SkillList.tsx`
 
 **功能清单**:
-- [ ] 网格布局（桌面端 3-4 列，平板 2 列，手机 1 列）
-- [ ] 加载骨架屏
-- [ ] 空状态展示
+- [x] 网格布局（桌面端 3-4 列，平板 2 列，手机 1 列）
+- [x] 加载骨架屏
+- [x] 空状态展示
 - [ ] 支持列表/网格视图切换（可选）
 
 **Props 定义**:
@@ -481,10 +518,10 @@ interface SkillListProps {
 **文件**: `src/components/skill/SkillForm.tsx`
 
 **功能清单**:
-- [ ] 字段：名称、描述、使用场景、使用方法、标签
+- [x] 字段：名称、描述、使用场景、使用方法、标签
 - [ ] 标签输入智能提示
-- [ ] 表单验证（名称必填、描述必填）
-- [ ] 支持 create/edit 两种模式
+- [x] 表单验证（名称必填、描述必填）
+- [x] 支持 create/edit 两种模式
 
 **Props 定义**:
 ```typescript
