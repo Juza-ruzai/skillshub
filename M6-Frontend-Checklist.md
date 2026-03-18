@@ -31,6 +31,38 @@
 
 **下一阶​​段：** Phase 2: 布局组件 (Header、Footer、Sidebar)
 
+### Phase 2: 布局组件 ✅ (2026-03-18 完成)
+
+**完成内容：**
+- ✅ Header (`src/components/layout/Header.tsx`)
+  - Logo/品牌名称、全局搜索栏（支持回车搜索）
+  - 导航链接（首页、上传）、用户菜单
+  - 通知图标 + 红点提示、移动端汉堡菜单
+
+- ✅ Footer (`src/components/layout/Footer.tsx`)
+  - 版权信息、快速链接（首页、关于）
+  - 固定在页面底部
+
+- ✅ Sidebar (`src/components/layout/Sidebar.tsx`)
+  - 标签云展示（根据使用频率调整大小）
+  - 点击标签触发筛选回调
+  - 移动端可折叠抽屉
+
+- ✅ Layout (`src/components/layout/Layout.tsx`)
+  - 组合布局组件（Header + Sidebar + Main + Footer）
+
+**测试覆盖：** 24 个单元测试全部通过
+- `Header.test.tsx` - 12 个测试
+- `Footer.test.tsx` - 4 个测试
+- `Sidebar.test.tsx` - 8 个测试
+
+**代码质量：**
+- `npm run lint` ✅ 无错误
+- `npm run type-check` ✅ 无错误
+- `npm run format:check` ✅ 通过
+
+**下一步：** Phase 3 通用组件开发 (StarRating, Pagination, MarkdownPreview, FileTree, CommentSection, TagCloud)
+
 ---
 
 ## 技术栈确认
@@ -54,7 +86,7 @@
 | 阶段 | 名称 | 预估工期 | 依赖 | 状态 |
 |------|------|----------|------|------|
 | Phase 1 | 基础架构 | 1 天 | 无 | 🟢 已完成 |
-| Phase 2 | 布局组件 | 1 天 | Phase 1 | 🔴 未开始 |
+| Phase 2 | 布局组件 | 1 天 | Phase 1 | 🟢 已完成 |
 | Phase 3 | 通用组件 | 2 天 | Phase 1 | 🔴 未开始 |
 | Phase 4 | Skill 组件 | 2 天 | Phase 2, 3 | 🔴 未开始 |
 | Phase 5 | 认证页面 | 1 天 | Phase 1, 2 | 🔴 未开始 |
@@ -139,12 +171,12 @@
 **文件**: `src/components/layout/Header.tsx`
 
 **功能清单**:
-- [ ] Logo/品牌名称展示
-- [ ] 全局搜索栏（支持回车搜索）
-- [ ] 导航链接（首页、上传）
-- [ ] 用户菜单（登录/注册 或 个人中心/登出）
-- [ ] 通知图标 + 红点提示
-- [ ] **移动端**: 汉堡菜单折叠
+- [x] Logo/品牌名称展示
+- [x] 全局搜索栏（支持回车搜索）
+- [x] 导航链接（首页、上传）
+- [x] 用户菜单（登录/注册 或 个人中心/登出）
+- [x] 通知图标 + 红点提示
+- [x] **移动端**: 汉堡菜单折叠
 
 **Props 定义**:
 ```typescript
@@ -158,18 +190,18 @@ interface HeaderProps {
 **文件**: `src/components/layout/Footer.tsx`
 
 **功能清单**:
-- [ ] 版权信息
-- [ ] 快速链接（首页、关于）
-- [ ] 固定底部或内容不足时置底
+- [x] 版权信息
+- [x] 快速链接（首页、关于）
+- [x] 固定底部或内容不足时置底
 
 ### 2.3 侧边栏 (Sidebar)
 
 **文件**: `src/components/layout/Sidebar.tsx`
 
 **功能清单**:
-- [ ] 标签云展示
-- [ ] 点击标签触发筛选回调
-- [ ] **移动端**: 可折叠抽屉
+- [x] 标签云展示
+- [x] 点击标签触发筛选回调
+- [x] **移动端**: 可折叠抽屉
 
 **Props 定义**:
 ```typescript
