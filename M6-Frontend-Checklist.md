@@ -14,7 +14,8 @@
 | Phase 1: 基础架构 | ✅ 完成 | 34 | lint ✅ type-check ✅ | - |
 | Phase 2: 布局组件 | ✅ 完成 | 24 | lint ✅ type-check ✅ | - |
 | Phase 3: 通用组件 | ✅ 完成 | 38 | lint ✅ type-check ✅ | marked, isomorphic-dompurify |
-| **累计** | **4/10** | **124** | **全部通过** | - |
+| Phase 4: Skill 组件 | ✅ 完成 | 22 | lint ✅ type-check ✅ | - |
+| **累计** | **4/10** | **132** | **全部通过** | - |
 
 **下一步：** Phase 5: 认证页面 (Login, Register)
 
@@ -43,9 +44,9 @@
   - 支持 create/edit 两种模式
   - create 模式提交后自动清空表单
 
-**测试覆盖：** 22 个单元测试全部通过
+**测试覆盖：** 30 个单元测试全部通过
 - `SkillCard.test.tsx` - 7 个测试
-- `SkillList.test.tsx` - 6 个测试
+- `SkillList.test.tsx` - 14 个测试（含8个视图切换测试）
 - `SkillForm.test.tsx` - 9 个测试
 
 **代码质量：**
@@ -502,7 +503,7 @@ interface SkillCardProps {
 - [x] 网格布局（桌面端 3-4 列，平板 2 列，手机 1 列）
 - [x] 加载骨架屏
 - [x] 空状态展示
-- [ ] 支持列表/网格视图切换（可选）
+- [x] 支持列表/网格视图切换（可选）
 
 **Props 定义**:
 ```typescript

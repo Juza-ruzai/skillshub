@@ -1,7 +1,8 @@
 import type { Skill } from '@/types/skill'
 import type { ReactNode } from 'react'
+import { useState, useCallback } from 'react'
 import { SkillCard } from './SkillCard'
-import { Loader2 } from 'lucide-react'
+import { Loader2, LayoutGrid, List } from 'lucide-react'
 
 export interface SkillListProps {
   skills: Skill[]
@@ -12,6 +13,8 @@ export interface SkillListProps {
   renderSkillCard?: (skill: Skill) => ReactNode
 }
 
+type ViewMode = 'grid' | 'list'
+
 export function SkillList({
   skills,
   loading,
@@ -20,6 +23,11 @@ export function SkillList({
   onSkillClick,
   renderSkillCard,
 }: SkillListProps): JSX.Element {
+  const [viewMode, setViewMode] = useState<ViewMode>('grid')
+
+  const handleGridClick = useCallback(() => setViewMode('grid'), [])
+  const handleListClick = useCallback(() => setViewMode('list'), [])
+
   if (loading) {
     return (
       <div data-testid="skill-skeleton" className="flex items-center justify-center py-12">
@@ -44,15 +52,53 @@ export function SkillList({
     )
   }
 
+  const containerClasses =
+    viewMode === 'grid'
+      ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+      : 'flex flex-col gap-4'
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {skills.map((skill) =>
-        renderSkillCard ? (
-          renderSkillCard(skill)
-        ) : (
-          <SkillCard key={skill.id} skill={skill} onClick={onSkillClick} />
-        )
-      )}
+    <div className="space-y-4">
+      {/* View Mode Toggle */}
+      <div className="flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={handleGridClick}
+          aria-label="Grid view"
+          data-active={viewMode === 'grid'}
+          className={`p-2 rounded-md transition-colors ${
+            viewMode === 'grid'
+              ? 'bg-blue-100 text-blue-600'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          <LayoutGrid size={20} />
+        </button>
+        <button
+          type="button"
+          onClick={handleListClick}
+          aria-label="List view"
+          data-active={viewMode === 'list'}
+          className={`p-2 rounded-md transition-colors ${
+            viewMode === 'list'
+              ? 'bg-blue-100 text-blue-600'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          <List size={20} />
+        </button>
+      </div>
+
+      {/* Skills Container */}
+      <div className={containerClasses}>
+        {skills.map((skill) =>
+          renderSkillCard ? (
+            renderSkillCard(skill)
+          ) : (
+            <SkillCard key={skill.id} skill={skill} onClick={onSkillClick} />
+          )
+        )}
+      </div>
     </div>
   )
 }
