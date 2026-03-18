@@ -3,7 +3,7 @@
 > 本文档整合 M2/M3/M4 推迟的前端任务 + M6 原本的任务
 > 采用**分阶段依次开发**模式，每阶段完成后需通过验收标准才可进入下一阶段
 > 最后更新：2026-03-18
-> **当前状态：Phase 4 Skill 组件开发完成 ✅，准备开始 Phase 5**
+> **当前状态：Phase 6 首页与搜索 - 进行中 🟡**
 
 ---
 
@@ -14,47 +14,45 @@
 | Phase 1: 基础架构 | ✅ 完成 | 34 | lint ✅ type-check ✅ | - |
 | Phase 2: 布局组件 | ✅ 完成 | 24 | lint ✅ type-check ✅ | - |
 | Phase 3: 通用组件 | ✅ 完成 | 38 | lint ✅ type-check ✅ | marked, isomorphic-dompurify |
-| Phase 4: Skill 组件 | ✅ 完成 | 22 | lint ✅ type-check ✅ | - |
-| **累计** | **4/10** | **132** | **全部通过** | - |
+| Phase 4: Skill 组件 | ✅ 完成 | 30 | lint ✅ type-check ✅ | - |
+| Phase 5: 认证页面 | ✅ 完成 | 22 | lint ✅ type-check ✅ | Phase 1, 2 |
+| **累计** | **5/10** | **154** | **全部通过** | - |
 
-**下一步：** Phase 5: 认证页面 (Login, Register)
+**下一步：** Phase 6: 首页与搜索 (Home, Search)
 
----
 
-### Phase 4: Skill 组件 ✅ (2026-03-18 完成)
+### Phase 5: 认证页面 ✅ (2026-03-18 完成，22/22 测试全部通过)
 
 **完成内容：**
-- ✅ SkillCard (`src/components/skill/SkillCard.tsx`)
-  - 封面图占位、名称、描述展示
-  - 评分、下载数、收藏数统计
-  - 悬停阴影效果
-  - 点击触发 onClick 回调
+- ✅ Login 页面 (`src/pages/Login.tsx`)
+  - 邮箱/密码表单
+  - 表单验证（邮箱格式、必填项）
+  - 登录成功跳转首页
+  - 错误提示（用户不存在、密码错误）
+  - 已登录用户重定向
+  - 注册链接
 
-- ✅ SkillList (`src/components/skill/SkillList.tsx`)
-  - 响应式网格布局（1/2/3 列）
-  - 加载骨架屏（Loader2 动画）
-  - 空状态展示（emptyText）
-  - 错误状态显示
-  - 支持自定义卡片渲染
+- ✅ Register 页面 (`src/pages/Register.tsx`)
+  - 用户名/邮箱/密码表单
+  - 密码强度检测（弱/中/强）
+  - 表单验证（用户名≥3字符、邮箱格式、密码≥6字符）
+  - 注册成功跳转登录页并预填邮箱
+  - 错误提示（邮箱已存在）
+  - 登录链接
 
-- ✅ SkillForm (`src/components/skill/SkillForm.tsx`)
-  - 字段：名称、描述、使用场景、使用方法、标签
-  - 标签输入（回车添加，点击删除）
-  - 表单验证（名称必填且≥3字符，其他必填）
-  - 支持 create/edit 两种模式
-  - create 模式提交后自动清空表单
+- ✅ shadcn/ui 组件补充
+  - `src/components/ui/button.tsx`
+  - `src/components/ui/input.tsx`
+  - `src/components/ui/label.tsx`
+  - `src/components/ui/card.tsx`
+  - `src/components/ui/alert.tsx`
 
-**测试覆盖：** 30 个单元测试全部通过
-- `SkillCard.test.tsx` - 7 个测试
-- `SkillList.test.tsx` - 14 个测试（含8个视图切换测试）
-- `SkillForm.test.tsx` - 9 个测试
+**关键实现细节：**
+- 使用受控组件（value + onChange）处理表单输入
+- 在 `handleSubmit` 中直接从表单元素读取值，避免 React 状态异步更新的时序问题
+- 测试中使用 `fireEvent.change` + `fireEvent.submit` 确保状态同步
 
-**代码质量：**
-- `npm run lint` ✅ 无错误
-- `npm run type-check` ✅ 无错误
-- 无 `any` 类型使用
-
-**下一步：** Phase 5: 认证页面 (Login, Register)
+**下一步：** 进入 Phase 6：首页与搜索
 
 ---
 
@@ -68,18 +66,7 @@
 - ✅ 路由配置 (`src/App.tsx`) - 完整路由表
 - ✅ ESLint + Prettier 配置
 
-**测试覆盖：** 34 个单元测试全部通过
-- `api.test.ts` - 10 个测试
-- `types.test.ts` - 11 个测试
-- `useAuth.test.ts` - 9 个测试
-- `PrivateRoute.test.tsx` - 4 个测试
 
-**代码质量：**
-- `npm run lint` ✅ 无错误
-- `npm run type-check` ✅ 无错误
-- `npm run format:check` ✅ 通过
-
-**下一阶​​段：** Phase 2: 布局组件 (Header、Footer、Sidebar)
 
 ### Phase 2: 布局组件 ✅ (2026-03-18 完成)
 
@@ -101,17 +88,7 @@
 - ✅ Layout (`src/components/layout/Layout.tsx`)
   - 组合布局组件（Header + Sidebar + Main + Footer）
 
-**测试覆盖：** 24 个单元测试全部通过
-- `Header.test.tsx` - 12 个测试
-- `Footer.test.tsx` - 4 个测试
-- `Sidebar.test.tsx` - 8 个测试
 
-**代码质量：**
-- `npm run lint` ✅ 无错误
-- `npm run type-check` ✅ 无错误
-- `npm run format:check` ✅ 通过
-
-**下一步：** Phase 3 通用组件开发 (StarRating, Pagination, MarkdownPreview, FileTree, CommentSection, TagCloud)
 
 ### Phase 3: 通用组件 ✅ (2026-03-18 完成)
 
@@ -153,22 +130,33 @@
 - `marked` - Markdown 解析
 - `isomorphic-dompurify` - XSS 防护
 
-**测试覆盖：** 38 个单元测试全部通过
-- `StarRating.test.tsx` - 8 个测试
-- `Pagination.test.tsx` - 7 个测试
-- `MarkdownPreview.test.tsx` - 5 个测试
-- `FileTree.test.tsx` - 6 个测试
-- `CommentSection.test.tsx` - 7 个测试
-- `TagCloud.test.tsx` - 5 个测试
-
-**代码质量：**
-- `npm run lint` ✅ 无错误
-- `npm run type-check` ✅ 无错误
-- 无 `any` 类型使用
-
-**下一步：** Phase 4 Skill 组件 (SkillCard, SkillList, SkillForm)
-
 ---
+
+### Phase 4: Skill 组件 ✅ (2026-03-18 完成)
+
+**完成内容：**
+- ✅ SkillCard (`src/components/skill/SkillCard.tsx`)
+  - 封面图占位、名称、描述展示
+  - 评分、下载数、收藏数统计
+  - 悬停阴影效果
+  - 点击触发 onClick 回调
+
+- ✅ SkillList (`src/components/skill/SkillList.tsx`)
+  - 响应式网格布局（1/2/3 列）
+  - 加载骨架屏（Loader2 动画）
+  - 空状态展示（emptyText）
+  - 错误状态显示
+  - 支持自定义卡片渲染
+  - 支持列表/网格视图切换
+
+- ✅ SkillForm (`src/components/skill/SkillForm.tsx`)
+  - 字段：名称、描述、使用场景、使用方法、标签
+  - 标签输入（回车添加，点击删除）
+  - 表单验证（名称必填且≥3字符，其他必填）
+  - 支持 create/edit 两种模式
+  - create 模式提交后自动清空表单
+---
+
 
 ## 技术栈确认
 
@@ -194,8 +182,8 @@
 | Phase 2 | 布局组件 | 1 天 | Phase 1 | 🟢 已完成 |
 | Phase 3 | 通用组件 | 2 天 | Phase 1 | 🟢 已完成 |
 | Phase 4 | Skill 组件 | 2 天 | Phase 2, 3 | 🟢 已完成 |
-| Phase 5 | 认证页面 | 1 天 | Phase 1, 2 | 🔴 未开始 |
-| Phase 6 | 首页与搜索 | 2 天 | Phase 4, 5 | 🔴 未开始 |
+| Phase 5 | 认证页面 | 1 天 | Phase 1, 2 | 🟢 已完成 |
+| Phase 6 | 首页与搜索 | 2 天 | Phase 4, 5 | 🟡 进行中 |
 | Phase 7 | Skill 详情页 | 2 天 | Phase 3, 4 | 🔴 未开始 |
 | Phase 8 | 上传与编辑 | 2 天 | Phase 4 | 🔴 未开始 |
 | Phase 9 | 个人中心 | 2 天 | Phase 4 | 🔴 未开始 |
@@ -559,22 +547,22 @@ interface SkillFormProps {
 **文件**: `src/pages/Login.tsx`
 
 **功能清单**:
-- [ ] 邮箱/密码表单
-- [ ] 表单验证（邮箱格式、密码长度）
-- [ ] 登录成功后跳转首页
-- [ ] 错误提示（邮箱不存在、密码错误）
-- [ ] "还没有账号？去注册" 链接
+- [x] 邮箱/密码表单
+- [x] 表单验证（邮箱格式、密码长度）
+- [x] 登录成功后跳转首页
+- [x] 错误提示（邮箱不存在、密码错误）
+- [x] "还没有账号？去注册" 链接
 
 ### 5.2 注册页
 
 **文件**: `src/pages/Register.tsx`
 
 **功能清单**:
-- [ ] 用户名/邮箱/密码表单
-- [ ] 密码强度提示
-- [ ] 表单验证（用户名长度、邮箱格式、密码强度）
-- [ ] 注册成功后跳转登录页
-- [ ] "已有账号？去登录" 链接
+- [x] 用户名/邮箱/密码表单
+- [x] 密码强度提示
+- [x] 表单验证（用户名长度、邮箱格式、密码强度）
+- [x] 注册成功后跳转登录页
+- [x] "已有账号？去登录" 链接
 
 ### ✅ Phase 5 验收标准
 
