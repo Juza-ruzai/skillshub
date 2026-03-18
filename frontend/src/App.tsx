@@ -3,6 +3,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PrivateRoute } from './components/PrivateRoute'
 
 import { Home } from './pages/Home'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import SkillDetail from './pages/SkillDetail'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -12,10 +15,8 @@ const queryClient = new QueryClient({
     },
   },
 })
+
 // 页面组件（将在后续 Phase 中实现）
-const Login = () => <div>Login Page</div>
-const Register = () => <div>Register Page</div>
-const SkillDetail = () => <div>Skill Detail</div>
 const SkillUpload = () => <div>Skill Upload</div>
 const SkillEdit = () => <div>Skill Edit</div>
 const UserProfile = () => <div>User Profile</div>

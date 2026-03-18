@@ -172,7 +172,7 @@
 | M4: 互动功能 | 4 | 100% | 🟢 已完成 | - |
 | M5: 管理后台 | 4 | 100% | 🟢 已完成 | - |
 | M5.5: 后端接口补充 | 4 | 100% | 🟢 已完成 | - |
-| M6: 前端页面 | 10 | 0% | 🔴 未开始 | M1-M5.5 |
+| M6: 前端页面 | 10 | 70% | 🟡 进行中 | M1-M5.5 |
 | M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
 
 **图例**：🔴 未开始 / 🟡 进行中 / 🟢 已完成 / ⚪ 阻塞
@@ -421,43 +421,58 @@
 
 **依赖**：M1-M5 完成
 
-- [ ] **M6.1** 布局组件
-  - [ ] `components/layout/Header.tsx` - 顶部导航
-  - [ ] `components/layout/Footer.tsx` - 底部
-  - [ ] `components/layout/Sidebar.tsx` - 侧边栏（标签云）
+- [x] **M6.1** 布局组件 ✅
+  - [x] `components/layout/Header.tsx` - 顶部导航
+  - [x] `components/layout/Footer.tsx` - 底部
+  - [x] `components/layout/Sidebar.tsx` - 侧边栏（标签云）
 
-- [ ] **M6.2** 通用组件
-  - [ ] `components/common/StarRating.tsx` - 星级评分
-  - [ ] `components/common/Pagination.tsx` - 分页
-  - [ ] `components/common/MarkdownPreview.tsx` - Markdown 预览
-  - [ ] `components/common/FileTree.tsx` - 文件树
+- [x] **M6.2** 通用组件 ✅
+  - [x] `components/common/StarRating.tsx` - 星级评分
+  - [x] `components/common/Pagination.tsx` - 分页
+  - [x] `components/common/MarkdownPreview.tsx` - Markdown 预览
+  - [x] `components/common/FileTree.tsx` - 文件树
+  - [x] `components/common/CommentSection.tsx` - 评论区
 
-- [ ] **M6.3** 搜索功能
-  - [ ] 顶部搜索栏
-  - [ ] 标签云筛选
-  - [ ] 搜索结果展示
+- [x] **M6.3** 首页与搜索 ✅
+  - [x] `pages/Home.tsx` - 首页（四个榜单 Tab）
+  - [x] 顶部搜索栏
+  - [x] 标签云筛选
+  - [x] 搜索结果展示
 
-- [ ] **M6.4** Skill 上传页
+- [x] **M6.4** 认证页面 ✅
+  - [x] `pages/Login.tsx` - 登录页
+  - [x] `pages/Register.tsx` - 注册页
+
+- [x] **M6.5** Skill 详情页 ✅
+  - [x] `pages/SkillDetail.tsx`
+  - [x] 完整信息展示
+  - [x] 文件树展示
+  - [x] Markdown 预览
+  - [x] 评分/收藏/下载功能
+  - [x] 嵌套评论区
+  - [x] 作者操作（编辑/删除）
+
+- [ ] **M6.6** Skill 上传页
   - [ ] `pages/SkillUpload.tsx`
   - [ ] 分步表单（上传 → 填写信息 → 预览）
   - [ ] 标签输入智能提示
 
-- [ ] **M6.5** Skill 编辑页
+- [ ] **M6.7** Skill 编辑页
   - [ ] `pages/SkillEdit.tsx`
   - [ ] 修改元信息
   - [ ] 重新上传文件
 
-- [ ] **M6.6** 个人中心
+- [ ] **M6.8** 个人中心
   - [ ] `pages/UserProfile.tsx`
   - [ ] 我上传的 Skills 列表
   - [ ] 我收藏的 Skills 列表
   - [ ] 我的评论列表
   - [ ] 作者统计面板（PV/UV/下载/收藏/评分分布）
 
-- [ ] **M6.7** 路由与导航
-  - [ ] `App.tsx` 路由配置
-  - [ ] 登录态路由保护
-  - [ ] 移动端适配
+- [x] **M6.9** 路由与导航 ✅
+  - [x] `App.tsx` 路由配置
+  - [x] 登录态路由保护
+  - [x] 移动端适配
 
 **验收标准**：
 - 所有页面可正常访问
