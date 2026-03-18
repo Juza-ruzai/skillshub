@@ -1,51 +1,89 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Filter, X } from 'lucide-react'
+import { apiClient } from '@/lib/api'
 
 interface Tag {
+  id: string
   name: string
-  count: number
+  usageCount: number
+}
+
+interface TagListResponse {
+  items: Tag[]
 }
 
 interface SidebarProps {
-  tags: Tag[]
   selectedTag?: string
-  onTagSelect: (tag: string) => void
+  onTagSelect?: (tag: string) => void
+  onTagClick?: (tag: string) => void
 }
 
-export const Sidebar = ({ tags, selectedTag, onTagSelect }: SidebarProps): JSX.Element => {
+export const Sidebar = ({ selectedTag, onTagSelect, onTagClick }: SidebarProps): JSX.Element => {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
+  const [tags, setTags] = useState<Tag[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const response = await apiClient.get<TagListResponse>('/tags')
+        setTags(response.data.items || [])
+      } catch {
+        setTags([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchTags()
+  }, [])
 
   // Calculate font size based on count (min 0.875rem, max 1.5rem)
   const getTagSize = (count: number) => {
-    const maxCount = Math.max(...tags.map((t) => t.count), 1)
+    if (tags.length === 0) return '0.875rem'
+    const maxCount = Math.max(...tags.map((t) => t.usageCount), 1)
     const minSize = 0.875
     const maxSize = 1.5
     const size = minSize + (count / maxCount) * (maxSize - minSize)
     return `${size}rem`
   }
 
+  const handleTagClick = (tagName: string) => {
+    if (onTagSelect) {
+      onTagSelect(tagName)
+    }
+    if (onTagClick) {
+      onTagClick(tagName)
+    }
+  }
+
   const TagList = ({ isMobile = false }: { isMobile?: boolean }) => (
     <div className={`flex flex-wrap gap-2 ${isMobile ? '' : 'content-start'}`}>
-      {tags.map((tag) => (
-        <button
-          key={tag.name}
-          onClick={() => {
-            onTagSelect(tag.name)
-            if (isMobile) {
-              setMobileDrawerOpen(false)
-            }
-          }}
-          className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-            selectedTag === tag.name
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-          }`}
-          style={{ fontSize: isMobile ? undefined : getTagSize(tag.count) }}
-        >
-          {tag.name}
-          <span className="ml-1.5 text-xs opacity-70">({tag.count})</span>
-        </button>
-      ))}
+      {loading ? (
+        <div className="text-sm text-gray-500">加载中...</div>
+      ) : tags.length === 0 ? (
+        <div className="text-sm text-gray-500">暂无标签</div>
+      ) : (
+        tags.map((tag) => (
+          <button
+            key={tag.id}
+            onClick={() => {
+              handleTagClick(tag.name)
+              if (isMobile) {
+                setMobileDrawerOpen(false)
+              }
+            }}
+            className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+              selectedTag === tag.name
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+            }`}
+            style={{ fontSize: isMobile ? undefined : getTagSize(tag.usageCount) }}
+          >
+            {tag.name}
+            <span className="ml-1.5 text-xs opacity-70">({tag.usageCount})</span>
+          </button>
+        ))
+      )}
     </div>
   )
 

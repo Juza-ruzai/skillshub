@@ -271,8 +271,9 @@ class SkillService:
         Returns:
             Skill 列表
         """
-        # 最近 7 天
+        # 最近 7 天（使用 naive datetime 匹配数据库类型）
         week_ago = datetime.now(UTC) - timedelta(days=7)
+        week_ago = week_ago.replace(tzinfo=None)
 
         query = (
             sqlmodel_select(Skill)
