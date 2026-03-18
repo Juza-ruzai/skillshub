@@ -54,9 +54,43 @@ project/
 
 
 ## 代码质量要求
-后端：运行 `ruff check` + `mypy app`无错误，测试覆盖率 ≥ 80%
-前端：运行 `npm run lint` + `npm run type-check` 无错误，禁止硬编码颜色（使用 shadcn CSS 变量）
-提交前必须格式化代码（Ruff/Prettier）
+
+### 后端
+运行以下命令无错误：
+```bash
+ruff check app
+ruff format app --check
+mypy app
+```
+- 测试覆盖率 ≥ 80%
+- 提交前必须运行 `ruff format app` 格式化代码
+
+### 前端
+运行以下命令无错误：
+```bash
+npm run lint        # ESLint 检查（包含 Prettier 规则）
+npm run format:check # Prettier 格式检查
+npm run type-check   # TypeScript 类型检查
+```
+
+**可用的代码质量命令：**
+| 命令 | 说明 |
+|------|------|
+| `npm run lint` | 检查 ESLint 和 Prettier 规则 |
+| `npm run lint:fix` | 自动修复 ESLint 和 Prettier 问题 |
+| `npm run format` | 使用 Prettier 格式化代码 |
+| `npm run format:check` | 检查代码格式（CI 使用） |
+| `npm run type-check` | TypeScript 类型检查 |
+
+**代码风格配置：**
+- ESLint 配置：`eslint.config.js`（包含 typescript-eslint, react-hooks, prettier）
+- Prettier 配置：`.prettierrc`（无分号、单引号、2空格缩进、printWidth: 100）
+- 禁止硬编码颜色（使用 shadcn CSS 变量）
+
+**提交前必须执行：**
+```bash
+npm run lint:fix && npm run type-check
+```
 
 ## Git 提交规范（精简）
 <type>(<scope>): <subject>
