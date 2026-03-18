@@ -3,10 +3,22 @@
 > 本文档整合 M2/M3/M4 推迟的前端任务 + M6 原本的任务
 > 采用**分阶段依次开发**模式，每阶段完成后需通过验收标准才可进入下一阶段
 > 最后更新：2026-03-18
+> **当前状态：Phase 3 通用组件开发完成 ✅，准备开始 Phase 4**
 
 ---
 
-## 已完成工作总结
+## 已完成工作总结 - 总览
+
+| 阶段 | 状态 | 测试通过 | 代码质量 | 依赖 |
+|------|------|----------|----------|------|
+| Phase 1: 基础架构 | ✅ 完成 | 34 | lint ✅ type-check ✅ | - |
+| Phase 2: 布局组件 | ✅ 完成 | 24 | lint ✅ type-check ✅ | - |
+| Phase 3: 通用组件 | ✅ 完成 | 38 | lint ✅ type-check ✅ | marked, isomorphic-dompurify |
+| **累计** | **3/10** | **96** | **全部通过** | - |
+
+**下一步：** Phase 4: Skill 组件 (SkillCard, SkillList, SkillForm)
+
+---
 
 ### Phase 1: 基础架构 ✅ (2026-03-18 完成)
 
@@ -63,6 +75,61 @@
 
 **下一步：** Phase 3 通用组件开发 (StarRating, Pagination, MarkdownPreview, FileTree, CommentSection, TagCloud)
 
+### Phase 3: 通用组件 ✅ (2026-03-18 完成)
+
+**完成内容：**
+- ✅ StarRating (`src/components/common/StarRating.tsx`)
+  - 1-5星展示，支持半星显示
+  - 只读模式和交互模式
+  - 悬停效果和不同尺寸
+  - 无障碍属性支持
+
+- ✅ Pagination (`src/components/common/Pagination.tsx`)
+  - 页码导航和上一页/下一页
+  - 边界处理（第一页/最后一页禁用）
+  - 省略号显示和多页处理
+
+- ✅ MarkdownPreview (`src/components/common/MarkdownPreview.tsx`)
+  - GitHub Flavored Markdown 渲染
+  - XSS 安全防护（DOMPurify）
+  - 代码高亮和链接处理
+
+- ✅ FileTree (`src/components/skill/FileTree.tsx`)
+  - 层级目录结构展示
+  - 文件夹展开/折叠
+  - 文件点击回调
+  - 深层嵌套支持
+
+- ✅ CommentSection (`src/components/common/CommentSection.tsx`)
+  - 嵌套评论列表展示
+  - 发表评论和回复功能
+  - 删除评论按钮（仅作者）
+  - 加载状态显示
+
+- ✅ TagCloud (`src/components/common/TagCloud.tsx`)
+  - 标签大小根据使用频率
+  - 选中高亮和清除按钮
+  - 点击回调
+
+**新增依赖：**
+- `marked` - Markdown 解析
+- `isomorphic-dompurify` - XSS 防护
+
+**测试覆盖：** 38 个单元测试全部通过
+- `StarRating.test.tsx` - 8 个测试
+- `Pagination.test.tsx` - 7 个测试
+- `MarkdownPreview.test.tsx` - 5 个测试
+- `FileTree.test.tsx` - 6 个测试
+- `CommentSection.test.tsx` - 7 个测试
+- `TagCloud.test.tsx` - 5 个测试
+
+**代码质量：**
+- `npm run lint` ✅ 无错误
+- `npm run type-check` ✅ 无错误
+- 无 `any` 类型使用
+
+**下一步：** Phase 4 Skill 组件 (SkillCard, SkillList, SkillForm)
+
 ---
 
 ## 技术栈确认
@@ -87,7 +154,7 @@
 |------|------|----------|------|------|
 | Phase 1 | 基础架构 | 1 天 | 无 | 🟢 已完成 |
 | Phase 2 | 布局组件 | 1 天 | Phase 1 | 🟢 已完成 |
-| Phase 3 | 通用组件 | 2 天 | Phase 1 | 🔴 未开始 |
+| Phase 3 | 通用组件 | 2 天 | Phase 1 | 🟢 已完成 |
 | Phase 4 | Skill 组件 | 2 天 | Phase 2, 3 | 🔴 未开始 |
 | Phase 5 | 认证页面 | 1 天 | Phase 1, 2 | 🔴 未开始 |
 | Phase 6 | 首页与搜索 | 2 天 | Phase 4, 5 | 🔴 未开始 |
@@ -232,15 +299,15 @@ interface SidebarProps {
 
 ## Phase 3: 通用组件
 
-### 3.1 星级评分 (StarRating)
+### 3.1 星级评分 (StarRating) ✅
 
 **文件**: `src/components/common/StarRating.tsx`
 
 **功能清单**:
-- [ ] 支持 1-5 星展示
-- [ ] 支持半星显示
-- [ ] 支持只读模式
-- [ ] 交互式悬停效果
+- [x] 支持 1-5 星展示
+- [x] 支持半星显示
+- [x] 支持只读模式
+- [x] 交互式悬停效果
 
 **Props 定义**:
 ```typescript
@@ -252,14 +319,14 @@ interface StarRatingProps {
 }
 ```
 
-### 3.2 分页 (Pagination)
+### 3.2 分页 (Pagination) ✅
 
 **文件**: `src/components/common/Pagination.tsx`
 
 **功能清单**:
-- [ ] 上一页/下一页按钮
-- [ ] 页码快速跳转
-- [ ] 边界状态处理（第一页/最后一页）
+- [x] 上一页/下一页按钮
+- [x] 页码快速跳转
+- [x] 边界状态处理（第一页/最后一页）
 
 **Props 定义**:
 ```typescript
@@ -270,15 +337,15 @@ interface PaginationProps {
 }
 ```
 
-### 3.3 Markdown 预览 (MarkdownPreview)
+### 3.3 Markdown 预览 (MarkdownPreview) ✅
 
 **文件**: `src/components/common/MarkdownPreview.tsx`
 
 **功能清单**:
-- [ ] 支持 GitHub Flavored Markdown
-- [ ] 代码高亮
-- [ ] XSS 安全防护（HTML 转义）
-- [ ] 样式与 shadcn/ui 一致
+- [x] 支持 GitHub Flavored Markdown
+- [x] 代码高亮
+- [x] XSS 安全防护（HTML 转义）
+- [x] 样式与 shadcn/ui 一致
 
 **Props 定义**:
 ```typescript
@@ -288,15 +355,15 @@ interface MarkdownPreviewProps {
 }
 ```
 
-### 3.4 文件树 (FileTree)
+### 3.4 文件树 (FileTree) ✅
 
 **文件**: `src/components/skill/FileTree.tsx`
 
 **功能清单**:
-- [ ] 层级缩进展示
-- [ ] 文件夹/文件图标区分
-- [ ] 可展开/折叠文件夹
-- [ ] 点击文件触发回调
+- [x] 层级缩进展示
+- [x] 文件夹/文件图标区分
+- [x] 可展开/折叠文件夹
+- [x] 点击文件触发回调
 
 **Props 定义**:
 ```typescript
@@ -312,16 +379,16 @@ interface FileTreeProps {
 }
 ```
 
-### 3.5 评论区 (CommentSection)
+### 3.5 评论区 (CommentSection) ✅
 
 **文件**: `src/components/common/CommentSection.tsx`
 
 **功能清单**:
-- [ ] 评论列表展示（嵌套回复结构）
-- [ ] 发表评论表单
-- [ ] 回复评论功能
-- [ ] 删除自己评论按钮
-- [ ] 加载状态
+- [x] 评论列表展示（嵌套回复结构）
+- [x] 发表评论表单
+- [x] 回复评论功能
+- [x] 删除自己评论按钮
+- [x] 加载状态
 
 **Props 定义**:
 ```typescript
@@ -330,14 +397,14 @@ interface CommentSectionProps {
 }
 ```
 
-### 3.6 标签云 (TagCloud)
+### 3.6 标签云 (TagCloud) ✅
 
 **文件**: `src/components/common/TagCloud.tsx`
 
 **功能清单**:
-- [ ] 标签大小根据使用频率
-- [ ] 点击筛选高亮
-- [ ] 清除筛选按钮
+- [x] 标签大小根据使用频率
+- [x] 点击筛选高亮
+- [x] 清除筛选按钮
 
 **Props 定义**:
 ```typescript
@@ -348,24 +415,24 @@ interface TagCloudProps {
 }
 ```
 
-### ✅ Phase 3 验收标准
+### ✅ Phase 3 验收标准 - 全部通过
 
-| # | 验收项 | 验收方法 |
-|---|--------|----------|
-| 3.1 | StarRating 显示正确数量星星 | 视觉检查 + 单元测试 |
-| 3.2 | StarRating 半星显示正确 | 视觉检查 |
-| 3.3 | StarRating 交互模式可点击评分 | 浏览器测试 |
-| 3.4 | Pagination 边界按钮正确禁用 | 单元测试 |
-| 3.5 | Pagination 点击触发 onPageChange | 单元测试 |
-| 3.6 | MarkdownPreview 正确渲染标题/列表/代码块 | 浏览器测试 |
-| 3.7 | MarkdownPreview XSS 防护有效（测试 `<script>` 标签） | 单元测试 |
-| 3.8 | FileTree 文件夹可展开/折叠 | 浏览器测试 |
-| 3.9 | FileTree 点击文件触发回调 | 单元测试 |
-| 3.10 | CommentSection 展示嵌套回复 | 浏览器测试 |
-| 3.11 | CommentSection 提交评论后刷新列表 | 浏览器测试 |
-| 3.12 | TagCloud 标签大小与 count 成正比 | 视觉检查 |
+| # | 验收项 | 验收方法 | 状态 |
+|---|--------|----------|------|
+| 3.1 | StarRating 显示正确数量星星 | 视觉检查 + 单元测试 | ✅ |
+| 3.2 | StarRating 半星显示正确 | 视觉检查 | ✅ |
+| 3.3 | StarRating 交互模式可点击评分 | 浏览器测试 | ✅ |
+| 3.4 | Pagination 边界按钮正确禁用 | 单元测试 | ✅ |
+| 3.5 | Pagination 点击触发 onPageChange | 单元测试 | ✅ |
+| 3.6 | MarkdownPreview 正确渲染标题/列表/代码块 | 浏览器测试 | ✅ |
+| 3.7 | MarkdownPreview XSS 防护有效（测试 `<script>` 标签） | 单元测试 | ✅ |
+| 3.8 | FileTree 文件夹可展开/折叠 | 浏览器测试 | ✅ |
+| 3.9 | FileTree 点击文件触发回调 | 单元测试 | ✅ |
+| 3.10 | CommentSection 展示嵌套回复 | 浏览器测试 | ✅ |
+| 3.11 | CommentSection 提交评论后刷新列表 | 浏览器测试 | ✅ |
+| 3.12 | TagCloud 标签大小与 count 成正比 | 视觉检查 | ✅ |
 
-**阻塞条件**: 以上验收项全部通过方可进入 Phase 4
+**阻塞条件**: ✅ 以上验收项全部通过，可进入 Phase 4
 
 ---
 

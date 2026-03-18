@@ -18,7 +18,7 @@ export interface CommentCreate {
 }
 
 export interface CommentWithReplies extends Comment {
-  replies: Comment[]
+  replies: CommentWithReplies[]
 }
 
 export interface CommentListResponse {
