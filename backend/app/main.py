@@ -12,6 +12,8 @@ from app.api.v1.auth import router as auth_router
 from app.api.v1.comments import comments_router, skill_comments_router
 from app.api.v1.notifications import router as notifications_router
 from app.api.v1.skills import router as skills_router
+from app.api.v1.tags import router as tags_router
+from app.api.v1.users import router as users_router
 from app.core.config import get_settings
 from app.core.database import init_db
 from app.core.exceptions import OpenClawException
@@ -68,6 +70,10 @@ app.include_router(
 )
 # 管理后台路由
 app.include_router(admin_router, prefix="/api/v1/admin", tags=["管理后台"])
+# 用户路由
+app.include_router(users_router, prefix="/api/v1/users", tags=["用户"])
+# 标签路由（公开访问）
+app.include_router(tags_router, prefix="/api/v1/tags", tags=["标签"])
 
 # 静态文件服务（上传的文件）
 app.mount("/uploads", StaticFiles(directory=str(settings.upload_path)), name="uploads")

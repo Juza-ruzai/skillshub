@@ -6,6 +6,7 @@ from sqlalchemy import asc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.comment import Comment
+from app.models.user import User
 from app.schemas.comment import CommentWithReplies
 
 
@@ -67,10 +68,21 @@ class CommentService:
         )
         all_comments = result.scalars().all()
 
+        # 批量获取用户名
+        user_ids = {comment.user_id for comment in all_comments}
+        username_map: dict[UUID, str] = {}
+        if user_ids:
+            user_result = await db_session.execute(
+                select(User.id, User.username).where(User.id.in_(user_ids))  # type: ignore[attr-defined]
+            )
+            username_map = dict(user_result.all())
+
         # 构建 ID -> Comment 映射
         comment_map: dict[UUID, CommentWithReplies] = {}
         for comment in all_comments:
-            comment_map[comment.id] = CommentWithReplies.model_validate(comment)
+            comment_data = CommentWithReplies.model_validate(comment)
+            comment_data.username = username_map.get(comment.user_id, "未知用户")
+            comment_map[comment.id] = comment_data
 
         # 构建嵌套结构
         main_comments: list[CommentWithReplies] = []

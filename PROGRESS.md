@@ -1,8 +1,8 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-17
-> **当前状态：M5 已完成 ✅，准备开始 M6 前端页面**
+> 最后更新：2026-03-18
+> **当前状态：M5.5 后端接口补充完成 ✅，准备开始 M6 前端页面**
 
 ---
 
@@ -110,6 +110,55 @@
 - 全部通过：✅ 153 tests passed
 - 代码覆盖率：80%
 
+---
+
+### M5.5: 后端接口补充 ✅ (100%) - **M6 前置工作**
+
+> 为支持 M6 前端开发，补充前端所需的后端接口和字段
+
+**新增接口：**
+
+| 接口 | 方法 | 路径 | 说明 |
+|------|------|------|------|
+| 用户统计 | GET | `/api/v1/users/me/stats` | 返回总PV/下载/收藏、评分分布、7天/30天趋势 |
+| 标签列表 | GET | `/api/v1/tags` | 公开访问，按使用次数降序排列 |
+
+**修复/增强接口：**
+
+| 接口 | 变更 | 说明 |
+|------|------|------|
+| `GET /api/v1/skills` | 修复 | `author_username` 字段现在返回正确值 |
+| `GET /api/v1/skills/trending` | 修复 | `author_username` 字段现在返回正确值 |
+| `GET /api/v1/skills/top-rated` | 修复 | `author_username` 字段现在返回正确值 |
+| `GET /api/v1/skills/most-downloaded` | 修复 | `author_username` 字段现在返回正确值 |
+| `GET /api/v1/skills/{id}/comments` | 增强 | 返回评论新增 `username` 字段 |
+| `POST /api/v1/skills/{id}/comments` | 增强 | 创建评论返回新增 `username` 字段 |
+
+**新增/修改文件：**
+- `app/api/v1/users.py` - 新增：用户统计接口
+- `app/api/v1/tags.py` - 新增：公开标签列表
+- `app/api/v1/skills.py` - 修改：添加 `_get_author_usernames` 辅助函数
+- `app/api/v1/comments.py` - 修改：创建评论返回 username
+- `app/schemas/comment.py` - 修改：`CommentResponse` 添加 `username` 字段
+- `app/services/comment_service.py` - 修改：查询并填充 username
+
+**测试统计：**
+- 新增测试：15 个
+  - `test_user_stats_api.py` - 5 个测试
+  - `test_skills_api.py` - 4 个测试
+  - `test_comments_api.py` - 3 个测试（扩展）
+  - `test_tags_api.py` - 3 个测试
+- 总测试数：168 个 ✅ (原 153 + 新增 15)
+- 代码覆盖率：80%
+- 全部通过：✅ `ruff check` + 测试通过
+
+**验收标准：**
+- [x] 前端统计面板可获取所需数据
+- [x] Skill 列表显示作者名称
+- [x] 评论区显示评论者用户名
+- [x] 标签云可获取公开标签列表
+- [x] 所有测试通过，无回归问题
+
 
 ---
 
@@ -122,7 +171,8 @@
 | M3: Skill 核心 | 8 | 100% | 🟢 已完成 | - |
 | M4: 互动功能 | 4 | 100% | 🟢 已完成 | - |
 | M5: 管理后台 | 4 | 100% | 🟢 已完成 | - |
-| M6: 前端页面 | 7 | 0% | 🔴 未开始 | M1-M5 |
+| M5.5: 后端接口补充 | 4 | 100% | 🟢 已完成 | - |
+| M6: 前端页面 | 10 | 0% | 🔴 未开始 | M1-M5.5 |
 | M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
 
 **图例**：🔴 未开始 / 🟡 进行中 / 🟢 已完成 / ⚪ 阻塞
@@ -450,6 +500,7 @@
 - PostgreSQL 15 (Docker) 运行中，端口 5432
 - 核心模块：`config.py`, `database.py`, `security.py`, `exceptions.py`
 - 数据模型：`user`, `skill`, `comment`, `favorite`, `rating`, `notification`, `tag`
+- API 路由：auth, skills, comments, notifications, admin, users, tags (168 测试通过)
 - Alembic 迁移配置完成
 - 代码质量：Ruff + MyPy 无错误
 - 启动命令：`python -m app.main` → http://localhost:8000
