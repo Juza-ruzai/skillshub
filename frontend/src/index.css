@@ -2,58 +2,288 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --radius: 0.5rem;
-  }
+/* ===== 设计系统 CSS 变量 ===== */
+:root {
+  /* ===== 白天模式 - 深海蓝晶 ===== */
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+  /* 背景 */
+  --bg-primary: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 30%, #dbeafe 70%, #ede9fe 100%);
+  --bg-glow-1: rgba(59, 130, 246, 0.15);
+  --bg-glow-2: rgba(6, 182, 212, 0.12);
+  --bg-glow-3: rgba(99, 102, 241, 0.1);
+
+  /* 卡片 */
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(255, 255, 255, 0.6);
+  --card-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+
+  /* 导航栏 */
+  --navbar-bg: rgba(255, 255, 255, 0.75);
+  --navbar-border: rgba(255, 255, 255, 0.6);
+
+  /* 文字 */
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+
+  /* 强调色 */
+  --accent-primary: #3b82f6;
+  --accent-secondary: #06b6d4;
+
+  /* 按钮渐变 */
+  --btn-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+  --stat-gradient: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+
+  /* 辅助 */
+  --ring-bg: #e2e8f0;
+  --tab-active-bg: rgba(255, 255, 255, 0.9);
+  --tab-active-border: rgba(59, 130, 246, 0.15);
+
+  /* shadcn/ui 兼容变量 */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  --primary: 222.2 47.4% 11.2%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0.5rem;
+}
+
+[data-theme='dark'] {
+  /* ===== 夜间模式 - 午夜深蓝 ===== */
+
+  /* 背景 */
+  --bg-primary: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  --bg-glow-1: rgba(59, 130, 246, 0.25);
+  --bg-glow-2: rgba(6, 182, 212, 0.2);
+  --bg-glow-3: rgba(99, 102, 241, 0.15);
+
+  /* 卡片 */
+  --card-bg: rgba(30, 41, 59, 0.8);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+  /* 导航栏 */
+  --navbar-bg: rgba(15, 23, 42, 0.85);
+  --navbar-border: rgba(255, 255, 255, 0.1);
+
+  /* 文字 */
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+
+  /* 强调色 */
+  --accent-primary: #60a5fa;
+  --accent-secondary: #34d399;
+
+  /* 按钮渐变 */
+  --btn-gradient: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+  --stat-gradient: linear-gradient(135deg, #60a5fa 0%, #34d399 100%);
+
+  /* 辅助 */
+  --ring-bg: #334155;
+  --tab-active-bg: rgba(59, 130, 246, 0.2);
+  --tab-active-border: rgba(59, 130, 246, 0.3);
+
+  /* shadcn/ui 兼容变量 */
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
+  --primary: 210 40% 98%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
+}
+
+/* ===== 背景光晕动画 ===== */
+@keyframes bgPulse {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.02);
   }
 }
 
+@keyframes glowFloat {
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    opacity: 0.8;
+    transform: translate(20px, -15px) scale(1.05);
+  }
+  66% {
+    opacity: 0.5;
+    transform: translate(-10px, 10px) scale(0.98);
+  }
+}
+
+/* ===== 主题过渡动画 ===== */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.5s ease,
+    border-color 0.5s ease,
+    color 0.5s ease;
+}
+
+/* ===== 全局基础样式 ===== */
 @layer base {
   * {
     @apply border-border;
   }
+
+  html {
+    font-family: 'Inter', 'Noto Sans SC', sans-serif;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    color: var(--text-primary);
+    min-height: 100vh;
+    background: var(--bg-primary);
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* 背景光晕效果 */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::before {
+    width: 600px;
+    height: 600px;
+    background: var(--bg-glow-1);
+    top: -100px;
+    right: -100px;
+    animation: glowFloat 12s ease-in-out infinite;
+  }
+
+  body::after {
+    width: 500px;
+    height: 500px;
+    background: var(--bg-glow-2);
+    bottom: -100px;
+    left: -100px;
+    animation: glowFloat 15s ease-in-out infinite reverse;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
+  }
+}
+
+/* ===== 玻璃拟态工具类 ===== */
+@layer utilities {
+  .glass {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+  }
+
+  .glass-navbar {
+    background: var(--navbar-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--navbar-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .gradient-text {
+    background: var(--btn-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gradient-stat {
+    background: var(--stat-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .btn-gradient {
+    background: var(--btn-gradient);
+    color: white;
+    transition: all 0.3s ease;
+  }
+
+  .btn-gradient:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+  }
+
+  .card-hover {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(59, 130, 246, 0.15);
+  }
+
+  .text-primary-custom {
+    color: var(--text-primary);
+  }
+
+  .text-secondary-custom {
+    color: var(--text-secondary);
+  }
+
+  .text-tertiary-custom {
+    color: var(--text-tertiary);
+  }
+
+  .accent-primary {
+    color: var(--accent-primary);
   }
 }

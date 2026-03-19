@@ -17,7 +17,7 @@ export const Layout = ({
   unreadCount = 0,
 }: LayoutProps): JSX.Element => {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col">
       <Header onSearch={onSearch} unreadCount={unreadCount} />
 
       <div className="flex-1 container mx-auto px-4 pt-20 pb-8">

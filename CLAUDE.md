@@ -95,3 +95,16 @@ npm run lint:fix && npm run type-check
 ## Git 提交规范（精简）
 <type>(<scope>): <subject>
 类型：feat(新功能)、fix(修复)、docs(文档)、refactor(重构)、test(测试)、chore(构建)
+
+## Windows 环境操作规范（必须遵守）
+
+### 进程/端口管理
+- **禁止**使用 bash 的 `kill` 命令杀 Windows 进程，bash 的 kill 对 Windows PID 无效
+- 查端口占用：`netstat -ano | grep :PORT`（bash）或 `netstat -ano | findstr :PORT`（PowerShell）
+- 杀进程：只能在 PowerShell/CMD 中执行 `taskkill /f /pid <PID>`，不要在 bash 中尝试
+- 如需关闭端口，**直接告知用户执行** `taskkill /f /pid <PID>`，不要自己尝试
+
+### 开发服务器
+- 前端默认端口：**5173**（`cd frontend && npm run dev`）
+- 后端默认端口：**8000**（`cd backend && python -m app.main`）
+- 启动前先确认端口未被占用，**不允许自动换端口**，如有占用先关闭被占用的端口
