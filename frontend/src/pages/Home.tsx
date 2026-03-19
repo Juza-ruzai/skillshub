@@ -5,7 +5,6 @@ import { Search, X, Pin } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { SkillList } from '@/components/skill/SkillList'
 import { Pagination } from '@/components/common/Pagination'
-import { Sidebar } from '@/components/layout/Sidebar'
 import type { Skill, SkillListResponse } from '@/types/skill'
 
 type TabType = 'hot' | 'trending' | 'top-rated' | 'most-downloaded'
@@ -55,7 +54,6 @@ export function Home(): JSX.Element {
   const [searchInput, setSearchInput] = useState('')
   const pageSize = 20
 
-  // Read URL params on mount
   const tagFilter = searchParams.get('tag') || undefined
   const searchQuery = searchParams.get('q') || undefined
 
@@ -88,49 +86,35 @@ export function Home(): JSX.Element {
   }, [])
 
   const handleSearch = useCallback(() => {
+    const next = new URLSearchParams(searchParams)
     if (searchInput.trim()) {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.set('q', searchInput.trim())
-      setSearchParams(newParams)
+      next.set('q', searchInput.trim())
     } else {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.delete('q')
-      setSearchParams(newParams)
+      next.delete('q')
     }
+    setSearchParams(next)
     setPage(1)
   }, [searchInput, searchParams, setSearchParams])
 
   const handleSearchKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
-      if (e.key === 'Enter') {
-        handleSearch()
-      }
+      if (e.key === 'Enter') handleSearch()
     },
     [handleSearch]
   )
 
   const handleClearSearch = useCallback(() => {
     setSearchInput('')
-    const newParams = new URLSearchParams(searchParams)
-    newParams.delete('q')
-    setSearchParams(newParams)
+    const next = new URLSearchParams(searchParams)
+    next.delete('q')
+    setSearchParams(next)
     setPage(1)
   }, [searchParams, setSearchParams])
 
-  const handleTagClick = useCallback(
-    (tag: string) => {
-      const newParams = new URLSearchParams(searchParams)
-      newParams.set('tag', tag)
-      setSearchParams(newParams)
-      setPage(1)
-    },
-    [searchParams, setSearchParams]
-  )
-
   const handleClearTagFilter = useCallback(() => {
-    const newParams = new URLSearchParams(searchParams)
-    newParams.delete('tag')
-    setSearchParams(newParams)
+    const next = new URLSearchParams(searchParams)
+    next.delete('tag')
+    setSearchParams(next)
     setPage(1)
   }, [searchParams, setSearchParams])
 
@@ -138,7 +122,6 @@ export function Home(): JSX.Element {
     window.location.href = `/skills/${skill.id}`
   }, [])
 
-  // Sort skills: pinned first
   const sortedSkills = data?.items
     ? [...data.items].sort((a, b) => {
         if (a.isPinned && !b.isPinned) return -1
@@ -150,177 +133,218 @@ export function Home(): JSX.Element {
   const errorMessage = error ? '加载失败，请稍后重试' : null
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section with Search */}
-      <div className="py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl font-bold text-gray-900 text-center mb-6">发现优质 AI Skills</h1>
-          <div className="max-w-2xl mx-auto relative">
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              placeholder="搜索 Skills..."
-              className="w-full px-4 py-3 pl-12 pr-12 text-gray-900 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-            {searchInput && (
-              <button
-                type="button"
-                onClick={handleClearSearch}
-                className="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+    <div>
+      {/* Search Bar */}
+      <div className="mb-8">
+        <div
+          className="relative flex items-center rounded-2xl"
+          style={{
+            background: 'var(--card-bg)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid var(--card-border)',
+            boxShadow: 'var(--card-shadow)',
+          }}
+        >
+          <Search className="absolute left-4 w-5 h-5" style={{ color: 'var(--text-tertiary)' }} />
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            placeholder="搜索 Skills..."
+            className="w-full pl-12 pr-12 py-3 bg-transparent outline-none"
+            style={{ color: 'var(--text-primary)', fontSize: 15 }}
+          />
+          {searchInput && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="absolute right-4 p-1"
+              style={{ color: 'var(--text-tertiary)' }}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Left Content */}
-          <div className="flex-1">
-            {/* Tabs */}
-            <div className="border-b border-gray-200 mb-6">
-              <nav className="flex space-x-8" aria-label="Tabs">
-                {(Object.keys(TAB_LABELS) as TabType[]).map((tab) => (
-                  <button
-                    key={tab}
-                    type="button"
-                    onClick={() => handleTabChange(tab)}
-                    role="tab"
-                    aria-selected={activeTab === tab}
-                    className={`py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
-                      activeTab === tab
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    {TAB_LABELS[tab]}
-                  </button>
-                ))}
-              </nav>
-            </div>
+      {/* Tabs */}
+      <div
+        className="flex gap-1 mb-6 p-1 rounded-xl"
+        style={{
+          background: 'var(--card-bg)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid var(--card-border)',
+          display: 'inline-flex',
+        }}
+        role="tablist"
+        aria-label="Tabs"
+      >
+        {(Object.keys(TAB_LABELS) as TabType[]).map((tab) => {
+          const isActive = activeTab === tab
+          return (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => handleTabChange(tab)}
+              role="tab"
+              aria-selected={isActive}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+              style={{
+                background: isActive ? 'var(--tab-active-bg)' : 'transparent',
+                color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                border: isActive ? '1px solid var(--tab-active-border)' : '1px solid transparent',
+                boxShadow: isActive ? '0 2px 8px rgba(59,130,246,0.08)' : 'none',
+              }}
+            >
+              {TAB_LABELS[tab]}
+            </button>
+          )
+        })}
+      </div>
 
-            {/* Active Filters */}
-            {(tagFilter || searchQuery) && (
-              <div className="mb-4 flex items-center gap-2">
-                <span className="text-sm text-gray-500">筛选条件:</span>
-                {tagFilter && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-700 rounded">
-                    标签: {tagFilter}
-                    <button
-                      type="button"
-                      onClick={handleClearTagFilter}
-                      className="hover:text-blue-900"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                )}
-                {searchQuery && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-sm bg-green-100 text-green-700 rounded">
-                    搜索: {searchQuery}
-                    <button
-                      type="button"
-                      onClick={handleClearSearch}
-                      className="hover:text-green-900"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleClearTagFilter()
-                    handleClearSearch()
-                  }}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+      {/* Active Filters */}
+      {(tagFilter || searchQuery) && (
+        <div className="mb-4 flex items-center gap-2 flex-wrap">
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            筛选:
+          </span>
+          {tagFilter && (
+            <span
+              className="inline-flex items-center gap-1 px-3 py-1 text-sm rounded-full"
+              style={{
+                background: 'rgba(59,130,246,0.1)',
+                color: 'var(--accent-primary)',
+                border: '1px solid rgba(59,130,246,0.2)',
+              }}
+            >
+              标签: {tagFilter}
+              <button type="button" onClick={handleClearTagFilter} className="ml-1">
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+          {searchQuery && (
+            <span
+              className="inline-flex items-center gap-1 px-3 py-1 text-sm rounded-full"
+              style={{
+                background: 'rgba(6,182,212,0.1)',
+                color: 'var(--accent-secondary)',
+                border: '1px solid rgba(6,182,212,0.2)',
+              }}
+            >
+              搜索: {searchQuery}
+              <button type="button" onClick={handleClearSearch} className="ml-1">
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Skill List */}
+      <SkillList
+        skills={sortedSkills}
+        loading={isLoading}
+        error={errorMessage}
+        emptyText={
+          searchQuery || tagFilter ? '没有找到相关 Skill，尝试其他关键词或标签' : '暂无 Skill'
+        }
+        onSkillClick={handleSkillClick}
+        renderSkillCard={(skill) => (
+          <div
+            key={skill.id}
+            data-testid="skill-card"
+            data-pinned={skill.isPinned}
+            className="relative rounded-2xl transition-all duration-400 cursor-pointer"
+            style={{
+              background: 'var(--card-bg)',
+              backdropFilter: 'blur(20px)',
+              border: `1px solid ${skill.isPinned ? 'rgba(59,130,246,0.3)' : 'var(--card-border)'}`,
+              boxShadow: 'var(--card-shadow)',
+            }}
+            onClick={() => handleSkillClick(skill)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleSkillClick(skill)
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-6px)'
+              e.currentTarget.style.boxShadow = '0 16px 40px rgba(59,130,246,0.15)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = 'var(--card-shadow)'
+            }}
+          >
+            {skill.isPinned && (
+              <div className="absolute top-3 right-3 z-10">
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full text-white"
+                  style={{ background: 'var(--btn-gradient)' }}
                 >
-                  清除筛选
-                </button>
+                  <Pin className="h-3 w-3" />
+                  置顶
+                </span>
               </div>
             )}
-
-            {/* Skill List */}
-            <SkillList
-              skills={sortedSkills}
-              loading={isLoading}
-              error={errorMessage}
-              emptyText={
-                searchQuery || tagFilter ? '没有找到相关 Skill，尝试其他关键词或标签' : '暂无 Skill'
-              }
-              onSkillClick={handleSkillClick}
-              renderSkillCard={(skill) => (
-                <div
-                  key={skill.id}
-                  data-testid="skill-card"
-                  data-pinned={skill.isPinned}
-                  className={`relative bg-white rounded-lg border shadow-sm hover:shadow-md transition-shadow cursor-pointer ${
-                    skill.isPinned ? 'border-blue-300' : 'border-gray-200'
-                  }`}
-                  onClick={() => handleSkillClick(skill)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleSkillClick(skill)
-                  }}
-                >
-                  {skill.isPinned && (
-                    <div className="absolute top-2 right-2 z-10">
-                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded">
-                        <Pin className="h-3 w-3" />
-                        置顶
-                      </span>
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{skill.name}</h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{skill.description}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span className="flex items-center gap-1">
-                        ⭐ {(skill.ratingAvg ?? 0).toFixed(1)}
-                      </span>
-                      <span>下载: {skill.downloadCount ?? 0}</span>
-                      <span>收藏: {skill.favoriteCount ?? 0}</span>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {(skill.tags ?? []).slice(0, 3).map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+            {/* Card image area */}
+            <div
+              className="h-28 rounded-t-2xl flex items-center justify-center text-4xl"
+              style={{
+                background:
+                  'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(6,182,212,0.08) 100%)',
+              }}
+            >
+              🤖
+            </div>
+            <div className="p-4">
+              <h3
+                className="text-sm font-semibold mb-2 line-clamp-1"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                {skill.name}
+              </h3>
+              <p className="text-xs mb-3 line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
+                {skill.description}
+              </p>
+              <div
+                className="flex items-center gap-3 text-xs"
+                style={{ color: 'var(--text-tertiary)' }}
+              >
+                <span>⭐ {(skill.ratingAvg ?? 0).toFixed(1)}</span>
+                <span>↓ {skill.downloadCount ?? 0}</span>
+                <span>♥ {skill.favoriteCount ?? 0}</span>
+              </div>
+              {(skill.tags ?? []).length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-1">
+                  {(skill.tags ?? []).slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2 py-0.5 text-xs rounded-full"
+                      style={{
+                        background: 'rgba(59,130,246,0.08)',
+                        color: 'var(--accent-primary)',
+                        border: '1px solid rgba(59,130,246,0.15)',
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               )}
-            />
-
-            {/* Pagination */}
-            {data && data.pages > 1 && (
-              <div className="mt-8 flex justify-center" data-testid="pagination-container">
-                <Pagination
-                  currentPage={page}
-                  totalPages={data.pages}
-                  onPageChange={handlePageChange}
-                />
-              </div>
-            )}
+            </div>
           </div>
+        )}
+      />
 
-          {/* Right Sidebar */}
-          <aside className="w-full lg:w-64">
-            <Sidebar onTagClick={handleTagClick} />
-          </aside>
+      {/* Pagination */}
+      {data && data.pages > 1 && (
+        <div className="mt-8 flex justify-center" data-testid="pagination-container">
+          <Pagination currentPage={page} totalPages={data.pages} onPageChange={handlePageChange} />
         </div>
-      </div>
+      )}
     </div>
   )
 }

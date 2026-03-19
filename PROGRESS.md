@@ -1,13 +1,12 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-19（F1 全局样式与主题系统完成，渐变背景 + 光晕动画 + 双主题系统已就绪）
-> **当前状态：F2 布局组件重构（Header/Footer/Sidebar 玻璃拟态改造），后端全部完成（202测试通过）**
+> 最后更新：2026-03-19（F2 布局组件重构完成，Header/Footer/Sidebar/Layout 玻璃拟态改造完成）
+> **当前状态：F3 认证页面重构（Login/Register 玻璃拟态卡片），后端全部完成（202测试通过）**
 
 ---
 
 **📍 当前聚焦 (Current Focus):**
-- **F2: 布局组件重构** - Header/Footer/Sidebar/Layout 玻璃拟态改造
 - **F3: 认证页面重构** - Login/Register 玻璃拟态卡片
 - **F4+: 后续页面重构** - 首页/详情页/组件库（依赖 F2-F3）
 
@@ -24,7 +23,7 @@
 | M5: 管理后台基础 | 4 | 100% | 🟢 已完成 | - |
 | M5.5: 后端接口补充 | 4 | 100% | 🟢 已完成 | - |
 | M5.6: 管理员功能扩展 | 6 | 100% | 🟢 已完成 | - |
-| **F: 前端视觉重构** | **20** | **15%** | 🟡 **进行中** | **F1 已完成，F2 待开始** |
+| **F: 前端视觉重构** | **20** | **35%** | 🟡 **进行中** | **F2 已完成，F3 进行中** |
 | M6: 前端页面功能 | 10 | 70% | 🟡 进行中 | **F 重构完成** |
 | M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
 | M8: 后续功能（Post-MVP） | 10 | 0% | 🔴 未开始 | M7 |
@@ -146,14 +145,25 @@
 - `index.html` - Google Fonts（Space Grotesk + Noto Sans SC + Inter）
 - `font-family: heading/body` - Tailwind 字体配置
 
-**验收状态：**
-- ✅ 渐变背景渲染正确
-- ✅ 光晕动画运行中
-- ✅ 双主题切换正常
-- ✅ localStorage 持久化生效
-- ✅ 代码质量检查通过
 
+### F2: 布局组件重构 ✅ (100%)
+> **日期**：2026-03-19
+- **Header 完全重构**：玻璃拟态导航栏（`backdrop-filter: blur(20px)`）、渐变 Logo（`background: var(--btn-gradient)` + `backgroundClip: text`）、主题切换按钮（太阳/月亮图标 + 旋转动画）、玻璃拟态用户下拉菜单（含管理员入口）、渐变注册按钮
+- **Footer 重构**：玻璃拟态背景、渐变分隔线（`linear-gradient(90deg, transparent 0%, var(--accent-primary) 50%, transparent 100%)`）、渐变品牌 Logo
+- **Sidebar 重构**：玻璃拟态卡片、标签按使用频率动态调整字号（0.75rem - 1.1rem）、选中态渐变高亮、移动端抽屉玻璃效果 + 浮动筛选按钮
+- **Layout 重构**：背景双光晕动画（蓝 + 青，12s 循环，animation-delay 交错）、统一渐变背景层（`var(--bg-primary)`）
+- **App.tsx 路由架构重构**：所有主路由通过 Layout 的 Outlet 渲染，Login/Register 作为独立路由
+- **Home.tsx 同步更新**：应用玻璃拟态搜索框、Tab、SkillCard 样式
+
+**修改文件：**
+- `src/components/layout/Header.tsx` - 完全重构
+- `src/components/layout/Footer.tsx` - 完全重构
+- `src/components/layout/Sidebar.tsx` - 完全重构
+- `src/components/layout/Layout.tsx` - 添加背景光晕
+- `src/App.tsx` - 重构路由架构
+- `src/pages/Home.tsx` - 同步应用玻璃拟态样式
 ---
+
 
 ## 视觉驱动开发 + 增量验收流程
 
@@ -209,31 +219,31 @@
 
 ---
 
-### F2: 布局组件重构
+### F2: 布局组件重构 ✅ (100%)
 
-- [ ] **F2.1** Header 重构 (`src/components/layout/Header.tsx`)
-  - [ ] 玻璃拟态导航栏（backdrop-blur + 半透明背景）
-  - [ ] 渐变 Logo 文字效果
-  - [ ] 主题切换按钮（太阳/月亮图标 + 旋转动画）
-  - [ ] 用户菜单玻璃拟态下拉
+- [x] **F2.1** Header 重构 (`src/components/layout/Header.tsx`)
+  - [x] 玻璃拟态导航栏（backdrop-blur + 半透明背景）
+  - [x] 渐变 Logo 文字效果
+  - [x] 主题切换按钮（太阳/月亮图标 + 旋转动画）
+  - [x] 用户菜单玻璃拟态下拉
 
-- [ ] **F2.2** Footer 重构 (`src/components/layout/Footer.tsx`)
-  - [ ] 玻璃拟态背景
-  - [ ] 渐变分隔线
+- [x] **F2.2** Footer 重构 (`src/components/layout/Footer.tsx`)
+  - [x] 玻璃拟态背景
+  - [x] 渐变分隔线
 
-- [ ] **F2.3** Sidebar 重构 (`src/components/layout/Sidebar.tsx`)
-  - [ ] 玻璃拟态卡片
-  - [ ] 标签云使用频率调整大小
+- [x] **F2.3** Sidebar 重构 (`src/components/layout/Sidebar.tsx`)
+  - [x] 玻璃拟态卡片
+  - [x] 标签云使用频率调整大小
 
-- [ ] **F2.4** Layout 重构 (`src/components/layout/Layout.tsx`)
-  - [ ] 添加背景光晕元素
-  - [ ] 统一玻璃拟态容器
+- [x] **F2.4** Layout 重构 (`src/components/layout/Layout.tsx`)
+  - [x] 添加背景光晕元素
+  - [x] 统一玻璃拟态容器
 
 **验收标准：**
-- [ ] 导航栏玻璃拟态效果可见
-- [ ] 点击主题按钮切换白天/夜间模式
-- [ ] 移动端导航栏适配正常
-- [ ] 验收员截图确认效果
+- [x] 导航栏玻璃拟态效果可见
+- [x] 点击主题按钮切换白天/夜间模式
+- [x] 移动端导航栏适配正常
+- [x] 验收员截图确认效果
 
 **阻塞项：** 完成后方可进入 F3
 
@@ -543,7 +553,7 @@
 ### 视觉驱动开发流程
 
 ```
-F1 全局样式 → [验收] → F2 布局 → [验收] → F3 认证页 → [验收] →
+F1 全局样式 → [✅验收] → F2 布局 → [✅验收] → F3 认证页 → [验收] →
 F4 首页 → [验收] → F5 详情页 → [验收] → F6 组件调整 → [验收] →
 M6.6 上传页 → [验收] → M6.7 编辑页 → [验收] → M6.8 个人中心 → [验收] →
 M6.9 管理员后台 → [验收] → 部署上线
@@ -571,7 +581,8 @@ M6.9 管理员后台 → [验收] → 部署上线
 
 | 阻塞项 | 依赖 | 预计解决 |
 |--------|------|----------|
-| F2 布局重构 | F1 完成 | 现在开始 |
+| F3 认证页重构 | F2 完成 | 进行中 |
+| F4-F6 页面重构 | F3 完成 | F3 完成后 |
 | M6 新功能开发 | F 重构完成（F1-F6） | F6 完成后 |
 
 ---
@@ -592,7 +603,8 @@ M6.9 管理员后台 → [验收] → 部署上线
 - Vite + React 18 + TypeScript 5 + Tailwind CSS 环境配置完成
 - ESLint + Prettier 配置完成
 - **F1 全局样式与主题系统 ✅ 已完成**（渐变背景 + 光晕动画 + 双主题 + 字体）
-- **当前优先级：F2 布局组件重构**（Header/Footer/Sidebar 玻璃拟态改造）
+- **F2 布局组件重构 ✅ 已完成**（Header/Footer/Sidebar/Layout 玻璃拟态改造）
+- **当前优先级：F3 认证页面重构**（Login/Register 玻璃拟态卡片）
 - 启动命令：`npm run dev` → http://localhost:5173
 
 **快速启动指南：**

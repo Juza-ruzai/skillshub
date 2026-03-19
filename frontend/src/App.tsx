@@ -1,6 +1,8 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useCallback } from 'react'
 import { PrivateRoute } from './components/PrivateRoute'
+import { Layout } from './components/layout/Layout'
 
 import { Home } from './pages/Home'
 import Login from './pages/Login'
@@ -16,33 +18,69 @@ const queryClient = new QueryClient({
   },
 })
 
-// 页面组件（将在后续 Phase 中实现）
 const SkillUpload = () => <div>Skill Upload</div>
 const SkillEdit = () => <div>Skill Edit</div>
 const UserProfile = () => <div>User Profile</div>
 const NotFound = () => <div>404 Not Found</div>
+
+// Layout wrapper with shared state
+function AppLayout() {
+  const [, setSearchParams] = useSearchParams()
+
+  const handleTagSelect = useCallback(
+    (tag: string) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        next.set('tag', tag)
+        return next
+      })
+    },
+    [setSearchParams]
+  )
+
+  const handleSearch = useCallback(
+    (keyword: string) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev)
+        if (keyword.trim()) {
+          next.set('q', keyword.trim())
+        } else {
+          next.delete('q')
+        }
+        return next
+      })
+    },
+    [setSearchParams]
+  )
+
+  return <Layout onTagSelect={handleTagSelect} onSearch={handleSearch} />
+}
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          {/* 公开路由 */}
-          <Route path="/" element={<Home />} />
-          <Route path="/search" element={<Home />} />
-          <Route path="/skills/:id" element={<SkillDetail />} />
+          {/* Layout-wrapped routes */}
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/search" element={<Home />} />
+            <Route path="/skills/:id" element={<SkillDetail />} />
+
+            {/* Private routes inside layout */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/upload" element={<SkillUpload />} />
+              <Route path="/skills/:id/edit" element={<SkillEdit />} />
+              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/profile/skills" element={<UserProfile />} />
+              <Route path="/profile/favorites" element={<UserProfile />} />
+              <Route path="/profile/comments" element={<UserProfile />} />
+            </Route>
+          </Route>
+
+          {/* Standalone routes (no layout) */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-
-          {/* 需要登录的路由 */}
-          <Route element={<PrivateRoute />}>
-            <Route path="/upload" element={<SkillUpload />} />
-            <Route path="/skills/:id/edit" element={<SkillEdit />} />
-            <Route path="/profile" element={<UserProfile />} />
-            <Route path="/profile/skills" element={<UserProfile />} />
-            <Route path="/profile/favorites" element={<UserProfile />} />
-            <Route path="/profile/comments" element={<UserProfile />} />
-          </Route>
 
           {/* 404 */}
           <Route path="/404" element={<NotFound />} />
