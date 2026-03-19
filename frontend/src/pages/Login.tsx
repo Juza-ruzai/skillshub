@@ -1,12 +1,10 @@
 import { useState, useEffect, FormEvent } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { Button } from '../components/ui/button'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Alert, AlertDescription } from '../components/ui/alert'
-import { Loader2 } from 'lucide-react'
+import { Loader2, LogIn } from 'lucide-react'
+import { useTheme } from '../hooks/useTheme'
+import { Sun, Moon } from 'lucide-react'
 
 interface FormErrors {
   email?: string
@@ -26,6 +24,7 @@ export default function Login(): JSX.Element {
   const navigate = useNavigate()
   const location = useLocation()
   const { login, isAuthenticated, isLoading } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const state = location.state as LocationState
 
   const [formData, setFormData] = useState({
@@ -35,14 +34,12 @@ export default function Login(): JSX.Element {
   const [errors, setErrors] = useState<FormErrors>({})
   const [submitError, setSubmitError] = useState<string>('')
 
-  // 已登录用户重定向到首页
   useEffect(() => {
     if (isAuthenticated) {
       navigate('/')
     }
   }, [isAuthenticated, navigate])
 
-  // 预填邮箱
   useEffect(() => {
     if (state?.email) {
       setFormData((prev) => ({ ...prev, email: state.email as string }))
@@ -52,7 +49,6 @@ export default function Login(): JSX.Element {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
-    // 清除对应字段的错误
     if (errors[name as keyof FormErrors]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }))
     }
@@ -65,7 +61,6 @@ export default function Login(): JSX.Element {
     e.preventDefault()
     setSubmitError('')
 
-    // 直接从表单元素获取值，确保验证时使用的是最新值
     const form = e.target as HTMLFormElement
     const formElements = form.elements as HTMLFormControlsCollection
     const emailInput = formElements.namedItem('email') as HTMLInputElement
@@ -74,7 +69,6 @@ export default function Login(): JSX.Element {
     const email = emailInput?.value?.trim() || ''
     const password = passwordInput?.value || ''
 
-    // 同步执行验证
     const newErrors: FormErrors = {}
 
     if (!email) {
@@ -104,80 +98,188 @@ export default function Login(): JSX.Element {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">登录</CardTitle>
-          <CardDescription className="text-center">输入您的邮箱和密码登录账号</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {submitError && (
-              <Alert variant="destructive">
-                <AlertDescription>{submitError}</AlertDescription>
-              </Alert>
-            )}
+    <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
+      {/* 主题切换按钮 */}
+      <button
+        onClick={toggleTheme}
+        className="fixed top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-300 hover:scale-110"
+        style={{
+          background: 'var(--card-bg)',
+          borderColor: 'var(--card-border)',
+          boxShadow: 'var(--card-shadow)',
+        }}
+        aria-label="切换主题"
+      >
+        {theme === 'dark' ? (
+          <Sun className="h-5 w-5" style={{ color: 'var(--accent-primary)' }} />
+        ) : (
+          <Moon className="h-5 w-5" style={{ color: 'var(--accent-primary)' }} />
+        )}
+      </button>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">邮箱</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="邮箱"
-                value={formData.email}
-                onChange={handleChange}
-                disabled={isLoading}
-                aria-invalid={!!errors.email}
-                aria-describedby={errors.email ? 'email-error' : undefined}
-              />
-              {errors.email && (
-                <p id="email-error" className="text-sm text-red-500">
-                  {errors.email}
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">密码</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="密码"
-                value={formData.password}
-                onChange={handleChange}
-                disabled={isLoading}
-                aria-invalid={!!errors.password}
-                aria-describedby={errors.password ? 'password-error' : undefined}
-              />
-              {errors.password && (
-                <p id="password-error" className="text-sm text-red-500">
-                  {errors.password}
-                </p>
-              )}
-            </div>
-
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  登录中...
-                </>
-              ) : (
-                '登录'
-              )}
-            </Button>
-          </form>
-
-          <div className="mt-4 text-center text-sm">
-            <span className="text-gray-500">还没有账号？</span>{' '}
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
-              去注册
-            </Link>
+      {/* 玻璃拟态卡片 */}
+      <div
+        className="w-full max-w-md rounded-2xl p-8"
+        style={{
+          background: 'var(--card-bg)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid var(--card-border)',
+          boxShadow: 'var(--card-shadow)',
+        }}
+      >
+        {/* 卡片头部 */}
+        <div className="mb-8 text-center">
+          <div
+            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
+            style={{ background: 'var(--btn-gradient)' }}
+          >
+            <LogIn className="h-7 w-7 text-white" />
           </div>
-        </CardContent>
-      </Card>
+          <h1
+            className="mb-1 text-2xl font-bold"
+            style={{
+              fontFamily: "'Space Grotesk', 'Noto Sans SC', sans-serif",
+              color: 'var(--text-primary)',
+            }}
+          >
+            欢迎回来
+          </h1>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            输入您的邮箱和密码登录账号
+          </p>
+        </div>
+
+        {/* 表单 */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {submitError && (
+            <Alert variant="destructive">
+              <AlertDescription>{submitError}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* 邮箱 */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              邮箱
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="请输入邮箱"
+              value={formData.email}
+              onChange={handleChange}
+              disabled={isLoading}
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+              className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:ring-2 disabled:opacity-50"
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: errors.email ? '1px solid #ef4444' : '1px solid var(--card-border)',
+                color: 'var(--text-primary)',
+                backdropFilter: 'blur(10px)',
+              }}
+              onFocus={(e) => {
+                if (!errors.email) {
+                  e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'
+                }
+              }}
+              onBlur={(e) => {
+                if (!errors.email) {
+                  e.currentTarget.style.borderColor = 'var(--card-border)'
+                  e.currentTarget.style.boxShadow = 'none'
+                }
+              }}
+            />
+            {errors.email && (
+              <p id="email-error" className="text-xs text-red-500">
+                {errors.email}
+              </p>
+            )}
+          </div>
+
+          {/* 密码 */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              密码
+            </label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="请输入密码"
+              value={formData.password}
+              onChange={handleChange}
+              disabled={isLoading}
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? 'password-error' : undefined}
+              className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 disabled:opacity-50"
+              style={{
+                background: 'rgba(255,255,255,0.1)',
+                border: errors.password ? '1px solid #ef4444' : '1px solid var(--card-border)',
+                color: 'var(--text-primary)',
+                backdropFilter: 'blur(10px)',
+              }}
+              onFocus={(e) => {
+                if (!errors.password) {
+                  e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'
+                }
+              }}
+              onBlur={(e) => {
+                if (!errors.password) {
+                  e.currentTarget.style.borderColor = 'var(--card-border)'
+                  e.currentTarget.style.boxShadow = 'none'
+                }
+              }}
+            />
+            {errors.password && (
+              <p id="password-error" className="text-xs text-red-500">
+                {errors.password}
+              </p>
+            )}
+          </div>
+
+          {/* 登录按钮 */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="btn-gradient w-full rounded-xl py-3 text-sm font-semibold text-white disabled:opacity-60"
+            style={{ background: 'var(--btn-gradient)' }}
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                登录中...
+              </span>
+            ) : (
+              '登录'
+            )}
+          </button>
+        </form>
+
+        {/* 底部链接 */}
+        <div className="mt-6 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
+          还没有账号？{' '}
+          <Link
+            to="/register"
+            className="font-semibold transition-colors hover:underline"
+            style={{ color: 'var(--accent-primary)' }}
+          >
+            去注册
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

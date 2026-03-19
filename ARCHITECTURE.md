@@ -1,8 +1,8 @@
 # OpenClaw Skills Hub - 架构设计文档
 
-> 版本：v1.0
-> 日期：2026-03-17
-> 状态：已确认
+> 版本：v1.1
+> 日期：2026-03-18
+> 状态：已更新，匹配 PRD v1.2
 
 ---
 
@@ -235,6 +235,7 @@ openclaw-project/
 | email | VARCHAR(255) | UNIQUE, NOT NULL | 邮箱，用于登录 |
 | password_hash | VARCHAR(255) | NOT NULL | bcrypt 加密后的密码 |
 | is_admin | BOOLEAN | DEFAULT FALSE | 是否管理员 |
+| is_active | BOOLEAN | DEFAULT TRUE | 账号是否启用（禁用后无法登录） |
 | avatar_url | VARCHAR(500) | NULL | 头像 URL |
 | created_at | TIMESTAMP | DEFAULT NOW() | 注册时间 |
 | updated_at | TIMESTAMP | DEFAULT NOW() | 更新时间 |
@@ -315,6 +316,18 @@ openclaw-project/
 | usage_count | INTEGER | DEFAULT 0 | 使用次数 |
 | created_at | TIMESTAMP | DEFAULT NOW() | 创建时间 |
 
+#### download_logs（下载记录表）
+
+| 字段 | 类型 | 约束 | 说明 |
+|------|------|------|------|
+| id | UUID | PK | 主键 |
+| skill_id | UUID | FK → skills.id, INDEX | 下载的 Skill |
+| user_id | UUID | FK → users.id, NULL | 下载用户（NULL 表示游客） |
+| ip_address | VARCHAR(45) | NULL | 下载者 IP |
+| created_at | TIMESTAMP | DEFAULT NOW() | 下载时间 |
+
+**说明**：记录下载日志用于统计分析和管理员查看下载用户
+
 ### 5.3 索引设计
 
 ```sql
@@ -323,6 +336,10 @@ CREATE INDEX idx_skills_deleted_created ON skills(is_deleted, created_at DESC);
 CREATE INDEX idx_skills_tags ON skills USING GIN(tags);
 CREATE INDEX idx_skills_pinned ON skills(is_pinned DESC);
 
+-- 搜索优化（LIKE 查询）
+CREATE INDEX idx_skills_name ON skills(name);
+CREATE INDEX idx_skills_description ON skills(description);
+
 -- 评论查询
 CREATE INDEX idx_comments_skill ON comments(skill_id, is_deleted, created_at);
 CREATE INDEX idx_comments_parent ON comments(parent_id);
@@ -330,9 +347,9 @@ CREATE INDEX idx_comments_parent ON comments(parent_id);
 -- 通知查询
 CREATE INDEX idx_notifications_user ON notifications(user_id, is_read, created_at);
 
--- 全文搜索（中文）
-CREATE INDEX idx_skills_fts ON skills
-  USING gin(to_tsvector('chinese', name || ' ' || COALESCE(description, '')));
+-- 下载日志查询
+CREATE INDEX idx_download_logs_skill ON download_logs(skill_id, created_at);
+CREATE INDEX idx_download_logs_user ON download_logs(user_id, created_at);
 ```
 
 ### 5.4 热度算法
@@ -340,20 +357,39 @@ CREATE INDEX idx_skills_fts ON skills
 ```python
 def calculate_hot_score(skill) -> float:
     """
-    热度分 = (评分 × 20) + (下载数 × 2) + (收藏数 × 5) - (时间衰减分)
-    时间衰减分 = (当前时间 - 上传时间天数) × 1
-    最低热度分 = 0
+    热度分 = (评分 × 20) + (下载数 × 2) + (收藏数 × 5)
+
+    权重说明：
+    - 评分：平均分 × 20，满分 100 分
+    - 下载：每次下载 +2 分
+    - 收藏：每次收藏 +5 分
     """
     rating_score = skill.rating_avg * 20  # 满分 100 分
     download_score = skill.download_count * 2
     favorite_score = skill.favorite_count * 5
 
-    days_old = (current_time - skill.created_at).days
-    time_decay = days_old * 1
-
-    score = rating_score + download_score + favorite_score - time_decay
-    return max(0, score)
+    score = rating_score + download_score + favorite_score
+    return score
 ```
+
+### 5.5 搜索排序规则
+
+**默认排序：按相关度**
+```python
+# 相关度计算（LIKE 匹配）
+- 名称完全匹配：最高优先级
+- 名称部分匹配（LIKE '%keyword%'）：高优先级
+- 描述匹配：中优先级
+- 标签匹配：低优先级
+```
+
+**可选排序：按热度**
+```python
+# 按热度分降序排列
+ORDER BY hot_score DESC
+```
+
+**相同相关度时**：热度高的在前
 
 ---
 
@@ -410,6 +446,13 @@ def calculate_hot_score(skill) -> float:
               │  │ NotificationService│ │
               │  │  - 创建通知      │   │
               │  │  - 标记已读      │   │
+              │  └─────────────────┘   │
+              │  ┌─────────────────┐   │
+              │  │  AdminService   │   │
+              │  │  - 用户管理      │   │
+              │  │  - Skill管理     │   │
+              │  │  - 数据统计      │   │
+              │  │  - 报表导出      │   │
               │  └─────────────────┘   │
               └───────────┬───────────┘
                           │
@@ -508,13 +551,48 @@ def calculate_hot_score(skill) -> float:
 
 ### 7.6 管理员接口 (`/api/v1/admin`)
 
+#### Skill 管理
+
 | 方法 | 路径 | 说明 | 认证 |
 |------|------|------|------|
 | POST | `/skills/{id}/pin` | 置顶/取消置顶 | 是（管理员） |
+| PUT | `/skills/{id}` | 编辑任意 Skill | 是（管理员） |
+| DELETE | `/skills/{id}` | 强制删除 Skill | 是（管理员） |
+| GET | `/skills/deleted` | 获取软删除 Skill 列表 | 是（管理员） |
+| POST | `/skills/{id}/restore` | 恢复软删除 Skill | 是（管理员） |
+| GET | `/skills/{id}/downloads` | 查看下载用户列表 | 是（管理员） |
+
+#### 用户管理
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
+| GET | `/users` | 用户列表（支持分页/搜索） | 是（管理员） |
+| PATCH | `/users/{id}/admin` | 设置/取消管理员权限 | 是（管理员） |
+| PATCH | `/users/{id}/status` | 启用/禁用用户账号 | 是（管理员） |
+
+#### 评论管理
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
 | DELETE | `/comments/{id}` | 删除任意评论 | 是（管理员） |
-| GET | `/export` | 导出 Skills CSV | 是（管理员） |
-| GET | `/tags` | 标签列表管理 | 是（管理员） |
+| GET | `/comments` | 评论列表（支持筛选/分页） | 是（管理员） |
+
+#### 标签管理
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
+| GET | `/tags` | 标签列表（含使用次数） | 是（管理员） |
 | POST | `/tags/merge` | 合并标签 | 是（管理员） |
+
+#### 数据统计与导出
+
+| 方法 | 路径 | 说明 | 认证 |
+|------|------|------|------|
+| GET | `/stats/overview` | 平台概览统计 | 是（管理员） |
+| GET | `/stats/active-users` | 活跃用户榜单 | 是（管理员） |
+| GET | `/export/skills` | 导出 Skills CSV | 是（管理员） |
+| GET | `/export/users` | 导出用户 CSV | 是（管理员） |
+| GET | `/export/tags` | 导出标签统计 CSV | 是（管理员） |
 
 ---
 
@@ -565,13 +643,24 @@ def calculate_hot_score(skill) -> float:
 |------|------|----------|------|--------|
 | 浏览 Skill | ✅ | ✅ | ✅ | ✅ |
 | 下载 Skill | ✅ | ✅ | ✅ | ✅ |
+| 查看统计信息 | ✅ | ✅ | ✅ | ✅ |
 | 评分/收藏 | ❌ | ✅ | ✅ | ✅ |
 | 评论 | ❌ | ✅ | ✅ | ✅ |
+| 删除自己的评论 | ❌ | ✅ | ✅ | ✅ |
 | 上传 Skill | ❌ | ✅ | ✅ | ✅ |
-| 编辑/删除 Skill | ❌ | ❌ | ✅ | ✅ |
-| 删除评论 | ❌ | ❌ | 自己的 | ✅ |
+| 编辑/删除自己的 Skill | ❌ | ❌ | ✅ | ✅ |
 | 置顶 Skill | ❌ | ❌ | ❌ | ✅ |
+| 强制删除任意 Skill | ❌ | ❌ | ❌ | ✅ |
+| 编辑任意 Skill | ❌ | ❌ | ❌ | ✅ |
+| 查看软删除列表 | ❌ | ❌ | ❌ | ✅ |
+| 删除他人评论 | ❌ | ❌ | ❌ | ✅ |
+| 查看用户列表 | ❌ | ❌ | ❌ | ✅ |
+| 设置管理员权限 | ❌ | ❌ | ❌ | ✅ |
+| 禁用/启用用户 | ❌ | ❌ | ❌ | ✅ |
 | 导出报表 | ❌ | ❌ | ❌ | ✅ |
+| 查看下载用户 | ❌ | ❌ | ❌ | ✅ |
+| 活跃用户评选 | ❌ | ❌ | ❌ | ✅ |
+| 合并标签 | ❌ | ❌ | ❌ | ✅ |
 
 ---
 
@@ -636,10 +725,20 @@ frontend/src/
 ├── pages/
 │   ├── Home.tsx               # 首页（榜单）
 │   ├── SkillDetail.tsx        # Skill 详情页
-│   ├── SkillUpload.tsx        # 上传/编辑页
+│   ├── SkillUpload.tsx        # 上传页
+│   ├── SkillEdit.tsx          # 编辑 Skill 页
 │   ├── UserProfile.tsx        # 个人中心
+│   ├── UserSkills.tsx         # 我的 Skills
+│   ├── UserFavorites.tsx      # 我的收藏
+│   ├── UserComments.tsx       # 我的评论
 │   ├── Login.tsx              # 登录页
-│   └── Register.tsx           # 注册页
+│   ├── Register.tsx           # 注册页
+│   └── admin/                 # 管理员后台
+│       ├── AdminDashboard.tsx # 概览 Dashboard
+│       ├── AdminSkills.tsx    # Skill 管理
+│       ├── AdminUsers.tsx     # 用户管理
+│       ├── AdminComments.tsx  # 评论管理
+│       └── AdminStats.tsx     # 数据统计
 ├── hooks/
 │   ├── useAuth.ts             # 认证状态管理
 │   ├── useSkills.ts           # Skill 数据获取
@@ -664,17 +763,35 @@ frontend/src/
 
 ### 10.3 路由设计
 
+#### 公开路由
+
 | 路径 | 页面 | 认证要求 |
 |------|------|----------|
 | `/` | 首页（榜单） | 否 |
 | `/skills/:id` | Skill 详情 | 否 |
-| `/upload` | 上传 Skill | 是 |
-| `/skills/:id/edit` | 编辑 Skill | 是（作者） |
 | `/login` | 登录 | 否 |
 | `/register` | 注册 | 否 |
+
+#### 需要登录的路由
+
+| 路径 | 页面 | 认证要求 |
+|------|------|----------|
+| `/upload` | 上传 Skill | 是 |
+| `/skills/:id/edit` | 编辑 Skill | 是（作者） |
 | `/profile` | 个人中心 | 是 |
 | `/profile/skills` | 我的 Skills | 是 |
 | `/profile/favorites` | 我的收藏 | 是 |
+| `/profile/comments` | 我的评论 | 是 |
+
+#### 管理员专属路由
+
+| 路径 | 页面 | 认证要求 |
+|------|------|----------|
+| `/admin` | 管理后台 Dashboard | 是（管理员） |
+| `/admin/skills` | Skill 管理 | 是（管理员） |
+| `/admin/users` | 用户管理 | 是（管理员） |
+| `/admin/comments` | 评论管理 | 是（管理员） |
+| `/admin/stats` | 数据统计 | 是（管理员） |
 
 ---
 
@@ -779,27 +896,6 @@ VITE_API_BASE_URL=http://localhost:8000/api/v1
 VITE_FILE_BASE_URL=http://localhost:8000/api/v1/files
 ```
 
----
-
-## 15. 后续演进建议
-
-### 15.1 短期（验证阶段后）
-
-1. 添加 Redis 缓存热门榜单
-2. 文件存储迁移到对象存储（MinIO/阿里云 OSS）
-3. 添加 Celery 处理异步任务（文件解压、缩略图生成）
-
-### 15.2 中期（用户增长后）
-
-1. 全文搜索优化（Elasticsearch/Meilisearch）
-2. 图片 CDN 加速
-3. 数据库读写分离
-
-### 15.3 长期
-
-1. 微服务拆分（Skill 服务、用户服务、通知服务）
-2. 容器化部署（K8s）
-3. 多语言支持
 
 ---
 
@@ -809,6 +905,15 @@ VITE_FILE_BASE_URL=http://localhost:8000/api/v1/files
 - [SQLModel 官方文档](https://sqlmodel.tiangolo.com/)
 - [React 官方文档](https://react.dev/)
 - [shadcn/ui 文档](https://ui.shadcn.com/)
+
+---
+
+## 17. 变更记录
+
+| 版本 | 日期 | 变更内容 |
+|------|------|----------|
+| v1.0 | 2026-03-17 | 初始版本，完成基础架构设计 |
+| v1.1 | 2026-03-18 | 更新匹配 PRD v1.2：更新热度算法（去掉时间衰减）、扩展管理员 API、添加下载日志表、更新权限矩阵、添加管理员后台路由 |
 
 ---
 
