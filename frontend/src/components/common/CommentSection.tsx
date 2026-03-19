@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Send, Trash2, CornerDownRight, Loader2 } from 'lucide-react'
+import { Send, Trash2, CornerDownRight, Loader2, MessageSquare } from 'lucide-react'
 import type { CommentWithReplies, CommentCreate } from '@/types/comment'
 
 export interface CommentSectionProps {
@@ -49,57 +49,107 @@ function CommentItem({
   }
 
   return (
-    <div className={`${depth > 0 ? 'ml-8 border-l-2 border-gray-100 pl-4' : ''}`}>
+    <div
+      className={`${depth > 0 ? 'ml-6 pl-4' : ''}`}
+      style={depth > 0 ? { borderLeft: '1px solid var(--card-border)' } : {}}
+    >
       <div className="py-3">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium text-sm">
+          {/* Avatar */}
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+            style={{ background: 'var(--btn-gradient)' }}
+          >
             {comment.username.charAt(0).toUpperCase()}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-medium text-sm text-gray-900">{comment.username}</span>
-              <span className="text-xs text-gray-400">{formatDate(comment.createdAt)}</span>
-            </div>
-            <p className="mt-1 text-sm text-gray-700 whitespace-pre-wrap">{comment.content}</p>
 
+          <div className="flex-1 min-w-0">
+            {/* Header */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
+                {comment.username}
+              </span>
+              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                {formatDate(comment.createdAt)}
+              </span>
+            </div>
+
+            {/* Content */}
+            <p
+              className="mt-1 text-sm whitespace-pre-wrap"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              {comment.content}
+            </p>
+
+            {/* Actions */}
             <div className="mt-2 flex items-center gap-4">
               {currentUserId && (
                 <button
                   type="button"
                   onClick={() => setIsReplying(!isReplying)}
-                  className="text-xs text-gray-500 hover:text-blue-600 flex items-center gap-1"
+                  className="text-xs flex items-center gap-1 transition-colors duration-150"
+                  style={{ color: 'var(--text-tertiary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--accent-primary)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--text-tertiary)'
+                  }}
                   aria-label="Reply"
                 >
                   <CornerDownRight size={12} />
-                  Reply
+                  回复
                 </button>
               )}
               {isOwnComment && onDelete && (
                 <button
                   type="button"
                   onClick={() => onDelete(comment.id)}
-                  className="text-xs text-red-500 hover:text-red-600 flex items-center gap-1"
+                  className="text-xs flex items-center gap-1 transition-colors duration-150"
+                  style={{ color: 'var(--text-tertiary)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = '#ef4444'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--text-tertiary)'
+                  }}
                   aria-label="Delete comment"
                 >
                   <Trash2 size={12} />
-                  Delete
+                  删除
                 </button>
               )}
             </div>
 
+            {/* Reply Input */}
             {isReplying && (
               <div className="mt-3 flex gap-2">
                 <textarea
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
-                  placeholder="Write a reply..."
-                  className="flex-1 min-h-[60px] px-3 py-2 text-sm border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  placeholder="写下你的回复..."
+                  className="flex-1 min-h-[60px] px-3 py-2 text-sm rounded-xl outline-none transition-all duration-200 resize-none"
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: '1px solid var(--card-border)',
+                    color: 'var(--text-primary)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--card-border)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
                 />
                 <button
                   type="button"
                   onClick={handleSubmitReply}
                   disabled={isSubmitting || !replyContent.trim()}
-                  className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-2 rounded-xl text-white transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ background: 'var(--btn-gradient)' }}
                 >
                   {isSubmitting ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -113,8 +163,9 @@ function CommentItem({
         </div>
       </div>
 
+      {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="mt-2">
+        <div className="mt-1">
           {comment.replies.map((reply) => (
             <CommentItem
               key={reply.id}
@@ -156,37 +207,55 @@ export function CommentSection({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader2 size={24} className="animate-spin text-gray-400" />
-        <span className="ml-2 text-gray-500">Loading comments...</span>
+        <Loader2 size={24} className="animate-spin" style={{ color: 'var(--accent-primary)' }} />
+        <span className="ml-2" style={{ color: 'var(--text-secondary)' }}>
+          加载评论...
+        </span>
       </div>
     )
   }
 
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-gray-900">Comments ({comments.length})</h3>
-
+      {/* New Comment Input */}
       {currentUserId && (
-        <div className="flex gap-3">
+        <div
+          className="flex gap-3 p-4 rounded-xl"
+          style={{
+            background: 'rgba(255,255,255,0.03)',
+            border: '1px solid var(--card-border)',
+          }}
+        >
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            placeholder="Write a comment..."
-            className="flex-1 min-h-[80px] px-4 py-3 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            placeholder="发表你的评论..."
+            className="flex-1 min-h-[80px] px-4 py-3 text-sm rounded-xl outline-none transition-all duration-200 resize-none bg-transparent"
+            style={{
+              color: 'var(--text-primary)',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.boxShadow = 'none'
+            }}
           />
           <button
             type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || !newComment.trim()}
-            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 self-start"
+            className="px-4 py-2 text-white text-sm font-medium rounded-xl transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 self-start"
+            style={{ background: 'var(--btn-gradient)' }}
           >
             {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-            Post Comment
+            发表评论
           </button>
         </div>
       )}
 
-      <div className="divide-y divide-gray-100">
+      {/* Comments List */}
+      <div>
         {comments.map((comment) => (
           <CommentItem
             key={comment.id}
@@ -198,9 +267,25 @@ export function CommentSection({
         ))}
       </div>
 
+      {/* Empty State */}
       {comments.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          No comments yet. Be the first to comment!
+        <div className="text-center py-8 rounded-xl" style={{ color: 'var(--text-tertiary)' }}>
+          <MessageSquare size={32} className="mx-auto mb-2 opacity-50" />
+          <p>暂无评论，来发表第一条评论吧！</p>
+        </div>
+      )}
+
+      {/* Login Prompt */}
+      {!currentUserId && (
+        <div
+          className="text-center py-4 px-4 rounded-xl mt-4"
+          style={{
+            background: 'rgba(59,130,246,0.05)',
+            border: '1px dashed rgba(59,130,246,0.2)',
+            color: 'var(--text-secondary)',
+          }}
+        >
+          <p className="text-sm">登录后即可发表评论参与讨论</p>
         </div>
       )}
     </div>

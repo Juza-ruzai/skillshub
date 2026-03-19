@@ -1,21 +1,12 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from './Header'
 import { Footer } from './Footer'
-import { Sidebar } from './Sidebar'
 
 interface LayoutProps {
-  selectedTag?: string
-  onTagSelect?: (tag: string) => void
-  onSearch?: (keyword: string) => void
   unreadCount?: number
 }
 
-export const Layout = ({
-  selectedTag,
-  onTagSelect,
-  onSearch,
-  unreadCount = 0,
-}: LayoutProps): JSX.Element => {
+export const Layout = ({ unreadCount = 0 }: LayoutProps): JSX.Element => {
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -57,19 +48,11 @@ export const Layout = ({
 
       {/* Content layer */}
       <div className="relative flex flex-col min-h-screen" style={{ zIndex: 1 }}>
-        <Header onSearch={onSearch} unreadCount={unreadCount} />
+        <Header unreadCount={unreadCount} />
 
-        <div className="flex-1 container mx-auto px-4 md:px-10 pt-20 pb-8">
-          <div className="flex gap-8 pt-6">
-            {/* Sidebar - Desktop only */}
-            <Sidebar selectedTag={selectedTag} onTagSelect={onTagSelect} />
-
-            {/* Main Content */}
-            <main className="flex-1 min-w-0">
-              <Outlet />
-            </main>
-          </div>
-        </div>
+        <main className="flex-1 container mx-auto px-4 md:px-10 pt-24 pb-8">
+          <Outlet />
+        </main>
 
         <Footer />
       </div>

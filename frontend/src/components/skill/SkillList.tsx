@@ -66,26 +66,28 @@ export function SkillList({
           onClick={handleGridClick}
           aria-label="Grid view"
           data-active={viewMode === 'grid'}
-          className={`p-2 rounded-md transition-colors ${
-            viewMode === 'grid'
-              ? 'bg-blue-100 text-blue-600'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
+          className="p-2 rounded-lg transition-all duration-200"
+          style={{
+            background: viewMode === 'grid' ? 'rgba(59,130,246,0.12)' : 'var(--card-bg)',
+            color: viewMode === 'grid' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+            border: '1px solid var(--card-border)',
+          }}
         >
-          <LayoutGrid size={20} />
+          <LayoutGrid size={18} />
         </button>
         <button
           type="button"
           onClick={handleListClick}
           aria-label="List view"
           data-active={viewMode === 'list'}
-          className={`p-2 rounded-md transition-colors ${
-            viewMode === 'list'
-              ? 'bg-blue-100 text-blue-600'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
+          className="p-2 rounded-lg transition-all duration-200"
+          style={{
+            background: viewMode === 'list' ? 'rgba(59,130,246,0.12)' : 'var(--card-bg)',
+            color: viewMode === 'list' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+            border: '1px solid var(--card-border)',
+          }}
         >
-          <List size={20} />
+          <List size={18} />
         </button>
       </div>
 

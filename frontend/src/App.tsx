@@ -1,6 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useCallback } from 'react'
 import { PrivateRoute } from './components/PrivateRoute'
 import { Layout } from './components/layout/Layout'
 
@@ -23,46 +22,13 @@ const SkillEdit = () => <div>Skill Edit</div>
 const UserProfile = () => <div>User Profile</div>
 const NotFound = () => <div>404 Not Found</div>
 
-// Layout wrapper with shared state
-function AppLayout() {
-  const [, setSearchParams] = useSearchParams()
-
-  const handleTagSelect = useCallback(
-    (tag: string) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev)
-        next.set('tag', tag)
-        return next
-      })
-    },
-    [setSearchParams]
-  )
-
-  const handleSearch = useCallback(
-    (keyword: string) => {
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev)
-        if (keyword.trim()) {
-          next.set('q', keyword.trim())
-        } else {
-          next.delete('q')
-        }
-        return next
-      })
-    },
-    [setSearchParams]
-  )
-
-  return <Layout onTagSelect={handleTagSelect} onSearch={handleSearch} />
-}
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
           {/* Layout-wrapped routes */}
-          <Route element={<AppLayout />}>
+          <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<Home />} />
             <Route path="/skills/:id" element={<SkillDetail />} />

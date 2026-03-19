@@ -27,7 +27,23 @@ describe('Header', () => {
         </BrowserRouter>
       )
 
-      expect(screen.getByText('OpenClaw')).toBeInTheDocument()
+      expect(screen.getByText('SkillsHub')).toBeInTheDocument()
+    })
+
+    it('应该渲染蓝宝机器人图片', () => {
+      mockUseAuth.mockReturnValue({
+        user: null,
+        isAuthenticated: false,
+      })
+
+      render(
+        <BrowserRouter>
+          <Header />
+        </BrowserRouter>
+      )
+
+      const logo = screen.getByAltText('中建蓝宝')
+      expect(logo).toBeInTheDocument()
     })
 
     it('应该固定在顶部且有正确的 z-index', () => {
@@ -44,61 +60,6 @@ describe('Header', () => {
 
       const header = container.querySelector('header')
       expect(header).toHaveClass('fixed', 'top-0', 'z-50')
-    })
-  })
-
-  describe('搜索功能', () => {
-    it('搜索栏应该存在', () => {
-      mockUseAuth.mockReturnValue({
-        user: null,
-        isAuthenticated: false,
-      })
-
-      render(
-        <BrowserRouter>
-          <Header />
-        </BrowserRouter>
-      )
-
-      expect(screen.getByPlaceholderText(/搜索/i)).toBeInTheDocument()
-    })
-
-    it('回车键应该触发 onSearch 回调', () => {
-      mockUseAuth.mockReturnValue({
-        user: null,
-        isAuthenticated: false,
-      })
-
-      const onSearch = vi.fn()
-      render(
-        <BrowserRouter>
-          <Header onSearch={onSearch} />
-        </BrowserRouter>
-      )
-
-      const searchInput = screen.getByPlaceholderText(/搜索/i)
-      fireEvent.change(searchInput, { target: { value: 'react' } })
-      fireEvent.keyDown(searchInput, { key: 'Enter', code: 'Enter' })
-
-      expect(onSearch).toHaveBeenCalledWith('react')
-    })
-  })
-
-  describe('导航链接', () => {
-    it('应该显示首页和上传导航链接', () => {
-      mockUseAuth.mockReturnValue({
-        user: null,
-        isAuthenticated: false,
-      })
-
-      render(
-        <BrowserRouter>
-          <Header />
-        </BrowserRouter>
-      )
-
-      expect(screen.getByText('首页')).toBeInTheDocument()
-      expect(screen.getByText('上传')).toBeInTheDocument()
     })
   })
 

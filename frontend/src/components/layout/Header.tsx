@@ -2,26 +2,18 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme'
-import { Menu, Bell, Search, User, Sun, Moon, LogOut, Settings } from 'lucide-react'
+import { Menu, Bell, User, Sun, Moon, LogOut, Settings, Upload, ChevronDown } from 'lucide-react'
 
 interface HeaderProps {
-  onSearch?: (keyword: string) => void
   unreadCount?: number
 }
 
-export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element => {
+export const Header = ({ unreadCount = 0 }: HeaderProps): JSX.Element => {
   const { user, isAuthenticated, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
-  const [searchValue, setSearchValue] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-
-  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && onSearch) {
-      onSearch(searchValue)
-    }
-  }
 
   const handleLogout = async () => {
     await logout()
@@ -41,68 +33,29 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
       }}
     >
       <div className="container mx-auto px-4 md:px-10 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link
-          to="/"
-          className="text-xl font-bold font-heading"
-          style={{
-            background: 'var(--btn-gradient)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
-        >
-          OpenClaw
-        </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            to="/"
-            className="text-sm font-medium transition-colors duration-200"
-            style={{ color: 'var(--text-secondary)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-          >
-            首页
-          </Link>
-          <Link
-            to="/upload"
-            className="text-sm font-medium transition-colors duration-200"
-            style={{ color: 'var(--text-secondary)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent-primary)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-secondary)')}
-          >
-            上传
-          </Link>
-        </nav>
-
-        {/* Search Bar - Desktop */}
-        <div className="hidden md:flex items-center flex-1 max-w-md mx-6">
-          <div
-            className="relative w-full flex items-center rounded-2xl"
+        {/* Logo：蓝宝图片 + SkillsHub 文字 */}
+        <Link to="/" className="flex items-center gap-2 shrink-0">
+          <img
+            src="/cscec-robot.png"
+            alt="中建蓝宝"
+            className="h-9 w-9 object-contain"
+            style={{ filter: 'drop-shadow(0 2px 6px rgba(59,130,246,0.3))' }}
+          />
+          <span
+            className="text-xl font-bold font-heading"
             style={{
-              background: 'var(--card-bg)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid var(--card-border)',
-              boxShadow: 'var(--card-shadow)',
+              background: 'var(--btn-gradient)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
             }}
           >
-            <Search className="absolute left-3 w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-            <input
-              type="text"
-              placeholder="搜索 Skills..."
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              className="w-full pl-10 pr-4 py-2 bg-transparent outline-none text-sm"
-              style={{ color: 'var(--text-primary)' }}
-            />
-          </div>
-        </div>
+            SkillsHub
+          </span>
+        </Link>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* Theme Toggle */}
           <button
             aria-label="切换主题"
@@ -135,7 +88,7 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
             />
           </button>
 
-          {/* Notification Bell */}
+          {/* Notification Bell — 登录后显示 */}
           {isAuthenticated && (
             <button
               aria-label="通知"
@@ -160,37 +113,63 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
             </button>
           )}
 
-          {/* User Menu - Desktop */}
+          {/* 上传按钮 — 登录后显示，桌面端 */}
+          {isAuthenticated && (
+            <Link
+              to="/upload"
+              className="hidden md:flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 hover:scale-105"
+              style={{
+                background: 'var(--card-bg)',
+                border: '1px solid var(--card-border)',
+                color: 'var(--text-secondary)',
+              }}
+            >
+              <Upload className="w-4 h-4" />
+              上传
+            </Link>
+          )}
+
+          {/* User Menu — 桌面端 */}
           <div className="hidden md:block relative">
             {isAuthenticated ? (
               <>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all duration-200 hover:scale-105"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl transition-all duration-200 hover:scale-105"
                   style={{
                     background: 'var(--card-bg)',
                     border: '1px solid var(--card-border)',
-                    color: 'var(--text-primary)',
                   }}
                   aria-label="个人中心"
                 >
+                  {/* 头像圆形 */}
                   <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
                     style={{ background: 'var(--btn-gradient)' }}
                   >
                     {user?.username?.charAt(0).toUpperCase() ?? 'U'}
                   </div>
-                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  <span
+                    className="text-sm font-medium max-w-[80px] truncate"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
                     {user?.username}
                   </span>
+                  <ChevronDown
+                    className="w-4 h-4 transition-transform duration-200"
+                    style={{
+                      color: 'var(--text-secondary)',
+                      transform: userMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    }}
+                  />
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Dropdown */}
                 {userMenuOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
                     <div
-                      className="absolute right-0 mt-2 w-48 rounded-2xl z-50 overflow-hidden"
+                      className="absolute right-0 mt-2 w-52 rounded-2xl z-50 overflow-hidden"
                       style={{
                         background: 'var(--card-bg)',
                         backdropFilter: 'blur(20px)',
@@ -199,12 +178,39 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
                         boxShadow: '0 16px 40px rgba(59,130,246,0.15)',
                       }}
                     >
+                      {/* 用户信息头部 */}
+                      <div
+                        className="px-4 py-3 flex items-center gap-3"
+                        style={{ borderBottom: '1px solid var(--card-border)' }}
+                      >
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
+                          style={{ background: 'var(--btn-gradient)' }}
+                        >
+                          {user?.username?.charAt(0).toUpperCase() ?? 'U'}
+                        </div>
+                        <div className="min-w-0">
+                          <div
+                            className="text-sm font-semibold truncate"
+                            style={{ color: 'var(--text-primary)' }}
+                          >
+                            {user?.username}
+                          </div>
+                          <div
+                            className="text-xs truncate"
+                            style={{ color: 'var(--text-secondary)' }}
+                          >
+                            {user?.email}
+                          </div>
+                        </div>
+                      </div>
+
                       <button
                         onClick={() => {
                           navigate('/profile')
                           setUserMenuOpen(false)
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150"
                         style={{ color: 'var(--text-primary)' }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = 'rgba(59,130,246,0.08)'
@@ -216,13 +222,14 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
                         <User className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
                         个人中心
                       </button>
+
                       {user?.isAdmin && (
                         <button
                           onClick={() => {
                             navigate('/admin')
                             setUserMenuOpen(false)
                           }}
-                          className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150"
                           style={{ color: 'var(--text-primary)' }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.background = 'rgba(59,130,246,0.08)'
@@ -238,12 +245,14 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
                           管理后台
                         </button>
                       )}
+
                       <div
                         style={{ height: 1, background: 'var(--card-border)', margin: '4px 0' }}
                       />
+
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors duration-150"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors duration-150"
                         style={{ color: '#ef4444' }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.background = 'rgba(239,68,68,0.08)'
@@ -260,11 +269,22 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
                 )}
               </>
             ) : (
+              /* 未登录：登录 + 注册 */
               <div className="flex items-center gap-2">
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-medium transition-colors duration-200"
-                  style={{ color: 'var(--text-secondary)' }}
+                  className="px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200"
+                  style={{
+                    color: 'var(--text-secondary)',
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--card-border)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = 'var(--accent-primary)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = 'var(--text-secondary)'
+                  }}
                 >
                   登录
                 </Link>
@@ -310,96 +330,94 @@ export const Header = ({ onSearch, unreadCount = 0 }: HeaderProps): JSX.Element 
             backdropFilter: 'blur(20px)',
           }}
         >
-          <div className="container mx-auto px-4 py-4 space-y-4">
-            {/* Mobile Search */}
-            <div
-              className="relative flex items-center rounded-2xl"
-              style={{
-                background: 'var(--card-bg)',
-                border: '1px solid var(--card-border)',
-              }}
-            >
-              <Search
-                className="absolute left-3 w-4 h-4"
-                style={{ color: 'var(--text-tertiary)' }}
-              />
-              <input
-                type="text"
-                placeholder="搜索 Skills..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onKeyDown={handleSearchKeyDown}
-                className="w-full pl-10 pr-4 py-2 bg-transparent outline-none text-sm"
-                style={{ color: 'var(--text-primary)' }}
-              />
-            </div>
-
-            {/* Mobile Navigation */}
-            <nav className="flex flex-col gap-1">
-              <Link
-                to="/"
-                className="px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-150"
-                style={{ color: 'var(--text-secondary)' }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                首页
-              </Link>
-              <Link
-                to="/upload"
-                className="px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-150"
-                style={{ color: 'var(--text-secondary)' }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                上传
-              </Link>
-            </nav>
-
-            {/* Mobile User Actions */}
-            <div style={{ paddingTop: 12, borderTop: '1px solid var(--card-border)' }}>
-              {isAuthenticated ? (
-                <div className="flex flex-col gap-1">
-                  <Link
-                    to="/profile"
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm"
-                    style={{ color: 'var(--text-primary)' }}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <User className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
-                    {user?.username}
-                  </Link>
-                  <button
-                    onClick={() => {
-                      handleLogout()
-                      setMobileMenuOpen(false)
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm"
-                    style={{ color: '#ef4444' }}
-                  >
-                    <LogOut className="w-4 h-4" />
-                    退出登录
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <Link
-                    to="/login"
-                    className="px-4 py-2 text-center rounded-xl text-sm font-medium"
-                    style={{ color: 'var(--text-secondary)' }}
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    登录
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="px-4 py-2 text-center rounded-xl text-sm font-semibold text-white"
+          <div className="container mx-auto px-4 py-4 space-y-3">
+            {isAuthenticated ? (
+              <>
+                <div
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                  style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
+                >
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0"
                     style={{ background: 'var(--btn-gradient)' }}
-                    onClick={() => setMobileMenuOpen(false)}
                   >
-                    注册
-                  </Link>
+                    {user?.username?.charAt(0).toUpperCase() ?? 'U'}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                      {user?.username}
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                      {user?.email}
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
+                <Link
+                  to="/upload"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium"
+                  style={{
+                    color: 'var(--text-secondary)',
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--card-border)',
+                  }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Upload className="w-4 h-4" />
+                  上传 Skill
+                </Link>
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm"
+                  style={{
+                    color: 'var(--text-primary)',
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--card-border)',
+                  }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <User className="w-4 h-4" style={{ color: 'var(--accent-primary)' }} />
+                  个人中心
+                </Link>
+                <button
+                  onClick={() => {
+                    handleLogout()
+                    setMobileMenuOpen(false)
+                  }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm"
+                  style={{
+                    color: '#ef4444',
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--card-border)',
+                  }}
+                >
+                  <LogOut className="w-4 h-4" />
+                  退出登录
+                </button>
+              </>
+            ) : (
+              <div className="flex flex-col gap-2">
+                <Link
+                  to="/login"
+                  className="px-4 py-2.5 text-center rounded-xl text-sm font-medium"
+                  style={{
+                    color: 'var(--text-secondary)',
+                    background: 'var(--card-bg)',
+                    border: '1px solid var(--card-border)',
+                  }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  登录
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2.5 text-center rounded-xl text-sm font-semibold text-white"
+                  style={{ background: 'var(--btn-gradient)' }}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  注册
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

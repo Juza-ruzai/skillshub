@@ -75,23 +75,26 @@ export function StarRating({
             }}
             className={`
               relative cursor-${readonly ? 'default' : 'pointer'}
-              transition-colors duration-150
-              ${!readonly && hoverValue !== null && starIndex <= hoverValue ? 'text-yellow-400' : ''}
+              transition-all duration-200 hover:scale-110
             `}
+            style={{
+              color: isFilled ? '#fbbf24' : isHalf ? '#fbbf24' : 'var(--text-tertiary)',
+              opacity: hoverValue !== null && starIndex <= hoverValue ? 1 : 0.8,
+            }}
           >
             {isHalf ? (
               <span className="relative inline-block">
-                <Star size={starSizes[size]} className="text-gray-300" fill="none" />
+                <Star
+                  size={starSizes[size]}
+                  style={{ color: 'var(--text-tertiary)' }}
+                  fill="none"
+                />
                 <span className="absolute inset-0 overflow-hidden w-1/2">
-                  <Star size={starSizes[size]} className="text-yellow-400" fill="currentColor" />
+                  <Star size={starSizes[size]} fill="currentColor" />
                 </span>
               </span>
             ) : (
-              <Star
-                size={starSizes[size]}
-                className={isFilled ? 'text-yellow-400' : 'text-gray-300'}
-                fill={isFilled ? 'currentColor' : 'none'}
-              />
+              <Star size={starSizes[size]} fill={isFilled ? 'currentColor' : 'none'} />
             )}
           </span>
         )

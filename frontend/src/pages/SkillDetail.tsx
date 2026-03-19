@@ -1,7 +1,19 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Download, Heart, Edit, Trash2, Eye, Calendar, Loader2, AlertTriangle } from 'lucide-react'
+import {
+  Download,
+  Heart,
+  Edit,
+  Trash2,
+  Eye,
+  Calendar,
+  Loader2,
+  AlertTriangle,
+  Sparkles,
+  FolderOpen,
+  MessageCircle,
+} from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { StarRating } from '../components/common/StarRating'
 import { FileTree } from '../components/skill/FileTree'
@@ -17,6 +29,14 @@ import {
 import { getSkillComments, postComment } from '../lib/commentsApi'
 import { API_BASE_URL } from '../lib/api'
 import type { CommentCreate } from '../types/comment'
+
+// Skill icon emoji pool
+const SKILL_ICONS = ['🤖', '📊', '📝', '🔍', '⚡', '🎯', '🛠️', '📈', '🔮', '💡', '🧠', '🚀']
+
+const getSkillIcon = (id: string): string => {
+  const index = id.charCodeAt(0) % SKILL_ICONS.length
+  return SKILL_ICONS[index]
+}
 
 export default function SkillDetail(): JSX.Element {
   const { id } = useParams<{ id: string }>()
@@ -63,7 +83,6 @@ export default function SkillDetail(): JSX.Element {
   const downloadMutation = useMutation({
     mutationFn: () => downloadSkill(id!),
     onSuccess: (data) => {
-      // 触发文件下载
       window.open(data.url, '_blank')
       queryClient.invalidateQueries({ queryKey: ['skill', id] })
     },
@@ -125,24 +144,20 @@ export default function SkillDetail(): JSX.Element {
     return (
       <div data-testid="skill-detail-skeleton" className="max-w-7xl mx-auto px-4 py-8">
         <div className="animate-pulse space-y-6">
-          {/* 标题骨架 */}
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          {/* 作者信息骨架 */}
+          <div className="h-8 rounded w-1/3" style={{ background: 'var(--card-bg)' }} />
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-gray-200 rounded-full" />
-            <div className="h-4 bg-gray-200 rounded w-24" />
+            <div className="w-10 h-10 rounded-full" style={{ background: 'var(--card-bg)' }} />
+            <div className="h-4 rounded w-24" style={{ background: 'var(--card-bg)' }} />
           </div>
-          {/* 内容骨架 */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-full" />
-              <div className="h-4 bg-gray-200 rounded w-5/6" />
-              <div className="h-4 bg-gray-200 rounded w-4/6" />
-              <div className="h-32 bg-gray-200 rounded" />
+              <div className="h-4 rounded w-full" style={{ background: 'var(--card-bg)' }} />
+              <div className="h-4 rounded w-5/6" style={{ background: 'var(--card-bg)' }} />
+              <div className="h-32 rounded" style={{ background: 'var(--card-bg)' }} />
             </div>
             <div className="space-y-4">
-              <div className="h-40 bg-gray-200 rounded" />
-              <div className="h-20 bg-gray-200 rounded" />
+              <div className="h-40 rounded" style={{ background: 'var(--card-bg)' }} />
+              <div className="h-20 rounded" style={{ background: 'var(--card-bg)' }} />
             </div>
           </div>
         </div>
@@ -154,13 +169,23 @@ export default function SkillDetail(): JSX.Element {
   if (skillError || !skill) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center py-12">
-          <h2 className="text-xl font-semibold text-gray-900">加载失败</h2>
-          <p className="text-gray-500 mt-2">无法加载 Skill 详情，请稍后重试</p>
+        <div
+          className="text-center py-12 rounded-2xl"
+          style={{
+            background: 'var(--card-bg)',
+            backdropFilter: 'blur(20px)',
+            border: '1px solid var(--card-border)',
+          }}
+        >
+          <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+            加载失败
+          </h2>
+          <p style={{ color: 'var(--text-secondary)' }}>无法加载 Skill 详情，请稍后重试</p>
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 rounded-xl text-white transition-all duration-300 hover:scale-105"
+            style={{ background: 'var(--btn-gradient)' }}
           >
             返回首页
           </button>
@@ -170,19 +195,60 @@ export default function SkillDetail(): JSX.Element {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* 头部信息 */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">{skill.name}</h1>
-
-        {/* 作者信息 */}
-        <div className="flex items-center gap-3 text-sm text-gray-600">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
-            {skill.authorUsername?.charAt(0).toUpperCase() || '?'}
+    <div className="max-w-7xl mx-auto px-4 py-6">
+      {/* 头部信息 - 玻璃拟态卡片 */}
+      <div
+        className="rounded-2xl p-6 mb-6"
+        style={{
+          background: 'var(--card-bg)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid var(--card-border)',
+          boxShadow: 'var(--card-shadow)',
+        }}
+      >
+        <div className="flex items-start gap-4">
+          {/* Skill Icon */}
+          <div
+            className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shrink-0"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(59,130,246,0.15) 0%, rgba(6,182,212,0.1) 100%)',
+              border: '1px solid rgba(59,130,246,0.2)',
+            }}
+          >
+            {getSkillIcon(skill.id)}
           </div>
-          <div>
-            <p className="font-medium text-gray-900">{skill.authorUsername}</p>
-            <div className="flex items-center gap-4 mt-0.5">
+
+          <div className="flex-1 min-w-0">
+            {/* 标题 - 渐变效果 */}
+            <h1
+              className="text-2xl md:text-3xl font-bold mb-2"
+              style={{
+                background: 'var(--btn-gradient)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                fontFamily: "'Space Grotesk', 'Noto Sans SC', sans-serif",
+              }}
+            >
+              {skill.name}
+            </h1>
+
+            {/* 作者信息 */}
+            <div
+              className="flex flex-wrap items-center gap-3 text-sm"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              <div
+                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                style={{ background: 'var(--btn-gradient)' }}
+              >
+                {skill.authorUsername?.charAt(0).toUpperCase() || '?'}
+              </div>
+              <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
+                {skill.authorUsername}
+              </span>
               <span className="flex items-center gap-1">
                 <Calendar size={14} />
                 {new Date(skill.createdAt).toLocaleDateString('zh-CN')}
@@ -197,43 +263,131 @@ export default function SkillDetail(): JSX.Element {
       </div>
 
       {/* 主要内容区 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* 左侧：详情内容 */}
-        <div className="lg:col-span-2 space-y-8">
-          {/* 描述 */}
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">简介</h2>
-            <p className="text-gray-700 whitespace-pre-wrap">{skill.description}</p>
+        <div className="lg:col-span-2 space-y-6">
+          {/* 简介 */}
+          <section
+            className="rounded-2xl p-6"
+            style={{
+              background: 'var(--card-bg)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
+            }}
+          >
+            <h2
+              className="text-lg font-semibold mb-3 flex items-center gap-2"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              <Sparkles size={18} style={{ color: 'var(--accent-primary)' }} />
+              简介
+            </h2>
+            <p style={{ color: 'var(--text-secondary)' }} className="whitespace-pre-wrap">
+              {skill.description}
+            </p>
           </section>
 
           {/* 使用场景 */}
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">使用场景</h2>
-            <p className="text-gray-700 whitespace-pre-wrap">{skill.usageScenario}</p>
-          </section>
+          {skill.usageScenario && (
+            <section
+              className="rounded-2xl p-6"
+              style={{
+                background: 'var(--card-bg)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid var(--card-border)',
+                boxShadow: 'var(--card-shadow)',
+              }}
+            >
+              <h2
+                className="text-lg font-semibold mb-3 flex items-center gap-2"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <Sparkles size={18} style={{ color: 'var(--accent-primary)' }} />
+                使用场景
+              </h2>
+              <p style={{ color: 'var(--text-secondary)' }} className="whitespace-pre-wrap">
+                {skill.usageScenario}
+              </p>
+            </section>
+          )}
 
           {/* 使用方法 */}
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">使用方法</h2>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <MarkdownPreview content={skill.usageMethod} />
-            </div>
-          </section>
+          {skill.usageMethod && (
+            <section
+              className="rounded-2xl p-6"
+              style={{
+                background: 'var(--card-bg)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid var(--card-border)',
+                boxShadow: 'var(--card-shadow)',
+              }}
+            >
+              <h2
+                className="text-lg font-semibold mb-3 flex items-center gap-2"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <Sparkles size={18} style={{ color: 'var(--accent-primary)' }} />
+                使用方法
+              </h2>
+              <div
+                className="rounded-xl p-4"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid var(--card-border)',
+                }}
+              >
+                <MarkdownPreview content={skill.usageMethod} />
+              </div>
+            </section>
+          )}
 
           {/* 演示图片 */}
           {skill.demoImages && skill.demoImages.length > 0 && (
-            <section>
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">效果演示</h2>
+            <section
+              className="rounded-2xl p-6"
+              style={{
+                background: 'var(--card-bg)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid var(--card-border)',
+                boxShadow: 'var(--card-shadow)',
+              }}
+            >
+              <h2
+                className="text-lg font-semibold mb-4 flex items-center gap-2"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <Sparkles size={18} style={{ color: 'var(--accent-primary)' }} />
+                效果演示
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {skill.demoImages.map((image, index) => (
-                  <div key={index} className="rounded-lg overflow-hidden border border-gray-200">
+                  <div
+                    key={index}
+                    className="rounded-xl overflow-hidden"
+                    style={{
+                      border: '1px solid var(--card-border)',
+                    }}
+                  >
                     <img
                       src={`${API_BASE_URL}/files/${image.url}`}
                       alt={image.caption || `Demo ${index + 1}`}
                       className="w-full h-auto"
                     />
                     {image.caption && (
-                      <p className="text-sm text-gray-600 p-2 bg-gray-50">{image.caption}</p>
+                      <p
+                        className="text-sm p-3"
+                        style={{
+                          color: 'var(--text-secondary)',
+                          background: 'rgba(255,255,255,0.03)',
+                        }}
+                      >
+                        {image.caption}
+                      </p>
                     )}
                   </div>
                 ))}
@@ -243,20 +397,60 @@ export default function SkillDetail(): JSX.Element {
 
           {/* 文件树 */}
           {skill.fileTree && skill.fileTree.length > 0 && (
-            <section>
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">文件结构</h2>
-              <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <section
+              className="rounded-2xl p-6"
+              style={{
+                background: 'var(--card-bg)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid var(--card-border)',
+                boxShadow: 'var(--card-shadow)',
+              }}
+            >
+              <h2
+                className="text-lg font-semibold mb-4 flex items-center gap-2"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                <FolderOpen size={18} style={{ color: 'var(--accent-primary)' }} />
+                文件结构
+              </h2>
+              <div
+                className="rounded-xl p-4"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid var(--card-border)',
+                }}
+              >
                 <FileTree data={skill.fileTree} />
               </div>
             </section>
           )}
 
           {/* 标签 */}
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">标签</h2>
+          <section
+            className="rounded-2xl p-6"
+            style={{
+              background: 'var(--card-bg)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
+            }}
+          >
+            <h2 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
+              标签
+            </h2>
             <div className="flex flex-wrap gap-2">
               {skill.tags.map((tag) => (
-                <span key={tag} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                <span
+                  key={tag}
+                  className="px-3 py-1.5 rounded-full text-sm transition-all duration-200 hover:scale-105"
+                  style={{
+                    background: 'rgba(59,130,246,0.1)',
+                    color: 'var(--accent-primary)',
+                    border: '1px solid rgba(59,130,246,0.2)',
+                  }}
+                >
                   {tag}
                 </span>
               ))}
@@ -264,28 +458,56 @@ export default function SkillDetail(): JSX.Element {
           </section>
 
           {/* 评论区 */}
-          <section>
+          <section
+            className="rounded-2xl p-6"
+            style={{
+              background: 'var(--card-bg)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
+            }}
+          >
+            <h2
+              className="text-lg font-semibold mb-4 flex items-center gap-2"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              <MessageCircle size={18} style={{ color: 'var(--accent-primary)' }} />
+              评论 ({commentsData?.total || 0})
+            </h2>
             <CommentSection
               comments={commentsData?.items || []}
               currentUserId={user?.id}
               isLoading={isLoadingComments}
               onSubmitComment={handleSubmitComment}
             />
-            {!user && <p className="text-center text-gray-500 mt-4">登录后发表评论</p>}
           </section>
         </div>
 
         {/* 右侧：互动区 */}
         <div className="space-y-6">
-          {/* 操作按钮 */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-            {/* 下载按钮 */}
+          {/* 操作卡片 */}
+          <div
+            className="rounded-2xl p-6 space-y-5"
+            style={{
+              background: 'var(--card-bg)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
+            }}
+          >
+            {/* 下载按钮 - 渐变 */}
             <button
               type="button"
               data-testid="download-button"
               onClick={handleDownload}
               disabled={downloadMutation.isPending}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-white font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: 'var(--btn-gradient)',
+                boxShadow: '0 4px 15px rgba(59,130,246,0.3)',
+              }}
             >
               {downloadMutation.isPending ? (
                 <Loader2 size={20} className="animate-spin" />
@@ -295,13 +517,27 @@ export default function SkillDetail(): JSX.Element {
               下载 ({formatFileSize(skill.fileSize)})
             </button>
 
-            {/* 评分 */}
-            <div className="pt-4 border-t border-gray-100">
-              <p className="text-sm text-gray-600 mb-2">评分</p>
+            {/* 评分区 */}
+            <div className="pt-4" style={{ borderTop: '1px solid var(--card-border)' }}>
+              <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
+                评分
+              </p>
               <div className="flex items-center gap-3">
                 <StarRating value={skill.userRating || 0} readonly={!user} onChange={handleRate} />
-                <span className="text-lg font-semibold text-gray-900">{skill.ratingAvg}</span>
-                <span className="text-sm text-gray-500">({skill.ratingCount} 评分)</span>
+                <span
+                  className="text-2xl font-bold"
+                  style={{
+                    background: 'var(--btn-gradient)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {skill.ratingAvg?.toFixed(1) || '0.0'}
+                </span>
+                <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+                  ({skill.ratingCount} 评分)
+                </span>
               </div>
             </div>
 
@@ -312,11 +548,12 @@ export default function SkillDetail(): JSX.Element {
               data-favorited={skill.isFavorite}
               onClick={handleToggleFavorite}
               disabled={!user || favoriteMutation.isPending}
-              className={`w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                skill.isFavorite
-                  ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100'
-                  : 'border-gray-200 text-gray-700 hover:bg-gray-50'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: skill.isFavorite ? 'rgba(239,68,68,0.08)' : 'transparent',
+                borderColor: skill.isFavorite ? 'rgba(239,68,68,0.3)' : 'var(--card-border)',
+                color: skill.isFavorite ? '#ef4444' : 'var(--text-secondary)',
+              }}
             >
               {favoriteMutation.isPending ? (
                 <Loader2 size={18} className="animate-spin" />
@@ -324,33 +561,95 @@ export default function SkillDetail(): JSX.Element {
                 <Heart size={18} className={skill.isFavorite ? 'fill-current' : ''} />
               )}
               {skill.isFavorite ? '已收藏' : '收藏'}
-              <span className="text-gray-500">({skill.favoriteCount})</span>
+              <span style={{ color: 'var(--text-tertiary)' }}>({skill.favoriteCount})</span>
             </button>
 
-            {/* 统计信息 */}
-            <div className="pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
-              <div>
-                <p className="text-lg font-semibold text-gray-900">{skill.viewCount}</p>
-                <p className="text-xs text-gray-500">浏览</p>
+            {/* 统计信息 - 玻璃拟态卡片 */}
+            <div
+              className="pt-4 grid grid-cols-3 gap-3"
+              style={{ borderTop: '1px solid var(--card-border)' }}
+            >
+              <div
+                className="rounded-xl p-3 text-center"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid var(--card-border)',
+                }}
+              >
+                <p
+                  className="text-lg font-bold"
+                  style={{
+                    background: 'var(--btn-gradient)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {skill.viewCount}
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  浏览
+                </p>
               </div>
-              <div>
-                <p className="text-lg font-semibold text-gray-900">{skill.downloadCount}</p>
-                <p className="text-xs text-gray-500">下载</p>
+              <div
+                className="rounded-xl p-3 text-center"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid var(--card-border)',
+                }}
+              >
+                <p
+                  className="text-lg font-bold"
+                  style={{
+                    background: 'var(--btn-gradient)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {skill.downloadCount}
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  下载
+                </p>
               </div>
-              <div>
-                <p className="text-lg font-semibold text-gray-900">{skill.favoriteCount}</p>
-                <p className="text-xs text-gray-500">收藏</p>
+              <div
+                className="rounded-xl p-3 text-center"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid var(--card-border)',
+                }}
+              >
+                <p
+                  className="text-lg font-bold"
+                  style={{
+                    background: 'var(--btn-gradient)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                >
+                  {skill.favoriteCount}
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  收藏
+                </p>
               </div>
             </div>
 
             {/* 作者操作 */}
             {isAuthor && (
-              <div className="pt-4 border-t border-gray-100 space-y-2">
+              <div className="pt-4 space-y-2" style={{ borderTop: '1px solid var(--card-border)' }}>
                 <button
                   type="button"
                   data-testid="edit-button"
                   onClick={() => navigate(`/skills/${id}/edit`)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105"
+                  style={{
+                    background: 'rgba(59,130,246,0.08)',
+                    border: '1px solid rgba(59,130,246,0.2)',
+                    color: 'var(--accent-primary)',
+                  }}
                 >
                   <Edit size={18} />
                   编辑
@@ -359,7 +658,12 @@ export default function SkillDetail(): JSX.Element {
                   type="button"
                   data-testid="delete-button"
                   onClick={handleDelete}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-red-200 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 hover:scale-105"
+                  style={{
+                    background: 'rgba(239,68,68,0.08)',
+                    border: '1px solid rgba(239,68,68,0.2)',
+                    color: '#ef4444',
+                  }}
                 >
                   <Trash2 size={18} />
                   删除
@@ -367,35 +671,47 @@ export default function SkillDetail(): JSX.Element {
               </div>
             )}
           </div>
-
-          {/* 评论数量 */}
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <p className="text-2xl font-bold text-gray-900">{commentsData?.total || 0}</p>
-            <p className="text-sm text-gray-600">条评论</p>
-          </div>
         </div>
       </div>
 
-      {/* 删除确认对话框 */}
+      {/* 删除确认对话框 - 玻璃拟态 */}
       {showDeleteDialog && (
         <div
           data-testid="delete-confirm-dialog"
-          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 flex items-center justify-center z-50 p-4"
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
         >
-          <div className="bg-white rounded-xl max-w-md w-full p-6">
+          <div
+            className="rounded-2xl max-w-md w-full p-6"
+            style={{
+              background: 'var(--card-bg)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
+            }}
+          >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle size={20} className="text-red-600" />
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center"
+                style={{ background: 'rgba(239,68,68,0.1)' }}
+              >
+                <AlertTriangle size={20} style={{ color: '#ef4444' }} />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">确认删除</h3>
+              <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
+                确认删除
+              </h3>
             </div>
-            <p className="text-gray-600 mb-6">确定要删除这个 Skill 吗？此操作不可恢复。</p>
+            <p style={{ color: 'var(--text-secondary)' }} className="mb-6">
+              确定要删除这个 Skill 吗？此操作不可恢复。
+            </p>
             <div className="flex gap-3 justify-end">
               <button
                 type="button"
                 data-testid="cancel-delete-button"
                 onClick={() => setShowDeleteDialog(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 rounded-xl transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
               >
                 取消
               </button>
@@ -404,7 +720,8 @@ export default function SkillDetail(): JSX.Element {
                 data-testid="confirm-delete-button"
                 onClick={confirmDelete}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                className="px-4 py-2 rounded-xl text-white transition-all duration-200 hover:scale-105 disabled:opacity-50"
+                style={{ background: 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)' }}
               >
                 {deleteMutation.isPending ? (
                   <Loader2 size={18} className="animate-spin" />
