@@ -75,6 +75,7 @@ async def setup_database() -> AsyncGenerator[None, None]:
 
     # 先导入所有模型，确保元数据正确加载
     from app.models.comment import Comment  # noqa: F401
+    from app.models.download_log import DownloadLog  # noqa: F401
     from app.models.favorite import Favorite  # noqa: F401
     from app.models.notification import Notification  # noqa: F401
     from app.models.rating import Rating  # noqa: F401

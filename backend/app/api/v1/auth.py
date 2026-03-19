@@ -71,6 +71,10 @@ async def login(
     if not user:
         raise UnauthorizedException("邮箱或密码错误")
 
+    # 检查用户是否被禁用
+    if not user.is_active:
+        raise UnauthorizedException("账号已被禁用，请联系管理员")
+
     # 创建 Access Token
     access_token = create_access_token(data={"sub": str(user.id)})
 

@@ -315,3 +315,494 @@ class TestAdminTags:
         assert response.status_code == 200
         data = response.json()
         assert data["merged_count"] >= 0
+
+
+class TestAdminSkillManagement:
+    """管理员 Skill 管理扩展测试."""
+
+    @pytest.mark.asyncio
+    async def test_edit_any_skill_success(
+        self, client: AsyncClient, test_admin: dict, test_skill: dict
+    ) -> None:
+        """测试管理员编辑任意 Skill."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 编辑 Skill
+        response = await client.put(
+            f"/api/v1/admin/skills/{test_skill['id']}",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "name": "Updated Skill Name",
+                "description": "Updated description",
+                "usage_scenario": "Updated scenario",
+                "usage_method": "Updated method",
+                "tags": ["updated", "tag"],
+            },
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["name"] == "Updated Skill Name"
+        assert data["description"] == "Updated description"
+
+    @pytest.mark.asyncio
+    async def test_edit_nonexistent_skill(
+        self, client: AsyncClient, test_admin: dict
+    ) -> None:
+        """测试编辑不存在的 Skill."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 编辑不存在的 Skill
+        response = await client.put(
+            "/api/v1/admin/skills/00000000-0000-0000-0000-000000000000",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "name": "Updated Skill Name",
+                "description": "Updated description",
+                "usage_scenario": "Updated scenario",
+                "usage_method": "Updated method",
+                "tags": ["updated"],
+            },
+        )
+
+        assert response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_force_delete_skill_success(
+        self, client: AsyncClient, test_admin: dict, test_skill: dict
+    ) -> None:
+        """测试管理员强制删除 Skill（物理删除）."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 强制删除 Skill
+        response = await client.delete(
+            f"/api/v1/admin/skills/{test_skill['id']}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 204
+
+        # 验证 Skill 已被物理删除
+        skill_response = await client.get(f"/api/v1/skills/{test_skill['id']}")
+        assert skill_response.status_code == 404
+
+    @pytest.mark.asyncio
+    async def test_list_deleted_skills(
+        self, client: AsyncClient, test_admin: dict, test_skill: dict
+    ) -> None:
+        """测试获取软删除 Skill 列表."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 先软删除 Skill
+        await client.delete(
+            f"/api/v1/skills/{test_skill['id']}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        # 获取软删除列表
+        response = await client.get(
+            "/api/v1/admin/skills/deleted",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "items" in data
+        assert len(data["items"]) >= 1
+        assert any(item["id"] == test_skill["id"] for item in data["items"])
+
+    @pytest.mark.asyncio
+    async def test_restore_deleted_skill(
+        self, client: AsyncClient, test_admin: dict, test_skill: dict
+    ) -> None:
+        """测试恢复软删除的 Skill."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 先软删除 Skill
+        await client.delete(
+            f"/api/v1/skills/{test_skill['id']}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        # 恢复 Skill
+        response = await client.post(
+            f"/api/v1/admin/skills/{test_skill['id']}/restore",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["is_deleted"] is False
+
+        # 验证 Skill 可以再次访问
+        skill_response = await client.get(f"/api/v1/skills/{test_skill['id']}")
+        assert skill_response.status_code == 200
+
+    @pytest.mark.asyncio
+    async def test_get_skill_downloads(
+        self, client: AsyncClient, test_admin: dict, test_skill: dict
+    ) -> None:
+        """测试查看 Skill 下载用户列表."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 查看下载列表
+        response = await client.get(
+            f"/api/v1/admin/skills/{test_skill['id']}/downloads",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "items" in data
+        assert isinstance(data["items"], list)
+
+
+class TestAdminUserManagement:
+    """管理员用户管理测试."""
+
+    @pytest.mark.asyncio
+    async def test_list_users(
+        self, client: AsyncClient, test_admin: dict, test_user: dict
+    ) -> None:
+        """测试获取用户列表."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 获取用户列表
+        response = await client.get(
+            "/api/v1/admin/users",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "items" in data
+        assert len(data["items"]) >= 2  # 至少包含 admin 和 test_user
+
+    @pytest.mark.asyncio
+    async def test_search_users(
+        self, client: AsyncClient, test_admin: dict, test_user: dict
+    ) -> None:
+        """测试搜索用户."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 搜索用户
+        response = await client.get(
+            "/api/v1/admin/users?search=testuser",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "items" in data
+        assert any(user["username"] == "testuser" for user in data["items"])
+
+    @pytest.mark.asyncio
+    async def test_set_user_admin_status(
+        self, client: AsyncClient, test_admin: dict, test_user: dict
+    ) -> None:
+        """测试设置用户管理员权限."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 设置用户为管理员
+        response = await client.patch(
+            f"/api/v1/admin/users/{test_user['id']}/admin",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"is_admin": True},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["is_admin"] is True
+
+        # 取消管理员权限
+        response = await client.patch(
+            f"/api/v1/admin/users/{test_user['id']}/admin",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"is_admin": False},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["is_admin"] is False
+
+    @pytest.mark.asyncio
+    async def test_set_user_active_status(
+        self, client: AsyncClient, test_admin: dict, test_user: dict
+    ) -> None:
+        """测试启用/禁用用户账号."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 禁用用户
+        response = await client.patch(
+            f"/api/v1/admin/users/{test_user['id']}/status",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"is_active": False},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["is_active"] is False
+
+        # 启用用户
+        response = await client.patch(
+            f"/api/v1/admin/users/{test_user['id']}/status",
+            headers={"Authorization": f"Bearer {token}"},
+            json={"is_active": True},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert data["is_active"] is True
+
+
+class TestAdminCommentManagement:
+    """管理员评论管理测试."""
+
+    @pytest.mark.asyncio
+    async def test_list_comments(
+        self, client: AsyncClient, test_admin: dict, test_comment: dict
+    ) -> None:
+        """测试获取评论列表."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 获取评论列表
+        response = await client.get(
+            "/api/v1/admin/comments",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "items" in data
+        assert len(data["items"]) >= 1
+
+    @pytest.mark.asyncio
+    async def test_list_comments_with_filter(
+        self, client: AsyncClient, test_admin: dict, test_comment: dict, test_skill: dict
+    ) -> None:
+        """测试带筛选条件的评论列表."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 按 Skill ID 筛选
+        response = await client.get(
+            f"/api/v1/admin/comments?skill_id={test_skill['id']}",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "items" in data
+
+
+class TestAdminStatistics:
+    """管理员数据统计测试."""
+
+    @pytest.mark.asyncio
+    async def test_get_overview_stats(
+        self, client: AsyncClient, test_admin: dict
+    ) -> None:
+        """测试获取平台概览统计."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 获取概览统计
+        response = await client.get(
+            "/api/v1/admin/stats/overview",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "total_skills" in data
+        assert "total_users" in data
+        assert "today_downloads" in data
+        assert "today_comments" in data
+        assert "today_uploads" in data
+
+    @pytest.mark.asyncio
+    async def test_get_active_users(
+        self, client: AsyncClient, test_admin: dict
+    ) -> None:
+        """测试获取活跃用户榜单."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 获取活跃用户榜单
+        response = await client.get(
+            "/api/v1/admin/stats/active-users",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        data = response.json()
+        assert "items" in data
+        assert isinstance(data["items"], list)
+
+    @pytest.mark.asyncio
+    async def test_export_users_csv(
+        self, client: AsyncClient, test_admin: dict, test_user: dict
+    ) -> None:
+        """测试导出用户 CSV."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 导出用户 CSV
+        response = await client.get(
+            "/api/v1/admin/export/users",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "text/csv; charset=utf-8"
+        assert "attachment" in response.headers["content-disposition"]
+
+        # 验证 CSV 内容
+        content = response.text
+        assert "username" in content
+        assert test_user["username"] in content
+
+    @pytest.mark.asyncio
+    async def test_export_tags_csv(
+        self, client: AsyncClient, test_admin: dict, test_skill: dict
+    ) -> None:
+        """测试导出标签统计 CSV."""
+        # 管理员登录
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_admin["email"],
+                "password": test_admin["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 导出标签 CSV
+        response = await client.get(
+            "/api/v1/admin/export/tags",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "text/csv; charset=utf-8"
+        assert "attachment" in response.headers["content-disposition"]
+
+        # 验证 CSV 内容
+        content = response.text
+        assert "name" in content

@@ -10,6 +10,7 @@ class UserBase(SQLModel):
     username: str = Field(max_length=50, unique=True, index=True)
     email: str = Field(max_length=255, unique=True, index=True)
     is_admin: bool = Field(default=False)
+    is_active: bool = Field(default=True)
     avatar_url: str | None = Field(default=None, max_length=500)
 
 

@@ -85,6 +85,13 @@ async def get_current_user(
     if not user:
         raise UnauthorizedException("用户不存在")
 
+    # 检查用户是否被禁用
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="账号已被禁用，请联系管理员",
+        )
+
     return user
 
 

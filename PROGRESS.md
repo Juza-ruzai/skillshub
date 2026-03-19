@@ -1,164 +1,14 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-18
-> **当前状态：M5.5 后端接口补充完成 ✅，准备开始 M6 前端页面**
+> 最后更新：2026-03-19
+> **当前状态：M5.6 后端管理员功能扩展已完成，M6 前端页面开发中（Phase 8 上传与编辑）**
 
 ---
 
-## 已完成工作总结
-
-### M1: 基础设施 ✅ (100%)
-- 后端：Python 3.11 + FastAPI + SQLModel + PostgreSQL
-- 前端：Vite + React 18 + TypeScript 5 + Tailwind CSS
-- 代码质量：Ruff + MyPy
-
-### M2: 用户认证 ✅ (100%)
-
-**后端已完成：**
-- `schemas/user.py` - UserCreate, UserLogin, UserResponse, TokenResponse
-- `services/user_service.py` - 注册/登录/获取用户服务
-- `api/deps.py` - get_current_user, get_current_admin 依赖注入
-- `api/v1/auth.py` - 认证路由 (注册/登录/刷新/登出/获取当前用户)
-- JWT Token 认证 + Refresh Token Cookie
-- bcrypt 密码加密
-
-**测试覆盖：**
-- 单元测试：17 个 (Schema + Service)
-- 集成测试：14 个 (API 路由)
-- 代码覆盖率：90%
-- 全部通过：✅ `ruff check` + `mypy app`
-
-### M3: Skill 核心 ✅ (100%)
-
-**后端已完成：**
-- `models/` - skill, tag, favorite, rating 数据模型
-- `schemas/skill.py` - Skill 相关 Schema + 分页响应
-- `services/file_service.py` - 文件上传/解压/预览
-- `services/skill_service.py` - Skill CRUD + 热度计算 + 搜索
-- `services/rating_service.py` - 评分服务（首次评分/更新评分/统计）
-- `services/favorite_service.py` - 收藏服务（添加/取消/切换/统计）
-- `api/v1/skills.py` - 完整 API 路由
-
-**API 端点：**
-| 端点 | 功能 | 状态 |
-|------|------|------|
-| `GET /api/v1/skills` | 列表（分页/搜索/排序） | ✅ |
-| `GET /api/v1/skills/trending` | 本周热门 | ✅ |
-| `GET /api/v1/skills/top-rated` | 评分最高 | ✅ |
-| `GET /api/v1/skills/most-downloaded` | 下载最多 | ✅ |
-| `POST /api/v1/skills` | 上传 Skill | ✅ |
-| `GET /api/v1/skills/{id}` | 详情（含收藏状态/用户评分） | ✅ |
-| `PUT /api/v1/skills/{id}` | 更新 | ✅ |
-| `DELETE /api/v1/skills/{id}` | 软删除 | ✅ |
-| `POST /api/v1/skills/{id}/download` | 下载 | ✅ |
-| `POST /api/v1/skills/{id}/rate` | 评分（1-5星） | ✅ |
-| `POST /api/v1/skills/{id}/favorite` | 收藏/取消收藏 | ✅ |
-
-**测试统计：**
-- 单元测试：63 个
-- 集成测试：31 个
-- 代码覆盖率：82%
-- 全部通过：✅ 108 tests passed
-
-### M4: 互动功能 ✅ (100%)
-
-**后端已完成：**
-- `models/comment.py` - 评论模型（支持嵌套回复）
-- `schemas/comment.py` - CommentCreate, CommentResponse, CommentWithReplies
-- `schemas/notification.py` - NotificationResponse, NotificationListResponse
-- `services/comment_service.py` - 评论服务（创建/查询/删除/嵌套结构）
-- `services/notification_service.py` - 通知服务（创建/查询/标记已读）
-- `api/v1/comments.py` - 评论 API 路由
-- `api/v1/notifications.py` - 通知 API 路由
-
-**API 端点：**
-| 端点 | 功能 | 状态 |
-|------|------|------|
-| `GET /api/v1/skills/{id}/comments` | 获取评论（嵌套结构） | ✅ |
-| `POST /api/v1/skills/{id}/comments` | 发表评论/回复 | ✅ |
-| `DELETE /api/v1/comments/{id}` | 删除评论 | ✅ |
-| `GET /api/v1/users/me/notifications` | 通知列表 | ✅ |
-| `PATCH /api/v1/users/me/notifications/{id}/read` | 标记已读 | ✅ |
-| `POST /api/v1/users/me/notifications/read-all` | 全部标记已读 | ✅ |
-
-**测试统计：**
-- 单元测试：79 个
-- 集成测试：40 个
-- 代码覆盖率：82%
-- 全部通过：✅ 141 tests passed
-
-### M5: 管理后台 ✅ (100%) - **本次完成**
-
-**后端已完成：**
-- `api/v1/admin.py` - 管理后台路由
-- `CurrentAdmin` 依赖注入 - 管理员权限保护
-- CSV 导出功能
-- 标签合并功能
-
-**API 端点：**
-| 端点 | 功能 | 状态 |
-|------|------|------|
-| `POST /api/v1/admin/skills/{id}/pin` | 置顶/取消置顶 Skill | ✅ |
-| `DELETE /api/v1/admin/comments/{id}` | 删除任意评论 | ✅ |
-| `GET /api/v1/admin/export` | 导出 Skills CSV | ✅ |
-| `GET /api/v1/admin/tags` | 标签列表 | ✅ |
-| `POST /api/v1/admin/tags/merge` | 合并标签 | ✅ |
-
-**测试统计：**
-- 集成测试：12 个（管理后台 API）
-- 全部通过：✅ 153 tests passed
-- 代码覆盖率：80%
-
----
-
-### M5.5: 后端接口补充 ✅ (100%) - **M6 前置工作**
-
-> 为支持 M6 前端开发，补充前端所需的后端接口和字段
-
-**新增接口：**
-
-| 接口 | 方法 | 路径 | 说明 |
-|------|------|------|------|
-| 用户统计 | GET | `/api/v1/users/me/stats` | 返回总PV/下载/收藏、评分分布、7天/30天趋势 |
-| 标签列表 | GET | `/api/v1/tags` | 公开访问，按使用次数降序排列 |
-
-**修复/增强接口：**
-
-| 接口 | 变更 | 说明 |
-|------|------|------|
-| `GET /api/v1/skills` | 修复 | `author_username` 字段现在返回正确值 |
-| `GET /api/v1/skills/trending` | 修复 | `author_username` 字段现在返回正确值 |
-| `GET /api/v1/skills/top-rated` | 修复 | `author_username` 字段现在返回正确值 |
-| `GET /api/v1/skills/most-downloaded` | 修复 | `author_username` 字段现在返回正确值 |
-| `GET /api/v1/skills/{id}/comments` | 增强 | 返回评论新增 `username` 字段 |
-| `POST /api/v1/skills/{id}/comments` | 增强 | 创建评论返回新增 `username` 字段 |
-
-**新增/修改文件：**
-- `app/api/v1/users.py` - 新增：用户统计接口
-- `app/api/v1/tags.py` - 新增：公开标签列表
-- `app/api/v1/skills.py` - 修改：添加 `_get_author_usernames` 辅助函数
-- `app/api/v1/comments.py` - 修改：创建评论返回 username
-- `app/schemas/comment.py` - 修改：`CommentResponse` 添加 `username` 字段
-- `app/services/comment_service.py` - 修改：查询并填充 username
-
-**测试统计：**
-- 新增测试：15 个
-  - `test_user_stats_api.py` - 5 个测试
-  - `test_skills_api.py` - 4 个测试
-  - `test_comments_api.py` - 3 个测试（扩展）
-  - `test_tags_api.py` - 3 个测试
-- 总测试数：168 个 ✅ (原 153 + 新增 15)
-- 代码覆盖率：80%
-- 全部通过：✅ `ruff check` + 测试通过
-
-**验收标准：**
-- [x] 前端统计面板可获取所需数据
-- [x] Skill 列表显示作者名称
-- [x] 评论区显示评论者用户名
-- [x] 标签云可获取公开标签列表
-- [x] 所有测试通过，无回归问题
-
+**📍 当前聚焦 (Current Focus):**
+- 完成 M6.6 Phase 8: Skill 上传与编辑页面（SkillUpload.tsx / SkillEdit.tsx）
+- 后端 M5.6 管理员功能扩展已完成 ✅
 
 ---
 
@@ -170,322 +20,305 @@
 | M2: 用户认证 | 6 | 100% | 🟢 已完成 | - |
 | M3: Skill 核心 | 8 | 100% | 🟢 已完成 | - |
 | M4: 互动功能 | 4 | 100% | 🟢 已完成 | - |
-| M5: 管理后台 | 4 | 100% | 🟢 已完成 | - |
+| M5: 管理后台基础 | 4 | 100% | 🟢 已完成 | - |
 | M5.5: 后端接口补充 | 4 | 100% | 🟢 已完成 | - |
+| M5.6: 管理员功能扩展 | 6 | 100% | 🟢 已完成 | - |
 | M6: 前端页面 | 10 | 70% | 🟡 进行中 | M1-M5.5 |
 | M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
+| M8: 后续功能（Post-MVP） | 10 | 0% | 🔴 未开始 | M7 |
 
 **图例**：🔴 未开始 / 🟡 进行中 / 🟢 已完成 / ⚪ 阻塞
 
 ---
 
-## M1: 基础设施
+## 已完成工作总结
 
-**目标**：搭建项目基础架构，配置开发环境
+### M1: 基础设施 ✅ (100%)
+- 后端：Python 3.11 + FastAPI + SQLModel + PostgreSQL
+- 前端：Vite + React 18 + TypeScript 5 + Tailwind CSS
+- 代码质量：Ruff + MyPy
 
-- [x] **M1.1** 后端项目初始化
-  - [x] 创建 `backend/` 目录结构
-  - [x] 初始化 Python 虚拟环境
-  - [x] 安装 FastAPI / SQLModel / Pydantic 等依赖
-  - [x] 创建 `requirements.txt`
+### M2: 用户认证 ✅ (100%)
+- `schemas/user.py` - UserCreate, UserLogin, UserResponse, TokenResponse
+- `services/user_service.py` - 注册/登录/获取用户服务
+- `api/deps.py` - get_current_user, get_current_admin 依赖注入
+- `api/v1/auth.py` - 认证路由 (注册/登录/刷新/登出/获取当前用户)
+- JWT Token 认证 + Refresh Token Cookie
+- bcrypt 密码加密
+- **测试覆盖**：单元测试 17 个 + 集成测试 14 个，代码覆盖率 90%
 
-- [x] **M1.2** 前端项目初始化
-  - [x] 使用 Vite 创建 React + TypeScript 项目
-  - [x] 配置 Tailwind CSS
-  - [x] 初始化 shadcn/ui
-  - [x] 配置 ESLint + Prettier
+### M3: Skill 核心 ✅ (100%)
+- 数据模型：skill, tag, favorite, rating
+- `services/skill_service.py` - Skill CRUD + 热度计算 + 搜索
+- `services/rating_service.py` - 评分服务（首次评分/更新评分/统计）
+- `services/favorite_service.py` - 收藏服务
+- `api/v1/skills.py` - 完整 API 路由
+- **测试覆盖**：单元测试 63 个 + 集成测试 31 个，108 tests passed
 
-- [x] **M1.3** 数据库配置
-  - [x] 编写 `docker-compose.yml` (PostgreSQL)
-  - [x] 配置 Alembic 迁移工具
-  - [x] 创建初始迁移脚本
+### M4: 互动功能 ✅ (100%)
+- `models/comment.py` - 评论模型（支持嵌套回复）
+- `services/comment_service.py` - 评论服务
+- `services/notification_service.py` - 通知服务
+- `api/v1/comments.py` - 评论 API 路由
+- `api/v1/notifications.py` - 通知 API 路由
+- **测试覆盖**：单元测试 79 个 + 集成测试 40 个，141 tests passed
 
-- [x] **M1.4** 核心配置模块
-  - [x] `app/core/config.py` - Pydantic Settings 配置
-  - [x] `app/core/database.py` - 数据库连接与会话
-  - [x] `app/core/security.py` - JWT/密码工具
-  - [x] `app/core/exceptions.py` - 自定义异常类
+### M5: 管理后台基础 ✅ (100%)
+- `api/v1/admin.py` - 基础管理后台路由
+- `CurrentAdmin` 依赖注入
+- 置顶/取消置顶、删除评论、导出 Skills CSV、标签合并
+- **测试覆盖**：集成测试 12 个，153 tests passed
 
-- [x] **M1.5** 代码质量工具配置
-  - [x] 配置 Ruff (Python lint/format)
-  - [x] 配置 MyPy 类型检查
-  - [x] 配置前端 lint/type-check 脚本
+### M5.5: 后端接口补充 ✅ (100%)
+- `GET /api/v1/users/me/stats` - 用户统计接口
+- `GET /api/v1/tags` - 公开标签列表
+- 修复 `author_username` 字段返回
+- 评论返回新增 `username` 字段
+- **测试覆盖**：新增 15 个测试，总计 168 个测试通过
 
-**验收标准**：
-- `docker-compose up -d postgres` 成功启动
-- 后端 `python -m app.main` 启动无报错
-- 前端 `npm run dev` 启动无报错
+### M5.6: 管理员功能扩展 ✅ (100%)
+> **来源**：PRD v1.2 新增需求
+
+**数据库模型更新：**
+- `users` 表添加 `is_active` 字段（账号启用/禁用）
+- 新建 `download_logs` 表（记录下载用户）
+
+**新增 AdminService 服务层：**
+- `services/admin_service.py` - 封装所有管理员业务逻辑
+- Skill 管理：编辑、强制删除、软删除列表、恢复、查看下载用户
+- 用户管理：列表、搜索、设置管理员、启用/禁用账号
+- 评论管理：列表、筛选
+- 数据统计：平台概览、活跃用户榜、导出 CSV
+
+**新增 Admin API 路由：**
+- `PUT /admin/skills/{id}` - 编辑任意 Skill
+- `DELETE /admin/skills/{id}` - 强制删除 Skill
+- `GET /admin/skills/deleted` - 软删除列表
+- `POST /admin/skills/{id}/restore` - 恢复软删除
+- `GET /admin/skills/{id}/downloads` - 查看下载用户
+- `GET /admin/users` - 用户列表（分页/搜索）
+- `PATCH /admin/users/{id}/admin` - 设置管理员权限
+- `PATCH /admin/users/{id}/status` - 启用/禁用账号
+- `GET /admin/comments` - 评论列表（筛选/分页）
+- `GET /admin/stats/overview` - 平台概览统计
+- `GET /admin/stats/active-users` - 活跃用户榜单
+- `GET /admin/export/users` - 导出用户 CSV
+- `GET /admin/export/tags` - 导出标签 CSV
+
+**用户禁用功能：**
+- `api/deps.py` - `get_current_user` 检查禁用状态
+- `api/v1/auth.py` - 登录时检查禁用状态，返回 403
+
+**测试覆盖：**
+- 单元测试：新增 `test_admin_service.py` 17 个测试
+- 集成测试：新增 16 个 admin API 测试 + 1 个禁用用户测试
+- **总计 202 个测试全部通过**
 
 ---
 
-## M2: 用户认证 ✅ (100%)
+## 进行中模块
 
-**目标**：实现用户注册、登录、JWT 认证体系
-
-**状态**：✅ 已完成（TDD 方式开发，31 个测试通过）
+### M6: 前端页面 🟡 (70%)
 
 **已完成：**
+- [x] **M6.1** 布局组件（Header, Footer, Sidebar, Layout）
+- [x] **M6.2** 通用组件（StarRating, Pagination, MarkdownPreview, FileTree, CommentSection, TagCloud）
+- [x] **M6.3** 首页与搜索（Home, 搜索, 标签云筛选）
+- [x] **M6.4** 认证页面（Login, Register）
+- [x] **M6.5** Skill 详情页（SkillDetail, 评分/收藏/下载, 评论区, 作者操作）
+- [x] **M6.9** 路由与导航
 
-- [x] **M2.1** 用户模型与 Schema
-  - [x] `schemas/user.py` - Pydantic 校验模型 (UserCreate, UserLogin, UserResponse, TokenResponse)
-  - [x] 邮箱验证、用户名长度、密码强度校验
+**进行中/待完成：**
+- [ ] **M6.6** Skill 上传页（Phase 8）⏳
+- [ ] **M6.7** Skill 编辑页（Phase 8）⏳
+- [ ] **M6.8** 个人中心（Phase 9）⏸️ 依赖 M6.6-6.7
 
-- [x] **M2.2** 认证服务层
-  - [x] `services/user_service.py` - 注册/登录逻辑
-  - [x] 密码 bcrypt 加密
-  - [x] JWT Token 生成与验证
-
-- [x] **M2.3** 认证 API 路由
-  - [x] `POST /api/v1/auth/register` - 注册 (201)
-  - [x] `POST /api/v1/auth/login` - 登录（OAuth2 + Refresh Cookie）
-  - [x] `POST /api/v1/auth/refresh` - 刷新 Access Token
-  - [x] `POST /api/v1/auth/logout` - 登出
-  - [x] `GET /api/v1/auth/me` - 获取当前用户
-
-- [x] **M2.4** 依赖注入
-  - [x] `api/deps.py` - `get_current_user()` / `get_current_admin()`
-
-- [ ] **M2.5** 前端登录页面 ⏸️ 推迟到 M6 统一开发
-  - [ ] `pages/Login.tsx` - 登录表单
-  - [ ] `pages/Register.tsx` - 注册表单
-  - [ ] `hooks/useAuth.ts` - 认证状态管理
-
-- [ ] **M2.6** 前端 API 封装 ⏸️ 推迟到 M6 统一开发
-  - [ ] `lib/api.ts` - axios 实例配置
-  - [ ] Token 自动刷新逻辑
-  - [ ] 请求拦截器添加 Authorization Header
-
-**测试统计**：
-- 单元测试：17 个 ✅
-- 集成测试：14 个 ✅
-- 代码覆盖率：90%
-
-**验收标准**：
-- [x] 用户可成功注册/登录
-- [x] 登录后获取 JWT Token 可访问受保护接口
-- [x] Token 过期后可自动刷新
+**验收标准：**
+- [ ] 所有页面可正常访问
+- [ ] 响应式布局（桌面+移动端）
+- [ ] 路由权限控制正确
+- [ ] `npm run lint && npm run type-check` 无错误
 
 ---
 
-## M3: Skill 核心 ✅ (100%)
+## 待开发模块
 
-**目标**：实现 Skill 的上传、管理、榜单、搜索功能
+### M5.6: 管理员功能扩展 🟢 (100%)
 
-**状态**：✅ 已完成（TDD 方式开发，108 个测试通过）
+> **来源**：PRD v1.2 新增需求
 
-**依赖**：M1, M2 ✅ 完成
+**目标**：扩展管理员功能，支持用户管理、Skill 管理、数据统计
 
-- [x] **M3.1** 数据模型
-  - [x] `models/skill.py` - Skill 表
-  - [x] `models/tag.py` - 标签表
-  - [x] `models/favorite.py` - 收藏表
-  - [x] `models/rating.py` - 评分表
-  - [x] 创建 Alembic 迁移
+- [x] **M5.6.1** 数据库模型更新
+  - [x] `users` 表添加 `is_active` 字段（账号启用/禁用）
+  - [x] 新建 `download_logs` 表（记录下载用户）
+  - [x] Alembic 迁移脚本
 
-- [x] **M3.2** Schema 定义
-  - [x] `schemas/skill.py` - Skill 相关 Schema
-  - [x] `schemas/common.py` - 分页响应
+- [x] **M5.6.2** Skill 管理扩展
+  - [x] `PUT /admin/skills/{id}` - 编辑任意 Skill
+  - [x] `DELETE /admin/skills/{id}` - 强制删除 Skill（物理删除）
+  - [x] `GET /admin/skills/deleted` - 软删除 Skill 列表
+  - [x] `POST /admin/skills/{id}/restore` - 恢复软删除 Skill
+  - [x] `GET /admin/skills/{id}/downloads` - 查看下载用户列表
 
-- [x] **M3.3** 文件服务
-  - [x] `services/file_service.py` - 上传/存储
-  - [x] 文件类型白名单校验
-  - [x] ZIP 解压与文件树解析
-  - [x] SKILL.md 内容提取
+- [x] **M5.6.3** 用户管理
+  - [x] `GET /admin/users` - 用户列表（分页/搜索）
+  - [x] `PATCH /admin/users/{id}/admin` - 设置/取消管理员
+  - [x] `PATCH /admin/users/{id}/status` - 启用/禁用账号
 
-- [x] **M3.4** Skill 服务层
-  - [x] `services/skill_service.py`
-  - [x] 创建/更新/软删除 Skill
-  - [x] 热度分数计算
-  - [x] 搜索过滤（名称/描述/标签）
+- [x] **M5.6.4** 数据统计
+  - [x] `GET /admin/stats/overview` - 平台概览（总 Skills/用户数/今日活跃）
+  - [x] `GET /admin/stats/active-users` - 活跃用户榜单（下载/评论/上传量）
+  - [x] `GET /admin/export/users` - 导出用户 CSV
+  - [x] `GET /admin/export/tags` - 导出标签统计 CSV
 
-- [x] **M3.5** Skill API 路由
-  - [x] `GET /api/v1/skills` - 列表（分页/搜索/排序）
-  - [x] `GET /api/v1/skills/trending` - 本周热门
-  - [x] `GET /api/v1/skills/top-rated` - 评分最高
-  - [x] `GET /api/v1/skills/most-downloaded` - 下载最多
-  - [x] `POST /api/v1/skills` - 上传 Skill
-  - [x] `GET /api/v1/skills/{id}` - 详情
-  - [x] `PUT /api/v1/skills/{id}` - 更新
-  - [x] `DELETE /api/v1/skills/{id}` - 软删除
-  - [x] `POST /api/v1/skills/{id}/download` - 下载
+- [x] **M5.6.5** 评论管理
+  - [x] `GET /admin/comments` - 评论列表（筛选/分页）
 
-- [x] **M3.6** 评分/收藏功能 ✅ 本次完成
-  - [x] `services/rating_service.py` - 评分服务
-  - [x] `services/favorite_service.py` - 收藏服务
-  - [x] `POST /api/v1/skills/{id}/rate` - 评分
-  - [x] `POST /api/v1/skills/{id}/favorite` - 收藏/取消
+- [x] **M5.6.6** AdminService 服务层
+  - [x] `services/admin_service.py` - 封装管理员业务逻辑
 
-- [ ] **M3.7** 前端首页 ⏸️ 推迟到 M6
-  - [ ] `pages/Home.tsx` - 首页榜单
-  - [ ] `components/skill/SkillCard.tsx` - Skill 卡片
-  - [ ] `components/skill/SkillList.tsx` - 列表展示
-  - [ ] Tab 切换（综合/本周/评分/下载）
-
-- [ ] **M3.8** 前端 Skill 详情页 ⏸️ 推迟到 M6
-  - [ ] `pages/SkillDetail.tsx`
-  - [ ] 文件树展示 `FileTree.tsx`
-  - [ ] SKILL.md 预览 `MarkdownPreview.tsx`
-  - [ ] 评分/收藏按钮
-  - [ ] 下载功能
-
-**验收标准**：
-- [x] Skill 可成功上传、解压、预览
-- [x] 热度榜单按算法正确排序
-- [x] 搜索可匹配名称/描述/标签
-- [x] 评分/收藏功能正常
+**验收标准：**
+- [x] 所有新增 API 有集成测试覆盖
+- [x] 管理员可以禁用用户账号，禁用后无法登录
+- [x] 可以查看任意 Skill 的下载用户列表
+- [x] 活跃用户榜单统计正确（按下载/评论/上传量综合）
+- [x] `ruff check` 通过（MyPy 有 SQLAlchemy 类型误报，不影响运行）
 
 ---
 
-## M4: 互动功能 ✅ (100%)
+### M6.6: Skill 上传页 🔴 (Phase 8)
 
-**目标**：实现评论系统和站内通知
+**目标**：实现分步表单上传 Skill
 
-**依赖**：M2, M3 完成 ✅
-
-**状态**：✅ 已完成（TDD 方式开发，141 个测试通过）
-
-- [x] **M4.1** 评论数据模型
-  - [x] `models/comment.py` - 评论表（支持嵌套回复）
-  - [x] `schemas/comment.py`
-  - [x] 创建 Alembic 迁移
-
-- [x] **M4.2** 评论服务与 API
-  - [x] `services/comment_service.py`
-  - [x] `GET /api/v1/skills/{id}/comments` - 获取评论（嵌套结构）
-  - [x] `POST /api/v1/skills/{id}/comments` - 发表评论
-  - [x] `DELETE /api/v1/comments/{id}` - 删除评论
-
-- [x] **M4.3** 通知系统
-  - [x] `models/notification.py`
-  - [x] `services/notification_service.py`
-  - [x] Skill 更新时创建通知
-  - [x] `GET /api/v1/users/me/notifications` - 通知列表
-  - [x] `PATCH /api/v1/users/notifications/{id}/read` - 标记已读
-
-- [ ] **M4.4** 前端互动组件 ⏸️ 推迟到 M6 统一开发
-  - [ ] `components/CommentSection.tsx` - 评论区
-  - [ ] 嵌套回复展示
-  - [ ] 通知红点提示
-
-**验收标准**：
-- 评论支持主评论 + 回复
-- Skill 更新后收藏者收到通知
-- 通知可标记已读
-
----
-
-## M5: 管理后台 ✅ (100%)
-
-**目标**：实现管理员功能
-
-**依赖**：M3 完成 ✅
-
-**状态**：✅ 已完成（TDD 方式开发，153 个测试通过）
-
-- [x] **M5.1** 管理员权限
-  - [x] `is_admin` 字段生效
-  - [x] 管理员专属 API 保护（`CurrentAdmin` 依赖注入）
-
-- [x] **M5.2** 置顶/推荐功能
-  - [x] `POST /api/v1/admin/skills/{id}/pin` - 置顶/取消置顶
-  - [x] 置顶 Skill 在首页优先展示
-
-- [x] **M5.3** 内容管理
-  - [x] `DELETE /api/v1/admin/comments/{id}` - 删除任意评论
-  - [x] `GET /api/v1/admin/export` - 导出 Skills CSV
-
-- [x] **M5.4** 标签管理
-  - [x] `GET /api/v1/admin/tags` - 标签列表
-  - [x] `POST /api/v1/admin/tags/merge` - 合并标签
-
-**后端已完成：**
-- `api/v1/admin.py` - 管理后台路由
-- 管理员权限中间件
-- CSV 导出功能
-- 标签合并功能
-
-**测试统计：**
-- 集成测试：12 个（管理后台 API）
-- 全部通过：✅ 153 tests passed
-
-**验收标准**：
-- [x] 管理员可置顶 Skill
-- [x] 可删除不当评论
-- [x] 可导出 CSV 报表
-
----
-
-## M6: 前端页面
-
-**目标**：完成所有前端页面和组件
-
-**依赖**：M1-M5 完成
-
-- [x] **M6.1** 布局组件 ✅
-  - [x] `components/layout/Header.tsx` - 顶部导航
-  - [x] `components/layout/Footer.tsx` - 底部
-  - [x] `components/layout/Sidebar.tsx` - 侧边栏（标签云）
-
-- [x] **M6.2** 通用组件 ✅
-  - [x] `components/common/StarRating.tsx` - 星级评分
-  - [x] `components/common/Pagination.tsx` - 分页
-  - [x] `components/common/MarkdownPreview.tsx` - Markdown 预览
-  - [x] `components/common/FileTree.tsx` - 文件树
-  - [x] `components/common/CommentSection.tsx` - 评论区
-
-- [x] **M6.3** 首页与搜索 ✅
-  - [x] `pages/Home.tsx` - 首页（四个榜单 Tab）
-  - [x] 顶部搜索栏
-  - [x] 标签云筛选
-  - [x] 搜索结果展示
-
-- [x] **M6.4** 认证页面 ✅
-  - [x] `pages/Login.tsx` - 登录页
-  - [x] `pages/Register.tsx` - 注册页
-
-- [x] **M6.5** Skill 详情页 ✅
-  - [x] `pages/SkillDetail.tsx`
-  - [x] 完整信息展示
-  - [x] 文件树展示
-  - [x] Markdown 预览
-  - [x] 评分/收藏/下载功能
-  - [x] 嵌套评论区
-  - [x] 作者操作（编辑/删除）
-
-- [ ] **M6.6** Skill 上传页
-  - [ ] `pages/SkillUpload.tsx`
-  - [ ] 分步表单（上传 → 填写信息 → 预览）
+- [ ] **前端组件**
+  - [ ] `pages/SkillUpload.tsx` - 上传页面
+  - [ ] 分步表单：Step 1 上传文件 → Step 2 填写信息 → Step 3 预览确认
+  - [ ] 文件拖拽上传区域
+  - [ ] 文件类型校验（.zip 或 .md）
+  - [ ] 上传进度条显示
   - [ ] 标签输入智能提示
+  - [ ] 表单验证（描述 10-50 字限制）
 
-- [ ] **M6.7** Skill 编辑页
-  - [ ] `pages/SkillEdit.tsx`
-  - [ ] 修改元信息
-  - [ ] 重新上传文件
+- [ ] **API 集成**
+  - [ ] `lib/skillsApi.ts` - 添加上传接口
+  - [ ] 上传成功后跳转 Skill 详情页
 
-- [ ] **M6.8** 个人中心
-  - [ ] `pages/UserProfile.tsx`
-  - [ ] 我上传的 Skills 列表
-  - [ ] 我收藏的 Skills 列表
-  - [ ] 我的评论列表
-  - [ ] 作者统计面板（PV/UV/下载/收藏/评分分布）
-
-- [x] **M6.9** 路由与导航 ✅
-  - [x] `App.tsx` 路由配置
-  - [x] 登录态路由保护
-  - [x] 移动端适配
-
-**验收标准**：
-- 所有页面可正常访问
-- 响应式布局（桌面+移动端）
-- 路由权限控制正确
+**验收标准：**
+- [ ] 分步表单步骤指示器正确
+- [ ] 文件拖拽上传正常工作
+- [ ] 非法文件类型被阻止并提示
+- [ ] 标签输入提示相似标签
+- [ ] 描述字数限制 10-50 字
+- [ ] 提交成功跳转新 Skill 详情页
 
 ---
 
-## M7: 部署上线
+### M6.7: Skill 编辑页 🔴 (Phase 8)
+
+**目标**：实现 Skill 编辑功能
+
+- [ ] **前端组件**
+  - [ ] `pages/SkillEdit.tsx` - 编辑页面
+  - [ ] 复用 SkillForm 组件
+  - [ ] 加载现有 Skill 数据填充表单
+  - [ ] 可重新上传文件
+  - [ ] 保存后显示成功提示
+  - [ ] 非作者访问重定向到 403/首页
+
+**验收标准：**
+- [ ] 编辑页正确加载现有数据
+- [ ] 编辑保存后显示成功提示
+- [ ] 非作者访问编辑页被重定向
+
+---
+
+### M6.8: 个人中心 🔴 (Phase 9)
+
+**目标**：实现个人中心各页面
+
+- [ ] **用户 Skills 页面**
+  - [ ] `pages/UserSkills.tsx` - 我上传的 Skills
+  - [ ] Skill 列表带编辑/删除按钮
+  - [ ] 无上传时显示"暂无上传"
+  - [ ] 删除确认对话框
+
+- [ ] **用户收藏页面**
+  - [ ] `pages/UserFavorites.tsx` - 我的收藏
+  - [ ] 收藏的 Skill 列表
+  - [ ] 取消收藏按钮
+
+- [ ] **用户评论页面**
+  - [ ] `pages/UserComments.tsx` - 我的评论
+  - [ ] 评论列表
+  - [ ] 点击跳转对应 Skill 详情页
+  - [ ] 删除评论按钮
+
+- [ ] **个人中心主页面增强**
+  - [ ] `pages/UserProfile.tsx` - 添加导航标签切换
+  - [ ] 作者统计面板（PV/UV、下载、收藏、评分分布、7天/30天趋势图）
+
+**验收标准：**
+- [ ] 用户信息正确展示
+- [ ] 导航标签切换正确
+- [ ] 统计面板数据正确
+- [ ] 图表正确渲染（柱状图/折线图）
+- [ ] 我的 Skills 列表正确展示
+- [ ] 删除 Skill 有确认对话框
+- [ ] 我的收藏列表可取消收藏
+- [ ] 我的评论点击跳转到对应 Skill
+
+---
+
+### M6.10: 管理员后台页面 🔴 (新增)
+
+> **来源**：PRD v1.2 新增需求，ARCHITECTURE v1.1 定义
+
+**目标**：实现管理员后台前端页面
+
+- [ ] **Admin Dashboard**
+  - [ ] `pages/admin/AdminDashboard.tsx`
+  - [ ] 平台数据统计卡片（总 Skills/用户数/今日下载/评论/上传）
+
+- [ ] **Skill 管理**
+  - [ ] `pages/admin/AdminSkills.tsx`
+  - [ ] Skill 列表（支持置顶/编辑/删除/恢复）
+  - [ ] 软删除 Skill 列表标签页
+  - [ ] 查看下载用户弹窗
+
+- [ ] **用户管理**
+  - [ ] `pages/admin/AdminUsers.tsx`
+  - [ ] 用户列表（支持搜索/分页）
+  - [ ] 设置管理员开关
+  - [ ] 启用/禁用账号按钮
+
+- [ ] **评论管理**
+  - [ ] `pages/admin/AdminComments.tsx`
+  - [ ] 评论列表（支持筛选/分页）
+  - [ ] 删除评论按钮
+
+- [ ] **数据统计**
+  - [ ] `pages/admin/AdminStats.tsx`
+  - [ ] 活跃用户榜单
+  - [ ] 导出报表按钮
+
+- [ ] **管理员路由**
+  - [ ] 添加 `/admin/*` 路由配置
+  - [ ] AdminRoute 保护（仅管理员可访问）
+
+**验收标准：**
+- [ ] 管理员可以查看所有用户列表
+- [ ] 可以设置/取消用户管理员权限
+- [ ] 可以禁用/启用用户账号
+- [ ] 可以强制删除任意 Skill
+- [ ] 可以查看 Skill 下载用户列表
+- [ ] 可以导出各类报表
+
+---
+
+### M7: 部署上线 🔴 (0%)
 
 **目标**：项目部署与上线准备
-
-**依赖**：M6 完成
 
 - [ ] **M7.1** 生产环境配置
   - [ ] 环境变量配置（生产环境）
@@ -503,19 +336,42 @@
   - [ ] 数据库备份策略
   - [ ] 文件存储备份
 
-**验收标准**：
-- 生产环境可正常访问
-- 数据库定期备份
-- 代码质量检查无错误
+**验收标准：**
+- [ ] 生产环境可正常访问
+- [ ] 数据库定期备份
+- [ ] 代码质量检查无错误
 
 ---
+
+### M8: 后续功能（Post-MVP）🔴 (0%)
+
+> **来源**：PRD v1.2 第 8 章后续功能规划
+
+**目标**：MVP 完成后的增强功能
+
+| 功能 | 说明 | 预计阶段 |
+|------|------|----------|
+| **视频/GIF 演示支持** | Skill 详情页支持视频和 GIF 播放 | M8 |
+| **实时 WebSocket 通知** | 从"下次加载显示"升级为实时推送 | M8 |
+| **用户举报功能** | 用户可以举报不当内容，管理员收到通知后处理 | M8 |
+| **Skill 版本历史** | 查看 Skill 的更新历史记录，支持对比版本差异 | M8 |
+| **内容审核机制** | 新上传 Skill 可选择需管理员审核后展示 | M8 |
+| **搜索增强** | 从 LIKE 升级为 pg_trgm 全文搜索，支持中文分词 | M8 |
+| **CDN/对象存储** | 文件存储迁移到 OSS/S3，提升访问速度 | M8 |
+| **邮箱通知** | 重要更新通过邮件通知用户（可选订阅） | M8 |
+| **Skill 分类体系** | 除标签外增加分类维度（如办公效率、数据处理等） | M9 |
+| **团队/部门统计** | 按部门维度统计 Skills 贡献和下载情况 | M9 |
+
+---
+
+## 快速参考
 
 **后端已就绪：**
 - Python 3.11 + FastAPI + SQLModel (异步) 环境配置完成
 - PostgreSQL 15 (Docker) 运行中，端口 5432
 - 核心模块：`config.py`, `database.py`, `security.py`, `exceptions.py`
 - 数据模型：`user`, `skill`, `comment`, `favorite`, `rating`, `notification`, `tag`
-- API 路由：auth, skills, comments, notifications, admin, users, tags (168 测试通过)
+- API 路由：auth, skills, comments, notifications, admin (完整), users, tags (202 测试通过)
 - Alembic 迁移配置完成
 - 代码质量：Ruff + MyPy 无错误
 - 启动命令：`python -m app.main` → http://localhost:8000
@@ -523,6 +379,7 @@
 **前端已就绪：**
 - Vite + React 18 + TypeScript 5 + Tailwind CSS 环境配置完成
 - ESLint + Prettier 配置完成
+- Phase 1-7 已完成（基础架构 → Skill 详情页）
 - 启动命令：`npm run dev` → http://localhost:5173
 
 **快速启动指南：**
@@ -542,18 +399,11 @@ npm run dev
 
 ---
 
-## 附录
+## 参考文档
 
-### 优先级说明
-
-- **P0（核心）**：M1, M2, M3 的核心功能
-- **P1（重要）**：M4, M5, M6
-- **P2（优化）**：M7 的高级功能
-
-### 参考文档
-
-- [PRD.md](./PRD.md) - 产品需求文档
-- [ARCHITECTURE.md](./ARCHITECTURE.md) - 架构设计文档
+- [PRD.md](./PRD.md) - 产品需求文档 (v1.2)
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - 架构设计文档 (v1.1)
 - [CLAUDE.md](./CLAUDE.md) - 编程规范
-  
+- [M6-Frontend-Checklist.md](./M6-Frontend-Checklist.md) - 前端开发清单
+
 *本文档随项目进展持续更新。*

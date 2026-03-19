@@ -42,6 +42,7 @@ class UserResponse(BaseModel):
     username: str = Field(..., description="用户名")
     email: str = Field(..., description="邮箱")
     is_admin: bool = Field(default=False, description="是否管理员")
+    is_active: bool = Field(default=True, description="是否启用")
     avatar_url: str | None = Field(default=None, description="头像URL")
     created_at: datetime = Field(..., description="创建时间")
 

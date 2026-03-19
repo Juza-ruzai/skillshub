@@ -2,6 +2,7 @@
 
 import pytest
 from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class TestAuthAPI:
@@ -300,3 +301,45 @@ class TestAuthAPI:
         assert response.status_code == 200
         # 检查是否清除了 cookie
         assert "set-cookie" in response.headers
+
+    @pytest.mark.asyncio
+    async def test_get_current_user_disabled_returns_403(
+        self, client: AsyncClient, test_user: dict, db_session: AsyncSession
+    ) -> None:
+        """测试被禁用用户访问受保护端点返回 403."""
+        # 先登录获取 token
+        login_response = await client.post(
+            "/api/v1/auth/login",
+            data={
+                "username": test_user["email"],
+                "password": test_user["password"],
+            },
+        )
+        token = login_response.json()["access_token"]
+
+        # 直接禁用用户（通过数据库会话）
+        from uuid import UUID
+
+        from sqlalchemy import select
+
+        from app.models.user import User
+
+        result = await db_session.execute(select(User).where(User.id == UUID(test_user["id"])))
+        user = result.scalar_one()
+        user.is_active = False
+        await db_session.commit()
+
+        # 尝试使用 token 访问受保护端点
+        response = await client.get(
+            "/api/v1/auth/me",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+
+        assert response.status_code == 403
+        assert "账号已被禁用" in response.json()["detail"]
+
+        # 清理：重新启用用户，避免影响其他测试
+        result = await db_session.execute(select(User).where(User.id == UUID(test_user["id"])))
+        user = result.scalar_one()
+        user.is_active = True
+        await db_session.commit()
