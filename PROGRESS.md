@@ -1,13 +1,13 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-20（M6.7 Skill 编辑页开发验收通过）
-> **当前状态：F1-F5 前端视觉重构已完成，后端 202 测试通过，M6.6/M6.7 完成**
+> 最后更新：2026-03-20（M6.8 个人中心开发验收通过）
+> **当前状态：F1-F5 前端视觉重构已完成，后端 219 测试通过，M6.6/M6.7/M6.8 完成**
 
 ---
 
 **📍 当前聚焦 (Current Focus):**
-- **M6.8: 个人中心** - 用户个人中心（我的 Skills / 收藏 / 评论 / 统计）
+- **M6.9: 管理员后台** - 管理员专属后台页面（Dashboard / Skill 管理 / 用户管理 / 评论管理 / 数据统计）
 
 ---
 
@@ -23,7 +23,7 @@
 | M5.5: 后端接口补充 | 4 | 100% | 🟢 已完成 | - |
 | M5.6: 管理员功能扩展 | 6 | 100% | 🟢 已完成 | - |
 | **F: 前端视觉重构** | **20** | **100%** | 🟢 **已完成** | **F1-F5 完成，F6 跳过** |
-| M6: 前端页面功能 | 10 | 80% | 🟡 进行中 | **M6.8 待开发** |
+| M6: 前端页面功能 | 10 | 90% | 🟡 进行中 | **M6.9 待开发** |
 | M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
 | M8: 后续功能（Post-MVP） | 10 | 0% | 🔴 未开始 | M7 |
 
@@ -237,6 +237,40 @@
 
 ---
 
+### M6.8: 个人中心 ✅ (100%)
+> **日期**：2026-03-20
+
+**后端补充（TDD 驱动，16 测试全通过）：**
+- `GET /api/v1/users/me/skills` - 分页返回当前用户上传的 Skills（按创建时间倒序）
+- `GET /api/v1/users/me/favorites` - 分页返回当前用户收藏的 Skills（含 author_username，按收藏时间倒序）
+- `GET /api/v1/users/me/comments` - 分页返回当前用户评论（含 skill_name 字段，JOIN Skill 表）
+- `GET /api/v1/users/me/stats` - 修复为真实 DB 查询（总浏览/下载/收藏/评分分布/7天30天趋势）
+- TDD 集成测试：`test_user_profile_api.py` 16 个用例（401 拦截 / 分页结构 / 数据隔离 / 字段校验）
+- **总计 219 个测试全部通过**
+
+**前端实现：**
+- `src/pages/UserProfile.tsx` - 嵌套布局（用户信息卡 + Tab 导航 + 右侧统计面板），`<Outlet>` 渲染子路由
+  - 用户信息卡：渐变头像徽章 + 用户名/邮箱/快速 badges（加入时间/作品数/收藏数）
+  - 右侧统计面板：4 个数值卡片 + SVG 评分分布柱状图 + SVG 浏览趋势折线图（7天/30天切换）
+  - 骨架屏加载态（玻璃拟态 animate-pulse）
+- `src/pages/UserSkills.tsx` - 我的 Skills 网格（hover 显示编辑/删除按钮，内联确认弹窗）
+- `src/pages/UserFavorites.tsx` - 我的收藏网格（hover 显示取消收藏按钮，POST toggle）
+- `src/pages/UserComments.tsx` - 我的评论列表（Skill 名可点击跳转，内联删除确认弹窗）
+- `src/App.tsx` - `/profile` 改为嵌套路由，index 自动重定向到 `/profile/skills`
+- `src/types/index.ts` - 新增 `MySkillItem`、`MyCommentItem`、`PagedResponse<T>`、`UserStats` 类型
+
+**Playwright 验收结果（2026-03-20）：**
+- [x] `/profile` 自动重定向到 `/profile/skills`
+- [x] 用户信息卡正确显示 username / email / 统计 badges
+- [x] Tab 切换：「我的收藏」跳转 `/profile/favorites`，「我的评论」跳转 `/profile/comments`
+- [x] 右侧统计面板：4 个数值卡片可见（浏览量/下载量/收藏数/作品数）
+- [x] 评分分布柱状图与趋势折线图可见（SVG 渲染）
+- [x] 空状态提示正常（无收藏/无评论时显示引导按钮）
+- [x] 亮色/暗色双主题视觉验收通过（Playwright 截图存档）
+- [x] `npm run lint:fix && npm run type-check` 无错误
+
+---
+
 
 ## 视觉驱动开发 + 增量验收流程
 
@@ -428,7 +462,7 @@
 
 ---
 
-## M6: 前端页面功能 🟡 (70%)
+## M6: 前端页面功能 🟡 (90%)
 
 > **依赖**：F 前端视觉重构完成后继续
 > **开发模式**：视觉驱动 + 增量验收（每页完成即验收）
@@ -516,41 +550,42 @@
 
 ---
 
-### M6.8: 个人中心 🔴
+### M6.8: 个人中心 ✅ (100%)
 
 > **目标**：用户个人中心，展示 Skills/收藏/评论/统计
+> **日期**：2026-03-20
 
-- [ ] **M6.8.1** 主页面框架 (`src/pages/UserProfile.tsx`)
-  - [ ] 玻璃拟态用户信息卡片
-  - [ ] 导航标签切换（我的 Skills / 收藏 / 评论）
+- [x] **M6.8.1** 主页面框架 (`src/pages/UserProfile.tsx`)
+  - [x] 玻璃拟态用户信息卡片
+  - [x] 导航标签切换（我的 Skills / 收藏 / 评论）
 
-- [ ] **M6.8.2** 作者统计面板
-  - [ ] PV/UV 访问量展示
-  - [ ] 下载/收藏总数（环形进度）
-  - [ ] 评分分布图表（柱状图，玻璃拟态）
-  - [ ] 7天/30天趋势图（折线图，玻璃拟态）
+- [x] **M6.8.2** 作者统计面板
+  - [x] PV/UV 访问量展示
+  - [x] 下载/收藏总数（数值卡片）
+  - [x] 评分分布图表（SVG 柱状图，玻璃拟态）
+  - [x] 7天/30天趋势图（SVG 折线图，玻璃拟态）
 
-- [ ] **M6.8.3** 我的 Skills (`src/pages/UserSkills.tsx`)
-  - [ ] Skill 列表（带编辑/删除按钮）
-  - [ ] 删除确认对话框（玻璃拟态）
-  - [ ] 空状态提示
+- [x] **M6.8.3** 我的 Skills (`src/pages/UserSkills.tsx`)
+  - [x] Skill 列表（带编辑/删除按钮）
+  - [x] 删除确认对话框（玻璃拟态内联弹窗）
+  - [x] 空状态提示
 
-- [ ] **M6.8.4** 我的收藏 (`src/pages/UserFavorites.tsx`)
-  - [ ] 收藏的 Skill 列表
-  - [ ] 取消收藏按钮
+- [x] **M6.8.4** 我的收藏 (`src/pages/UserFavorites.tsx`)
+  - [x] 收藏的 Skill 列表
+  - [x] 取消收藏按钮
 
-- [ ] **M6.8.5** 我的评论 (`src/pages/UserComments.tsx`)
-  - [ ] 评论列表（玻璃拟态卡片）
-  - [ ] 点击跳转对应 Skill
-  - [ ] 删除评论按钮
+- [x] **M6.8.5** 我的评论 (`src/pages/UserComments.tsx`)
+  - [x] 评论列表（玻璃拟态卡片）
+  - [x] 点击跳转对应 Skill
+  - [x] 删除评论按钮
 
 **验收标准：**
-- [ ] 用户信息正确展示
-- [ ] 导航标签切换正确
-- [ ] 图表正确渲染
-- [ ] 我的 Skills 列表可操作
-- [ ] 删除操作有确认对话框
-- [ ] **视觉验收**：截图确认符合 design-system
+- [x] 用户信息正确展示
+- [x] 导航标签切换正确
+- [x] 图表正确渲染
+- [x] 我的 Skills 列表可操作
+- [x] 删除操作有确认对话框
+- [x] **视觉验收**：截图确认符合 design-system（亮/暗双主题，2026-03-20）
 
 **阻塞项：** 依赖 M6.7 完成
 
@@ -654,7 +689,7 @@
 ```
 F1 全局样式 → [✅验收] → F2 布局 → [✅验收] → F3 认证页 → [✅验收] →
 F4 首页 → [✅验收] → F5 详情页 → [✅验收] → F6 组件调整 → [⏭️跳过] →
-M6.6 上传页 → [✅验收] → M6.7 编辑页 → [✅验收] → M6.8 个人中心 → [验收] →
+M6.6 上传页 → [✅验收] → M6.7 编辑页 → [✅验收] → M6.8 个人中心 → [✅验收] →
 M6.9 管理员后台 → [验收] → 部署上线
 ```
 
@@ -683,8 +718,8 @@ M6.9 管理员后台 → [验收] → 部署上线
 | ~~F6 shadcn/ui 组件调整~~ | ~~F5 完成~~ | ⏭️ 已跳过 |
 | ~~M6.6 Skill 上传页~~ | ~~F 重构完成~~ | ✅ 已完成并验收 |
 | ~~M6.7 Skill 编辑页~~ | ~~M6.6 完成~~ | ✅ 已完成并验收 |
-| M6.8 个人中心 | M6.7 完成 | 🟡 下一个待开发 |
-| M6.9 管理员后台 | M6.8 完成 | 🔴 未开始 |
+| ~~M6.8 个人中心~~ | ~~M6.7 完成~~ | ✅ 已完成并验收 |
+| M6.9 管理员后台 | M6.8 完成 | 🟡 下一个待开发 |
 
 ---
 
@@ -707,7 +742,7 @@ M6.9 管理员后台 → [验收] → 部署上线
 - PostgreSQL 15 (Docker) 运行中，端口 5432
 - 核心模块：`config.py`, `database.py`, `security.py`, `exceptions.py`
 - 数据模型：`user`, `skill`, `comment`, `favorite`, `rating`, `notification`, `tag`
-- API 路由：auth, skills, comments, notifications, admin (完整), users, tags (202 测试通过)
+- API 路由：auth, skills, comments, notifications, admin (完整), users, tags (219 测试通过)
 - Alembic 迁移配置完成
 - 代码质量：Ruff + MyPy 无错误
 - 启动命令：`python -m app.main` → http://localhost:8000
@@ -723,7 +758,8 @@ M6.9 管理员后台 → [验收] → 部署上线
 - **F6 ⏭️ 已跳过**（shadcn/ui 组件样式，F1-F5 方案已满足需求）
 - **M6.6 Skill 上传页 ✅ 已完成并验收**（三步式上传 + react-simplemde-editor + Playwright 验收通过）
 - **M6.7 Skill 编辑页 ✅ 已完成并验收**（单页表单 + 权限检查 + 玻璃拟态 Toast）
-- **当前优先级：M6.8 个人中心**
+- **M6.8 个人中心 ✅ 已完成并验收**（UserProfile 嵌套布局 + UserSkills/Favorites/Comments 子页面 + SVG 统计面板）
+- **当前优先级：M6.9 管理员后台**
 - 启动命令：`npm run dev` → http://localhost:5173
 
 **Playwright MCP 测试指南：**
