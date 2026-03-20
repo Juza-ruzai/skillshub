@@ -8,6 +8,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import SkillDetail from './pages/SkillDetail'
 import SkillUpload from './pages/SkillUpload'
+import SkillEdit from './pages/SkillEdit'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +19,6 @@ const queryClient = new QueryClient({
   },
 })
 
-const SkillEdit = () => <div>Skill Edit</div>
 const UserProfile = () => <div>User Profile</div>
 const NotFound = () => <div>404 Not Found</div>
 

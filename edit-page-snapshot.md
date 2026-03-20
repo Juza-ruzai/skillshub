@@ -1,0 +1,118 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - link "中建蓝宝 SkillsHub" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - img "中建蓝宝" [ref=e8]
+        - generic [ref=e9]: SkillsHub
+      - generic [ref=e10]:
+        - button "切换主题" [ref=e11] [cursor=pointer]:
+          - img [ref=e12]
+          - img [ref=e18]
+        - button "通知" [ref=e20] [cursor=pointer]:
+          - img [ref=e21]
+        - link "上传" [ref=e24] [cursor=pointer]:
+          - /url: /upload
+          - img [ref=e25]
+          - text: 上传
+        - button "个人中心" [ref=e29] [cursor=pointer]:
+          - generic [ref=e30]: T
+          - generic [ref=e31]: testuser
+          - img [ref=e32]
+  - main [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - heading "编辑 Skill" [level=1] [ref=e37]
+        - paragraph [ref=e38]: 更新你的 Skill 信息
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]: Skill 名称 *
+            - textbox "给你的 Skill 起个名字" [ref=e43]: 验收测试Skill
+          - generic [ref=e44]:
+            - generic [ref=e45]:
+              - generic [ref=e46]: 简短描述 *
+              - generic [ref=e47]: 25 / 10-50 字
+            - textbox "一句话描述这个 Skill 的作用，用于搜索结果展示" [ref=e48]: 这是M6.6验收测试的Skill描述，长度刚好合适
+          - generic [ref=e49]:
+            - generic [ref=e50]: 详细介绍（使用场景、效果演示等） *
+            - application [ref=e53]:
+              - toolbar [ref=e54]:
+                - button "Bold" [ref=e55] [cursor=pointer]:
+                  - generic [ref=e56]: 
+                - button "Italic" [ref=e57] [cursor=pointer]:
+                  - generic [ref=e58]: 
+                - button "Heading" [ref=e59] [cursor=pointer]:
+                  - generic [ref=e60]: 
+                - generic [ref=e61]: "|"
+                - button "Quote" [ref=e62] [cursor=pointer]:
+                  - generic [ref=e63]: 
+                - button "Generic List" [ref=e64] [cursor=pointer]:
+                  - generic [ref=e65]: 
+                - button "Numbered List" [ref=e66] [cursor=pointer]:
+                  - generic [ref=e67]: 
+                - generic [ref=e68]: "|"
+                - button "Create Link" [ref=e69] [cursor=pointer]:
+                  - generic [ref=e70]: 
+                - button "Insert Image" [ref=e71] [cursor=pointer]:
+                  - generic [ref=e72]: 
+                - generic [ref=e73]: "|"
+                - button "Toggle Preview" [ref=e74] [cursor=pointer]:
+                  - generic [ref=e75]: 
+                - button "Markdown Guide" [ref=e76] [cursor=pointer]:
+                  - generic [ref=e77]: 
+              - generic [ref=e78]:
+                - textbox [ref=e79]
+                - generic [ref=e82]: 这是一个验收测试的详细介绍，描述使用场景和效果演示。
+          - generic [ref=e84]:
+            - generic [ref=e85]: 使用方法 *
+            - application [ref=e88]:
+              - toolbar [ref=e89]:
+                - button "Bold" [ref=e90] [cursor=pointer]:
+                  - generic [ref=e91]: 
+                - button "Italic" [ref=e92] [cursor=pointer]:
+                  - generic [ref=e93]: 
+                - button "Heading" [ref=e94] [cursor=pointer]:
+                  - generic [ref=e95]: 
+                - generic [ref=e96]: "|"
+                - button "Quote" [ref=e97] [cursor=pointer]:
+                  - generic [ref=e98]: 
+                - button "Generic List" [ref=e99] [cursor=pointer]:
+                  - generic [ref=e100]: 
+                - button "Numbered List" [ref=e101] [cursor=pointer]:
+                  - generic [ref=e102]: 
+                - generic [ref=e103]: "|"
+                - button "Create Link" [ref=e104] [cursor=pointer]:
+                  - generic [ref=e105]: 
+                - button "Insert Image" [ref=e106] [cursor=pointer]:
+                  - generic [ref=e107]: 
+                - generic [ref=e108]: "|"
+                - button "Toggle Preview" [ref=e109] [cursor=pointer]:
+                  - generic [ref=e110]: 
+                - button "Markdown Guide" [ref=e111] [cursor=pointer]:
+                  - generic [ref=e112]: 
+              - generic [ref=e113]:
+                - textbox [ref=e114]
+                - generic [ref=e117]: 使用方法：直接调用此Skill，传入参数即可获得结果。
+          - generic [ref=e119]:
+            - generic [ref=e120]: 标签
+            - generic [ref=e121]:
+              - generic [ref=e122]:
+                - text: 验收测试
+                - button [ref=e123] [cursor=pointer]:
+                  - img [ref=e124]
+              - textbox [ref=e127]
+            - generic [ref=e128]: 最多 10 个标签，用于搜索和分类
+          - button "重新上传文件 （可选）" [ref=e130] [cursor=pointer]:
+            - img [ref=e131]
+            - text: 重新上传文件
+            - generic [ref=e134]: （可选）
+        - generic [ref=e135]:
+          - button "取消" [ref=e136] [cursor=pointer]:
+            - img [ref=e137]
+            - text: 取消
+          - button "保存修改" [ref=e139] [cursor=pointer]:
+            - img [ref=e140]
+            - text: 保存修改
+  - contentinfo [ref=e142]:
+    - generic [ref=e145]: © 2026 OpenClaw. All rights reserved.

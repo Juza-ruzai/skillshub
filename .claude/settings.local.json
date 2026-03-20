@@ -43,7 +43,8 @@
       "Bash(./venv/Scripts/python.exe -m pytest tests/unit/test_notification_service.py -v --tb=short)",
       "Bash(./venv/Scripts/python.exe -m ruff check app/services/notification_service.py app/schemas/notification.py app/api/v1/notifications.py)",
       "Bash(./venv/Scripts/python.exe -m pytest tests/unit/test_notification_service.py tests/unit/test_comment_service.py tests/unit/test_comment_schemas.py -v --tb=line)",
-      "Bash(./venv/Scripts/python.exe -m pytest tests/ -v --tb=line)"
+      "Bash(./venv/Scripts/python.exe -m pytest tests/ -v --tb=line)",
+      "Skill(update-config)"
     ]
   }
 }

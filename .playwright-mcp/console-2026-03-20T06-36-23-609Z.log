@@ -1,0 +1,8 @@
+[    5553ms] [WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=a20d267c:4435
+[    5553ms] [WARNING] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=a20d267c:4435
+[  312590ms] [ERROR] Failed to load resource: the server responded with a status of 422 (Unprocessable Content) @ http://localhost:8000/api/v1/skills:0
+[  312601ms] [ERROR] Upload error: AxiosError: Request failed with status code 422
+    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=a20d267c:1319:7)
+    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=a20d267c:1682:7)
+    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=a20d267c:2328:41)
+    at async handleUploadFile (http://localhost:5173/src/pages/SkillUpload.tsx:768:24) @ http://localhost:5173/src/pages/SkillUpload.tsx:780

@@ -1,0 +1,94 @@
+[     214ms] [WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. @ http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[     214ms] [WARNING] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. @ http://localhost:5175/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[     986ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[    1631ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[    2565ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[    3339ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[   73090ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[   76450ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[  150428ms] [WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[  150429ms] [WARNING] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[  152788ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  152789ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  153048ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  155121ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  158718ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[  158980ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/top-rated?page=1&page_size=20:0
+[  162827ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/top-rated?page=1&page_size=20:0
+[  162828ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  162981ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[  164419ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/most-downloaded?page=1&page_size=20:0
+[  166339ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[  178989ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  178993ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  179248ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  182623ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  182623ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  184971ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  189860ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  189860ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  190122ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  192198ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  202069ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/most-downloaded?page=1&page_size=20:0
+[  202330ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/top-rated?page=1&page_size=20:0
+[  203199ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[  203802ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  207160ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  349690ms] [WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[  349690ms] [WARNING] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[  350290ms] [WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[  350290ms] [WARNING] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[  352044ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  352058ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  352289ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/tags:0
+[  354393ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[  947718ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[  951078ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills/trending?page=1&page_size=20:0
+[ 1232998ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[ 1236358ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[ 1241914ms] ReferenceError: AppLayout is not defined
+    at App (http://localhost:5173/src/App.tsx?t=1773906397140:58:69)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19137:13)
+[ 1241915ms] ReferenceError: AppLayout is not defined
+    at App (http://localhost:5173/src/App.tsx?t=1773906397140:58:69)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19137:13)
+[ 1241917ms] [ERROR] The above error occurred in the <App> component:
+
+    at App (http://localhost:5173/src/App.tsx?t=1773906397140:58:69)
+    at ThemeProvider (http://localhost:5173/src/components/layout/ThemeProvider.tsx:28:33)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:14031
+[ 1241918ms] ReferenceError: AppLayout is not defined
+    at App (http://localhost:5173/src/App.tsx?t=1773906397140:58:69)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:15924:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-RPCDYKBN.js?v=ac2b4287:18879:28)
+[ 1258914ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[ 1262272ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[ 1310974ms] [WARNING] ⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[ 1310974ms] [WARNING] ⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath. @ http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=ac2b4287:4435
+[ 1313337ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
+[ 1316692ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8000/api/v1/skills?page=1&page_size=20:0
