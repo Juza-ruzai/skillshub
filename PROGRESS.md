@@ -726,6 +726,37 @@ M6.9 管理员后台 → [验收] → 部署上线
 - **当前优先级：M6.8 个人中心**
 - 启动命令：`npm run dev` → http://localhost:5173
 
+**Playwright MCP 测试指南：**
+
+> 注意：Playwright MCP 测试时容易遇到 401 认证错误，按以下步骤操作：
+
+**问题原因：**
+- `useAuth` 的 `initAuth` 是异步的，PrivateRoute 在 token 验证完成前就判断未登录
+- 每次 `browser_navigate` 后 React 应用重新挂载，需要等待 `initAuth` 完成
+
+**正确测试流程：**
+```javascript
+// Step 1: 获取有效 Token（每次新会话）
+// 在 bash 中执行：
+curl -s -X POST http://localhost:8000/api/v1/auth/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=test%40test.com&password=Test1234" | \
+  python -c "import json,sys; print(json.load(sys.stdin)['access_token'])"
+
+// Step 2: 在 Playwright 中设置 Token 并等待初始化
+await page.evaluate((token) => {
+  localStorage.setItem('token', token);
+}, '粘贴上面获取的token');
+
+// Step 3: 访问页面并等待 initAuth 完成
+await page.goto('http://localhost:5173/目标页面');
+await page.waitForTimeout(2000); // 关键：等待 useAuth 初始化完成
+```
+
+**测试账户：** `test@test.com` / `Test1234`
+
+---
+
 **快速启动指南：**
 ```powershell
 # 终端 1 - 数据库（如未启动）
