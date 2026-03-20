@@ -16,7 +16,7 @@ interface UseAuthReturn extends AuthState {
 
 export const useAuth = (): UseAuthReturn => {
   const [user, setUser] = useState<User | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(() => !!getAuthToken())
 
   // 初始化时检查本地 token
   useEffect(() => {
@@ -30,6 +30,7 @@ export const useAuth = (): UseAuthReturn => {
           clearAuthToken()
         }
       }
+      setIsLoading(false)
     }
     initAuth()
   }, [])
@@ -37,10 +38,16 @@ export const useAuth = (): UseAuthReturn => {
   const login = useCallback(async (credentials: UserLogin): Promise<void> => {
     setIsLoading(true)
     try {
-      const response = await apiClient.post('/auth/login', credentials)
-      const { access_token, user: userData } = response.data
+      const formData = new URLSearchParams()
+      formData.append('username', credentials.email)
+      formData.append('password', credentials.password)
+      const response = await apiClient.post('/auth/login', formData, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      })
+      const { access_token } = response.data
       setAuthToken(access_token)
-      setUser(userData)
+      const meResponse = await apiClient.get('/auth/me')
+      setUser(meResponse.data)
     } finally {
       setIsLoading(false)
     }

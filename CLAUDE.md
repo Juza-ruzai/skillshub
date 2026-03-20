@@ -91,6 +91,8 @@ npm run type-check   # TypeScript 类型检查
 ```bash
 npm run lint:fix && npm run type-check
 ```
+## 前后端API调试
+使用fastapi的openapi.json查看精准接口文档
 
 ## Git 提交规范（精简）
 <type>(<scope>): <subject>

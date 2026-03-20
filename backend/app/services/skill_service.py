@@ -129,7 +129,7 @@ class SkillService:
                 setattr(skill, field, value)
 
         # 更新时间
-        skill.updated_at = datetime.now(UTC)
+        skill.updated_at = datetime.now(UTC).replace(tzinfo=None)
 
         await db_session.commit()
         await db_session.refresh(skill)
@@ -151,7 +151,7 @@ class SkillService:
             是否成功删除
         """
         skill.is_deleted = True
-        skill.updated_at = datetime.now(UTC)
+        skill.updated_at = datetime.now(UTC).replace(tzinfo=None)
 
         await db_session.commit()
 

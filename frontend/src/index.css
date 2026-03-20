@@ -287,3 +287,96 @@
     color: var(--accent-primary);
   }
 }
+
+/* ===== EasyMDE/SimpleMDE 主题适配 ===== */
+.markdown-editor-container .EasyMDEContainer {
+  border: none;
+}
+
+.markdown-editor-container .EasyMDEContainer .CodeMirror {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: none;
+  border-top: 1px solid var(--card-border);
+  font-family: 'Inter', 'Noto Sans SC', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 12px;
+  min-height: 160px;
+}
+
+.markdown-editor-container .EasyMDEContainer .CodeMirror-scroll {
+  min-height: 140px;
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar {
+  background: var(--card-bg);
+  border: none;
+  border-bottom: 1px solid var(--card-border);
+  padding: 6px 10px;
+  opacity: 1;
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar button {
+  color: var(--text-secondary);
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar button:hover,
+.markdown-editor-container .EasyMDEContainer .editor-toolbar button.active {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-primary);
+  border-color: transparent;
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-toolbar i.separator {
+  border-color: var(--card-border);
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-preview {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-top: 1px solid var(--card-border);
+  padding: 12px 16px;
+}
+
+.markdown-editor-container .EasyMDEContainer .editor-preview-side {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border-left: 1px solid var(--card-border);
+}
+
+.markdown-editor-container .CodeMirror-cursor {
+  border-left-color: var(--accent-primary);
+}
+
+/* 深色模式下 CodeMirror 语法高亮 */
+[data-theme='dark'] .markdown-editor-container .CodeMirror .cm-header {
+  color: #60a5fa;
+}
+
+[data-theme='dark'] .markdown-editor-container .CodeMirror .cm-link {
+  color: #34d399;
+}
+
+[data-theme='dark'] .markdown-editor-container .CodeMirror .cm-url {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .markdown-editor-container .CodeMirror .cm-string {
+  color: #34d399;
+}
+
+/* 旋转动画（提交按钮） */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

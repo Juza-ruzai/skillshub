@@ -2,7 +2,7 @@
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,7 +14,6 @@ from app.schemas.skill import (
     FavoriteResponse,
     RatingCreate,
     RatingResponse,
-    SkillCreate,
     SkillDetailResponse,
     SkillFilterParams,
     SkillListResponse,
@@ -190,7 +189,11 @@ async def get_most_downloaded_skills(
 
 @router.post("", response_model=SkillResponse, status_code=status.HTTP_201_CREATED)
 async def create_skill(
-    skill_data: SkillCreate,
+    name: str = Form(...),
+    description: str = Form(...),
+    usage_scenario: str = Form(...),
+    usage_method: str = Form(...),
+    tags: list[str] = Form(default=[]),
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
     db_session: AsyncSession = Depends(get_session),
@@ -221,10 +224,18 @@ async def create_skill(
         filename=file.filename or "package.zip",
     )
 
+    skill_data_dict = {
+        "name": name,
+        "description": description,
+        "usage_scenario": usage_scenario,
+        "usage_method": usage_method,
+        "tags": tags,
+    }
+
     # 创建 Skill
     skill = await skill_service.create_skill(
         db_session,
-        skill_data=skill_data.model_dump(),
+        skill_data=skill_data_dict,
         author_id=current_user.id,
         file_path=file_path,
         file_size=len(content),

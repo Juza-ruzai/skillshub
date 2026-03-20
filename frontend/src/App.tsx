@@ -7,6 +7,7 @@ import { Home } from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import SkillDetail from './pages/SkillDetail'
+import SkillUpload from './pages/SkillUpload'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -17,7 +18,6 @@ const queryClient = new QueryClient({
   },
 })
 
-const SkillUpload = () => <div>Skill Upload</div>
 const SkillEdit = () => <div>Skill Edit</div>
 const UserProfile = () => <div>User Profile</div>
 const NotFound = () => <div>404 Not Found</div>

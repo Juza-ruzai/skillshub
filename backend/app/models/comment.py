@@ -19,5 +19,5 @@ class Comment(CommentBase, table=True):
     skill_id: UUID = Field(foreign_key="skills.id", index=True)
     user_id: UUID = Field(foreign_key="users.id")
     parent_id: UUID | None = Field(default=None, foreign_key="comments.id")
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC).replace(tzinfo=None))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC).replace(tzinfo=None))

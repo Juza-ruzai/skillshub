@@ -13,4 +13,4 @@ class DownloadLog(SQLModel, table=True):
     skill_id: UUID = Field(foreign_key="skills.id", index=True)
     user_id: UUID | None = Field(default=None, foreign_key="users.id")
     ip_address: str | None = Field(default=None, max_length=45)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC).replace(tzinfo=None))

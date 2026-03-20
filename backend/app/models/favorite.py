@@ -11,4 +11,4 @@ class Favorite(SQLModel, table=True):
 
     user_id: UUID = Field(foreign_key="users.id", primary_key=True)
     skill_id: UUID = Field(foreign_key="skills.id", primary_key=True)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC).replace(tzinfo=None))
