@@ -1,13 +1,13 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-20（M6.9 管理员后台开发验收通过）
-> **当前状态：F1-F5 前端视觉重构已完成，后端 219 测试通过，M6.6/M6.7/M6.8/M6.9 完成**
+> 最后更新：2026-03-20（M6 前端全部完成，管理后台复用主站 Header）
+> **当前状态：F1-F5 前端视觉重构已完成，后端 219 测试通过，M6.6/M6.7/M6.8/M6.9 全部完成，准备 M7 部署**
 
 ---
 
 **📍 当前聚焦 (Current Focus):**
-- **M7: 部署上线** - 前端 M6 全部完成，准备生产环境部署
+- **M7: 部署上线** - 前后端全部完成（219 后端测试通过，16 个前端页面验收通过），准备生产环境部署
 
 ---
 
@@ -24,7 +24,7 @@
 | M5.6: 管理员功能扩展 | 6 | 100% | 🟢 已完成 | - |
 | **F: 前端视觉重构** | **20** | **100%** | 🟢 **已完成** | **F1-F5 完成，F6 跳过** |
 | M6: 前端页面功能 | 10 | 100% | 🟢 已完成 | - |
-| M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
+| M7: 部署上线 | 3 | 0% | 🔴 未开始 | - |
 | M8: 后续功能（Post-MVP） | 10 | 0% | 🔴 未开始 | M7 |
 
 **图例**：🔴 未开始 / 🟡 进行中 / 🟢 已完成 / ⚪ 阻塞
@@ -268,6 +268,25 @@
 - [x] 空状态提示正常（无收藏/无评论时显示引导按钮）
 - [x] 亮色/暗色双主题视觉验收通过（Playwright 截图存档）
 - [x] `npm run lint:fix && npm run type-check` 无错误
+
+### M6.9: 管理员后台页面 ✅ (100%)
+> **日期**：2026-03-20
+
+**五大后台页面（全部通过 Playwright 验收）：**
+- `src/pages/admin/AdminDashboard.tsx` - 平台概览统计卡片（玻璃拟态）
+- `src/pages/admin/AdminSkills.tsx` - Skill 管理（置顶/删除/恢复/下载用户弹窗）
+- `src/pages/admin/AdminUsers.tsx` - 用户管理（搜索/分页/设管理员/禁用账号）
+- `src/pages/admin/AdminComments.tsx` - 评论管理（筛选/分页/软删除）
+- `src/pages/admin/AdminStats.tsx` - 数据统计（活跃榜单 7/30/90天 + CSV 导出）
+
+**路由与权限架构：**
+- `src/components/AdminRoute.tsx` - 管理员守卫（`is_admin` 校验，非管理员跳转首页）
+- `src/pages/admin/AdminLayout.tsx` - 顶部复用主站 `<Header />`（主题切换 + 返回主站）+ 左侧玻璃拟态侧边栏 + 移动端底部 Tab
+- `src/App.tsx` - Admin 路由组放在 `<Layout>` 外，独立嵌套结构
+
+**关键 Bug 修复：**
+- `src/types/user.ts` - 字段名从 camelCase 改为 snake_case（`is_admin`, `created_at`），对齐 FastAPI 响应
+- 修复了 AdminRoute / Header / UserProfile / SkillDetail.test.tsx / types.test.ts 共 5 处字段引用
 
 ---
 
@@ -631,11 +650,18 @@
 - [x] 可导出各类报表
 - [x] **视觉验收**：Playwright 截图确认（`admin-stats-verification.png`）
 
+- [x] **M6.9.7** 管理后台复用主站 Header（后续优化）
+  - [x] AdminLayout 引入 `<Header />` 组件，统一顶部导航栏
+  - [x] 管理员可在后台直接切换白天/夜间主题
+  - [x] 点击 Logo 返回主站，用户菜单保持完整功能
+  - [x] 内容区加 `pt-16` 避免被 fixed Header 遮挡
+
 **技术细节：**
 - 修复 `types/user.ts` 字段名与 API 响应对齐（`is_admin`, `is_active`, `avatar_url`, `created_at`）
 - 修复后端 `admin.py` 时区问题：`datetime.now(UTC)` → `datetime.utcnow()`
-- AdminLayout：左侧玻璃拟态侧边栏（桌面端）+ 底部固定 Tab 栏（移动端）
+- AdminLayout：顶部主站 Header + 左侧玻璃拟态侧边栏（桌面端）+ 底部固定 Tab 栏（移动端）
 - Header 管理员入口：`user?.is_admin` 条件显示管理后台链接
+- `src/pages/admin/AdminLayout.tsx` - 引入 `Header` 组件，外层包裹背景 `var(--bg-primary)`
 
 ---
 
@@ -695,7 +721,7 @@
 F1 全局样式 → [✅验收] → F2 布局 → [✅验收] → F3 认证页 → [✅验收] →
 F4 首页 → [✅验收] → F5 详情页 → [✅验收] → F6 组件调整 → [⏭️跳过] →
 M6.6 上传页 → [✅验收] → M6.7 编辑页 → [✅验收] → M6.8 个人中心 → [✅验收] →
-M6.9 管理员后台 → [验收] → 部署上线
+M6.9 管理员后台 → [✅验收] → 部署上线
 ```
 
 ### 验收检查清单（每个阶段）
@@ -724,7 +750,7 @@ M6.9 管理员后台 → [验收] → 部署上线
 | ~~M6.6 Skill 上传页~~ | ~~F 重构完成~~ | ✅ 已完成并验收 |
 | ~~M6.7 Skill 编辑页~~ | ~~M6.6 完成~~ | ✅ 已完成并验收 |
 | ~~M6.8 个人中心~~ | ~~M6.7 完成~~ | ✅ 已完成并验收 |
-| M6.9 管理员后台 | M6.8 完成 | 🟡 下一个待开发 |
+| ~~M6.9 管理员后台~~ | ~~M6.8 完成~~ | ✅ 已完成并验收 |
 
 ---
 
@@ -764,7 +790,8 @@ M6.9 管理员后台 → [验收] → 部署上线
 - **M6.6 Skill 上传页 ✅ 已完成并验收**（三步式上传 + react-simplemde-editor + Playwright 验收通过）
 - **M6.7 Skill 编辑页 ✅ 已完成并验收**（单页表单 + 权限检查 + 玻璃拟态 Toast）
 - **M6.8 个人中心 ✅ 已完成并验收**（UserProfile 嵌套布局 + UserSkills/Favorites/Comments 子页面 + SVG 统计面板）
-- **当前优先级：M6.9 管理员后台**
+- **M6.9 管理员后台 ✅ 已完成并验收**（AdminDashboard/Skills/Users/Comments/Stats 五页面 + AdminLayout 复用主站 Header）
+- **当前优先级：M7 部署上线**
 - 启动命令：`npm run dev` → http://localhost:5173
 
 **Playwright MCP 测试指南：**
