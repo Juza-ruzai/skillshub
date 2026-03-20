@@ -25,12 +25,3 @@ export interface TokenResponse {
   accessToken: string
   tokenType: string
 }
-
-export interface UserStats {
-  totalViews: number
-  totalDownloads: number
-  totalFavorites: number
-  ratingDistribution: Record<number, number>
-  trend7d: { date: string; value: number }[]
-  trend30d: { date: string; value: number }[]
-}

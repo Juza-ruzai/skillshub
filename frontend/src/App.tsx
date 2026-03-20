@@ -9,6 +9,10 @@ import Register from './pages/Register'
 import SkillDetail from './pages/SkillDetail'
 import SkillUpload from './pages/SkillUpload'
 import SkillEdit from './pages/SkillEdit'
+import UserProfile from './pages/UserProfile'
+import UserSkills from './pages/UserSkills'
+import UserFavorites from './pages/UserFavorites'
+import UserComments from './pages/UserComments'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +23,6 @@ const queryClient = new QueryClient({
   },
 })
 
-const UserProfile = () => <div>User Profile</div>
 const NotFound = () => <div>404 Not Found</div>
 
 function App() {
@@ -37,10 +40,12 @@ function App() {
             <Route element={<PrivateRoute />}>
               <Route path="/upload" element={<SkillUpload />} />
               <Route path="/skills/:id/edit" element={<SkillEdit />} />
-              <Route path="/profile" element={<UserProfile />} />
-              <Route path="/profile/skills" element={<UserProfile />} />
-              <Route path="/profile/favorites" element={<UserProfile />} />
-              <Route path="/profile/comments" element={<UserProfile />} />
+              <Route path="/profile" element={<UserProfile />}>
+                <Route index element={<Navigate to="skills" replace />} />
+                <Route path="skills" element={<UserSkills />} />
+                <Route path="favorites" element={<UserFavorites />} />
+                <Route path="comments" element={<UserComments />} />
+              </Route>
             </Route>
           </Route>
 

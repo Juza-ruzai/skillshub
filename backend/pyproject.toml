@@ -63,6 +63,7 @@ module = [
     "app.services.favorite_service",
     "app.services.comment_service",
     "app.api.v1.admin",
+    "app.api.v1.users",
 ]
 # 这些错误是 SQLModel 类型存根问题，代码逻辑正确（测试通过）
 disable_error_code = ["attr-defined", "arg-type", "call-overload", "no-any-return"]
