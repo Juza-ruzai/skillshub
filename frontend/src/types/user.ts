@@ -4,10 +4,11 @@ export interface User {
   id: string
   username: string
   email: string
-  isAdmin: boolean
-  avatarUrl?: string
-  createdAt: string
-  updatedAt: string
+  is_admin: boolean
+  is_active?: boolean
+  avatar_url?: string
+  created_at: string
+  updated_at?: string
 }
 
 export interface UserCreate {

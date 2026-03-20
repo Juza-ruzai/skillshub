@@ -36,7 +36,7 @@ export const AdminRoute = (): JSX.Element => {
     )
   }
 
-  if (!user || !user.isAdmin) {
+  if (!user || !user.is_admin) {
     return <Navigate to="/" replace />
   }
 

@@ -229,8 +229,8 @@ export default function UserProfile(): JSX.Element {
     { to: '/profile/comments', label: '我的评论', icon: <MessageCircle size={16} /> },
   ]
 
-  const joinDate = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })
+  const joinDate = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })
     : '—'
 
   return (

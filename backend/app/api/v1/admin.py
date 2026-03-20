@@ -1,7 +1,7 @@
 """管理后台 API 路由."""
 import csv
 import io
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import Any
 from uuid import UUID
 
@@ -296,7 +296,7 @@ async def merge_tags(
         target_tag_obj = Tag(
             name=target_tag_lower,
             usage_count=merged_count,
-            created_at=datetime.now(UTC),
+            created_at=datetime.utcnow(),
         )
         db.add(target_tag_obj)
     else:
@@ -349,7 +349,7 @@ async def update_any_skill(
     skill.usage_scenario = request.usage_scenario
     skill.usage_method = request.usage_method
     skill.tags = request.tags
-    skill.updated_at = datetime.now(UTC)
+    skill.updated_at = datetime.utcnow()
 
     await db.commit()
     await db.refresh(skill)
@@ -482,7 +482,7 @@ async def restore_skill(
         )
 
     skill.is_deleted = False
-    skill.updated_at = datetime.now(UTC)
+    skill.updated_at = datetime.utcnow()
     await db.commit()
     await db.refresh(skill)
 
@@ -800,7 +800,7 @@ async def get_overview_stats(
     total_users = users_result.scalar()
 
     # 今日开始时间
-    today = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+    today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
 
     # 今日下载数
     today_downloads_result = await db.execute(
@@ -847,7 +847,7 @@ async def get_active_users(
     Returns:
         活跃用户榜单
     """
-    since = datetime.now(UTC) - timedelta(days=days)
+    since = datetime.utcnow() - timedelta(days=days)
 
     # 统计每个用户的下载、评论、上传数量
     result = await db.execute(

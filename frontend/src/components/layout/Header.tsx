@@ -223,7 +223,7 @@ export const Header = ({ unreadCount = 0 }: HeaderProps): JSX.Element => {
                         个人中心
                       </button>
 
-                      {user?.isAdmin && (
+                      {user?.is_admin && (
                         <button
                           onClick={() => {
                             navigate('/admin')

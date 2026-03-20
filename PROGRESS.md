@@ -1,13 +1,13 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-20（M6.8 个人中心开发验收通过）
-> **当前状态：F1-F5 前端视觉重构已完成，后端 219 测试通过，M6.6/M6.7/M6.8 完成**
+> 最后更新：2026-03-20（M6.9 管理员后台开发验收通过）
+> **当前状态：F1-F5 前端视觉重构已完成，后端 219 测试通过，M6.6/M6.7/M6.8/M6.9 完成**
 
 ---
 
 **📍 当前聚焦 (Current Focus):**
-- **M6.9: 管理员后台** - 管理员专属后台页面（Dashboard / Skill 管理 / 用户管理 / 评论管理 / 数据统计）
+- **M7: 部署上线** - 前端 M6 全部完成，准备生产环境部署
 
 ---
 
@@ -23,7 +23,7 @@
 | M5.5: 后端接口补充 | 4 | 100% | 🟢 已完成 | - |
 | M5.6: 管理员功能扩展 | 6 | 100% | 🟢 已完成 | - |
 | **F: 前端视觉重构** | **20** | **100%** | 🟢 **已完成** | **F1-F5 完成，F6 跳过** |
-| M6: 前端页面功能 | 10 | 90% | 🟡 进行中 | **M6.9 待开发** |
+| M6: 前端页面功能 | 10 | 100% | 🟢 已完成 | - |
 | M7: 部署上线 | 3 | 0% | 🔴 未开始 | M6 |
 | M8: 后续功能（Post-MVP） | 10 | 0% | 🔴 未开始 | M7 |
 
@@ -591,46 +591,51 @@
 
 ---
 
-### M6.9: 管理员后台页面 🔴
+### M6.9: 管理员后台页面 ✅ (100%)
+> **日期**：2026-03-20（开发）/ 2026-03-20（Playwright 验收通过）
 
 > **目标**：管理员专属后台（Dashboard + 管理功能）
 
-- [ ] **M6.9.1** Admin Dashboard (`src/pages/admin/AdminDashboard.tsx`)
-  - [ ] 平台数据统计卡片（玻璃拟态）
-  - [ ] 总 Skills/用户数/今日下载/评论/上传
+- [x] **M6.9.1** Admin Dashboard (`src/pages/admin/AdminDashboard.tsx`)
+  - [x] 平台数据统计卡片（玻璃拟态）
+  - [x] 总 Skills/用户数/今日下载/评论/上传
 
-- [ ] **M6.9.2** Skill 管理 (`src/pages/admin/AdminSkills.tsx`)
-  - [ ] Skill 列表（置顶/编辑/删除/恢复）
-  - [ ] 软删除 Skill 标签页
-  - [ ] 查看下载用户弹窗（玻璃拟态）
+- [x] **M6.9.2** Skill 管理 (`src/pages/admin/AdminSkills.tsx`)
+  - [x] Skill 列表（置顶/编辑/删除/恢复）
+  - [x] 软删除 Skill 标签页
+  - [x] 查看下载用户弹窗（玻璃拟态）
 
-- [ ] **M6.9.3** 用户管理 (`src/pages/admin/AdminUsers.tsx`)
-  - [ ] 用户列表（搜索/分页）
-  - [ ] 设置管理员开关
-  - [ ] 启用/禁用账号按钮
+- [x] **M6.9.3** 用户管理 (`src/pages/admin/AdminUsers.tsx`)
+  - [x] 用户列表（搜索/分页）
+  - [x] 设置管理员开关
+  - [x] 启用/禁用账号按钮
 
-- [ ] **M6.9.4** 评论管理 (`src/pages/admin/AdminComments.tsx`)
-  - [ ] 评论列表（筛选/分页）
-  - [ ] 删除评论按钮
+- [x] **M6.9.4** 评论管理 (`src/pages/admin/AdminComments.tsx`)
+  - [x] 评论列表（筛选/分页）
+  - [x] 删除评论按钮
 
-- [ ] **M6.9.5** 数据统计 (`src/pages/admin/AdminStats.tsx`)
-  - [ ] 活跃用户榜单
-  - [ ] 导出报表按钮
+- [x] **M6.9.5** 数据统计 (`src/pages/admin/AdminStats.tsx`)
+  - [x] 活跃用户榜单（7/30/90 天切换）
+  - [x] 导出用户/标签 CSV 按钮
 
-- [ ] **M6.9.6** 管理员路由保护
-  - [ ] `/admin/*` 路由配置
-  - [ ] AdminRoute 守卫（仅管理员可访问）
+- [x] **M6.9.6** 管理员路由保护
+  - [x] `/admin/*` 路由配置（AdminLayout + Outlet）
+  - [x] AdminRoute 守卫（`is_admin` 校验，非管理员跳转首页）
 
 **验收标准：**
-- [ ] 管理员可查看所有用户列表
-- [ ] 可设置/取消管理员权限
-- [ ] 可禁用/启用用户账号
-- [ ] 可强制删除任意 Skill
-- [ ] 可查看 Skill 下载用户列表
-- [ ] 可导出各类报表
-- [ ] **视觉验收**：截图确认符合 design-system
+- [x] 管理员可查看所有用户列表
+- [x] 可设置/取消管理员权限
+- [x] 可禁用/启用用户账号
+- [x] 可强制删除任意 Skill
+- [x] 可查看 Skill 下载用户列表
+- [x] 可导出各类报表
+- [x] **视觉验收**：Playwright 截图确认（`admin-stats-verification.png`）
 
-**阻塞项：** 依赖 M6.8 完成
+**技术细节：**
+- 修复 `types/user.ts` 字段名与 API 响应对齐（`is_admin`, `is_active`, `avatar_url`, `created_at`）
+- 修复后端 `admin.py` 时区问题：`datetime.now(UTC)` → `datetime.utcnow()`
+- AdminLayout：左侧玻璃拟态侧边栏（桌面端）+ 底部固定 Tab 栏（移动端）
+- Header 管理员入口：`user?.is_admin` 条件显示管理后台链接
 
 ---
 

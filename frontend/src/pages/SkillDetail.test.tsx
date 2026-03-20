@@ -98,18 +98,16 @@ const mockCurrentUser: User = {
   id: 'user-123',
   username: 'john_doe',
   email: 'john@example.com',
-  isAdmin: false,
-  createdAt: '2026-01-01T00:00:00Z',
-  updatedAt: '2026-01-01T00:00:00Z',
+  is_admin: false,
+  created_at: '2026-01-01T00:00:00Z',
 }
 
 const mockOtherUser: User = {
   id: 'user-456',
   username: 'jane_doe',
   email: 'jane@example.com',
-  isAdmin: false,
-  createdAt: '2026-01-01T00:00:00Z',
-  updatedAt: '2026-01-01T00:00:00Z',
+  is_admin: false,
+  created_at: '2026-01-01T00:00:00Z',
 }
 
 // 测试工具函数

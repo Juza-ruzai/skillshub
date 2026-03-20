@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PrivateRoute } from './components/PrivateRoute'
+import { AdminRoute } from './components/AdminRoute'
 import { Layout } from './components/layout/Layout'
 
 import { Home } from './pages/Home'
@@ -13,6 +14,12 @@ import UserProfile from './pages/UserProfile'
 import UserSkills from './pages/UserSkills'
 import UserFavorites from './pages/UserFavorites'
 import UserComments from './pages/UserComments'
+import AdminLayout from './pages/admin/AdminLayout'
+import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminSkills from './pages/admin/AdminSkills'
+import AdminUsers from './pages/admin/AdminUsers'
+import AdminComments from './pages/admin/AdminComments'
+import AdminStats from './pages/admin/AdminStats'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +53,18 @@ function App() {
                 <Route path="favorites" element={<UserFavorites />} />
                 <Route path="comments" element={<UserComments />} />
               </Route>
+            </Route>
+          </Route>
+
+          {/* Admin routes (no main layout, own sidebar) */}
+          <Route element={<AdminRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/skills" element={<AdminSkills />} />
+              <Route path="/admin/users" element={<AdminUsers />} />
+              <Route path="/admin/comments" element={<AdminComments />} />
+              <Route path="/admin/stats" element={<AdminStats />} />
             </Route>
           </Route>
 

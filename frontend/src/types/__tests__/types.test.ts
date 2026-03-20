@@ -9,8 +9,8 @@ describe('类型定义', () => {
       expectTypeOf<User>().toHaveProperty('id')
       expectTypeOf<User>().toHaveProperty('username')
       expectTypeOf<User>().toHaveProperty('email')
-      expectTypeOf<User>().toHaveProperty('isAdmin')
-      expectTypeOf<User>().toHaveProperty('createdAt')
+      expectTypeOf<User>().toHaveProperty('is_admin')
+      expectTypeOf<User>().toHaveProperty('created_at')
     })
 
     it('UserCreate 应该包含注册必需字段', () => {
