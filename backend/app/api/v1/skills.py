@@ -122,23 +122,21 @@ async def list_skills(
     }
 
 
-@router.get("/trending", response_model=list[SkillListResponse])
+@router.get("/trending", response_model=PaginatedResponse[SkillListResponse])
 async def get_trending_skills(
-    limit: int = Query(10, ge=1, le=50),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     db_session: AsyncSession = Depends(get_session),
-) -> list[SkillListResponse]:
+) -> dict[str, Any]:
     """获取本周热门 Skills."""
-    skills = await skill_service.get_trending_skills(db_session, limit=limit)
+    skills = await skill_service.get_trending_skills(db_session, limit=page_size)
 
-    # 批量获取作者用户名
     author_ids = {skill.author_id for skill in skills}
     author_map = await _get_author_usernames(db_session, author_ids)
-
-    # 批量获取收藏数
     skill_ids = {skill.id for skill in skills}
     favorite_map = await _get_favorite_counts(db_session, skill_ids)
 
-    return [
+    items = [
         SkillListResponse(
             id=skill.id,
             name=skill.name,
@@ -154,25 +152,24 @@ async def get_trending_skills(
         )
         for skill in skills
     ]
+    return {"items": items, "total": len(items), "page": page, "page_size": page_size}
 
 
-@router.get("/top-rated", response_model=list[SkillListResponse])
+@router.get("/top-rated", response_model=PaginatedResponse[SkillListResponse])
 async def get_top_rated_skills(
-    limit: int = Query(10, ge=1, le=50),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     db_session: AsyncSession = Depends(get_session),
-) -> list[SkillListResponse]:
+) -> dict[str, Any]:
     """获取评分最高 Skills."""
-    skills = await skill_service.get_top_rated_skills(db_session, limit=limit)
+    skills = await skill_service.get_top_rated_skills(db_session, limit=page_size)
 
-    # 批量获取作者用户名
     author_ids = {skill.author_id for skill in skills}
     author_map = await _get_author_usernames(db_session, author_ids)
-
-    # 批量获取收藏数
     skill_ids = {skill.id for skill in skills}
     favorite_map = await _get_favorite_counts(db_session, skill_ids)
 
-    return [
+    items = [
         SkillListResponse(
             id=skill.id,
             name=skill.name,
@@ -188,25 +185,24 @@ async def get_top_rated_skills(
         )
         for skill in skills
     ]
+    return {"items": items, "total": len(items), "page": page, "page_size": page_size}
 
 
-@router.get("/most-downloaded", response_model=list[SkillListResponse])
+@router.get("/most-downloaded", response_model=PaginatedResponse[SkillListResponse])
 async def get_most_downloaded_skills(
-    limit: int = Query(10, ge=1, le=50),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
     db_session: AsyncSession = Depends(get_session),
-) -> list[SkillListResponse]:
+) -> dict[str, Any]:
     """获取下载最多 Skills."""
-    skills = await skill_service.get_most_downloaded_skills(db_session, limit=limit)
+    skills = await skill_service.get_most_downloaded_skills(db_session, limit=page_size)
 
-    # 批量获取作者用户名
     author_ids = {skill.author_id for skill in skills}
     author_map = await _get_author_usernames(db_session, author_ids)
-
-    # 批量获取收藏数
     skill_ids = {skill.id for skill in skills}
     favorite_map = await _get_favorite_counts(db_session, skill_ids)
 
-    return [
+    items = [
         SkillListResponse(
             id=skill.id,
             name=skill.name,
@@ -222,6 +218,7 @@ async def get_most_downloaded_skills(
         )
         for skill in skills
     ]
+    return {"items": items, "total": len(items), "page": page, "page_size": page_size}
 
 
 @router.post("", response_model=SkillResponse, status_code=status.HTTP_201_CREATED)

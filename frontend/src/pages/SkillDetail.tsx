@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   Download,
@@ -41,6 +41,7 @@ const getSkillIcon = (id: string): string => {
 export default function SkillDetail(): JSX.Element {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -83,7 +84,14 @@ export default function SkillDetail(): JSX.Element {
   const downloadMutation = useMutation({
     mutationFn: () => downloadSkill(id!),
     onSuccess: (data) => {
-      window.open(data.url, '_blank')
+      // 使用隐藏的 iframe 下载，避免打开空白页
+      const iframe = document.createElement('iframe')
+      iframe.style.display = 'none'
+      iframe.src = data.url
+      document.body.appendChild(iframe)
+      setTimeout(() => {
+        document.body.removeChild(iframe)
+      }, 5000)
       queryClient.invalidateQueries({ queryKey: ['skill', id] })
     },
   })
@@ -109,13 +117,19 @@ export default function SkillDetail(): JSX.Element {
 
   // 处理评分
   const handleRate = (score: number) => {
-    if (!user) return
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname + location.search } })
+      return
+    }
     rateMutation.mutate(score)
   }
 
   // 处理收藏
   const handleToggleFavorite = () => {
-    if (!user) return
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname + location.search } })
+      return
+    }
     favoriteMutation.mutate()
   }
 
