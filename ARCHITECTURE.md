@@ -542,6 +542,7 @@ ORDER BY hot_score DESC
 | GET | `/me/stats` | 作者统计面板 | 是 |
 | GET | `/me/notifications` | 站内通知列表 | 是 |
 | PATCH | `/notifications/{id}/read` | 标记通知已读 | 是 |
+| POST | `/me/notifications/read-all` | 一键标记所有通知已读 | 是 |
 
 ### 7.5 文件接口 (`/api/v1/files`)
 
@@ -593,6 +594,13 @@ ORDER BY hot_score DESC
 | GET | `/export/skills` | 导出 Skills CSV | 是（管理员） |
 | GET | `/export/users` | 导出用户 CSV | 是（管理员） |
 | GET | `/export/tags` | 导出标签统计 CSV | 是（管理员） |
+
+### 7.7 公开接口（无需鉴权）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/tags` | 公开标签列表（供首页标签云使用） |
+| GET | `/api/v1/stats/public` | 平台公开统计（Skills 总数、下载总数、用户总数，供首页 Hero 区域使用） |
 
 ---
 

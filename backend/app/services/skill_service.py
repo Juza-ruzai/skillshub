@@ -9,39 +9,27 @@ from sqlalchemy import desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select as sqlmodel_select
 
+from app.models.favorite import Favorite
 from app.models.skill import Skill
 
 
-def calculate_hot_score(skill: Skill) -> int:
+def calculate_hot_score(skill: Skill, favorite_count: int = 0) -> int:
     """计算 Skill 热度分数.
 
-    公式: (评分 × 20) + (下载数 × 2) + (收藏数 × 5) - (时间衰减分)
-    时间衰减分 = (当前时间 - 上传时间天数) × 1
-    最低热度分 = 0
+    公式: (评分 × 20) + (下载数 × 2) + (收藏数 × 5)
 
     Args:
         skill: Skill 模型实例
+        favorite_count: 收藏数（需调用方传入）
 
     Returns:
         热度分数
     """
-    # 评分分数（满分 100）
     rating_score = float(skill.rating_avg or 0) * 20
-
-    # 下载分数
     download_score = (skill.download_count or 0) * 2
+    favorite_score = favorite_count * 5
 
-    # 收藏分数（需要从关联表查询，这里简化处理）
-    favorite_score = 0  # 将在调用处处理
-
-    # 时间衰减
-    days_old = (datetime.now(UTC) - skill.created_at).days
-    time_decay = days_old * 1
-
-    # 计算总分
-    total_score = int(rating_score + download_score + favorite_score - time_decay)
-
-    return max(0, total_score)
+    return int(rating_score + download_score + favorite_score)
 
 
 class SkillService:
@@ -214,9 +202,21 @@ class SkillService:
             query = query.order_by(desc(Skill.rating_avg))
         elif sort_by == "download_count":
             query = query.order_by(desc(Skill.download_count))
-        else:  # hot_score 或其他
-            # 按创建时间排序（简化处理，实际应该按热度计算）
-            query = query.order_by(desc(Skill.created_at))
+        else:  # hot_score
+            # 收藏数子查询
+            fav_subq = (
+                select(Favorite.skill_id, func.count(Favorite.user_id).label("fav_cnt"))
+                .group_by(Favorite.skill_id)
+                .subquery()
+            )
+            # 热度公式：(评分×20) + (下载数×2) + (收藏数×5)
+            hot_score_expr = (
+                Skill.rating_avg * 20
+                + Skill.download_count * 2
+                + func.coalesce(fav_subq.c.fav_cnt, 0) * 5
+            )
+            query = query.outerjoin(fav_subq, Skill.id == fav_subq.c.skill_id)
+            query = query.order_by(desc(hot_score_expr), desc(Skill.created_at))
 
         # 分页
         query = query.offset((page - 1) * page_size).limit(page_size)

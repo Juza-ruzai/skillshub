@@ -218,7 +218,7 @@ class TestAdminExportSkills:
 
         # 导出 CSV
         response = await client.get(
-            "/api/v1/admin/export",
+            "/api/v1/admin/export/skills",
             headers={"Authorization": f"Bearer {token}"},
         )
 
@@ -248,7 +248,7 @@ class TestAdminExportSkills:
 
         # 导出 CSV
         response = await client.get(
-            "/api/v1/admin/export",
+            "/api/v1/admin/export/skills",
             headers={"Authorization": f"Bearer {token}"},
         )
 

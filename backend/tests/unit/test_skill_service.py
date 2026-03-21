@@ -318,18 +318,18 @@ class TestSkillService:
 
         score = calculate_hot_score(skill)
 
-        # 预期: (4.5 * 20) + (10 * 2) - (0 * 1) = 90 + 20 = 110
+        # 预期: (4.5 * 20) + (10 * 2) + (0 * 5) = 90 + 20 = 110
         assert score == 110
 
     @pytest.mark.asyncio
-    async def test_calculate_hot_score_with_time_decay(
+    async def test_calculate_hot_score_no_time_decay(
         self, db_session: AsyncSession
     ) -> None:
-        """测试热度分数的时间衰减."""
+        """测试热度分数不受时间影响（PRD 明确无时间衰减）."""
         from app.models.skill import Skill
         from app.services.skill_service import calculate_hot_score
 
-        # 创建一个 10 天前的 Skill
+        # 创建一个 10 天前的 Skill，热度分应与新 Skill 相同
         skill = Skill(
             id=uuid4(),
             name="Old Skill",
@@ -346,8 +346,8 @@ class TestSkillService:
 
         score = calculate_hot_score(skill)
 
-        # 预期: (5.0 * 20) + (0 * 2) - (10 * 1) = 100 - 10 = 90
-        assert score == 90
+        # 预期: (5.0 * 20) + (0 * 2) + (0 * 5) = 100（无时间衰减）
+        assert score == 100
 
     @pytest.mark.asyncio
     async def test_calculate_hot_score_minimum_zero(

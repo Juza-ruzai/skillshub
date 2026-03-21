@@ -33,6 +33,10 @@ export default function AdminStats(): JSX.Element {
     },
   })
 
+  const handleExportSkills = () => {
+    window.open(`${apiClient.defaults.baseURL}/admin/export/skills`, '_blank')
+  }
+
   const handleExportUsers = () => {
     window.open(`${apiClient.defaults.baseURL}/admin/export/users`, '_blank')
   }
@@ -62,6 +66,14 @@ export default function AdminStats(): JSX.Element {
         </div>
         {/* Export buttons */}
         <div className="flex gap-2">
+          <button
+            onClick={handleExportSkills}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all"
+            style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
+          >
+            <Download size={14} />
+            导出 Skills
+          </button>
           <button
             onClick={handleExportUsers}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all"

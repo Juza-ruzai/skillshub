@@ -122,7 +122,7 @@ async def delete_any_comment(
     await db.commit()
 
 
-@router.get("/export")
+@router.get("/export/skills")
 async def export_skills_csv(
     db: DbDep,
     current_admin: CurrentAdmin,
