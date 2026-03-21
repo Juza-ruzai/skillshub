@@ -83,9 +83,12 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 
 | # | 优先级 | 位置 | 状态 | 说明 |
 |---|--------|------|------|------|
-| B1 | 🟡 中 | 详情页作者信息 | ✅ 已修复 | 后端已正确返回 `author_username`；前端日期解析正常 |
-| B2 | 🟡 中 | 详情页下载文件大小 | ✅ 已修复 | `formatFileSize` 增加 `!bytes \|\| bytes <= 0` 防御 |
-| B3 | 🟢 低 | 数据库迁移 | ✅ 已修复 | 补写 `a1b2c3d4e5f6` Alembic 迁移（`is_active` + `download_logs`） |
+| B1 | 🟡 中 | Trending API 响应格式 | ✅ 已修复 | `/trending` `/top-rated` `/most-downloaded` 返回裸数组，前端期望分页格式 |
+| B2 | 🟡 中 | 详情页作者信息 | ✅ 已修复 | 后端已正确返回 `author_username`；前端日期解析正常 |
+| B3 | 🟡 中 | 详情页下载文件大小 | ✅ 已修复 | `formatFileSize` 增加 `!bytes \|\| bytes <= 0` 防御 |
+| B4 | 🟢 低 | 数据库迁移 | ✅ 已修复 | 补写 `a1b2c3d4e5f6` Alembic 迁移（`is_active` + `download_logs`） |
+| B5 | 🔴 高 | 游客收藏/评分无登录提示 | 🟡 待修复 | 按钮 disabled 但无跳转登录页逻辑，用户无反馈 |
+| B6 | 🔴 高 | 下载功能无效 | 🟡 待修复 | iframe 方案无效，文件无法下载 |
 
 > 新 Bug 在联调过程中持续补充此表。
 
