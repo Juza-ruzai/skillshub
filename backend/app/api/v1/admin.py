@@ -415,13 +415,14 @@ async def list_deleted_skills(
         软删除 Skill 列表
     """
     result = await db.execute(
-        select(Skill)
+        select(Skill, User.username)
+        .join(User, Skill.author_id == User.id)
         .where(Skill.is_deleted == True)  # noqa: E712
         .order_by(Skill.updated_at.desc())
         .offset(skip)
         .limit(limit)
     )
-    skills = result.scalars().all()
+    rows = result.all()
 
     # 获取总数
     count_result = await db.execute(
@@ -435,12 +436,18 @@ async def list_deleted_skills(
                 "id": str(skill.id),
                 "name": skill.name,
                 "description": skill.description,
+                "tags": skill.tags or [],
                 "author_id": str(skill.author_id),
+                "author_username": username,
+                "download_count": skill.download_count,
+                "rating_avg": str(skill.rating_avg),
+                "rating_count": skill.rating_count,
+                "is_pinned": skill.is_pinned,
                 "is_deleted": skill.is_deleted,
                 "created_at": skill.created_at.isoformat() if skill.created_at else None,
                 "updated_at": skill.updated_at.isoformat() if skill.updated_at else None,
             }
-            for skill in skills
+            for skill, username in rows
         ],
         "total": total,
         "skip": skip,

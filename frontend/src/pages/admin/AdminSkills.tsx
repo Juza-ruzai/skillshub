@@ -222,7 +222,7 @@ export default function AdminSkills(): JSX.Element {
                             className="text-xs truncate max-w-[180px]"
                             style={{ color: 'var(--text-muted)' }}
                           >
-                            {skill.tags.slice(0, 2).join(', ')}
+                            {(skill.tags ?? []).slice(0, 2).join(', ')}
                           </div>
                         </div>
                       </div>
@@ -234,7 +234,7 @@ export default function AdminSkills(): JSX.Element {
                       {skill.download_count}
                     </td>
                     <td className="px-4 py-3" style={{ color: 'var(--text-muted)' }}>
-                      {parseFloat(skill.rating_avg).toFixed(1)} ⭐
+                      {parseFloat(skill.rating_avg ?? '0').toFixed(1)} ⭐
                     </td>
                     <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-muted)' }}>
                       {new Date(skill.created_at).toLocaleDateString('zh-CN')}

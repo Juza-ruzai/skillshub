@@ -33,17 +33,19 @@ export default function AdminStats(): JSX.Element {
     },
   })
 
-  const handleExportSkills = () => {
-    window.open(`${apiClient.defaults.baseURL}/admin/export/skills`, '_blank')
+  const downloadCSV = async (path: string, filename: string) => {
+    const res = await apiClient.get(path, { responseType: 'blob' })
+    const url = URL.createObjectURL(res.data as Blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
-  const handleExportUsers = () => {
-    window.open(`${apiClient.defaults.baseURL}/admin/export/users`, '_blank')
-  }
-
-  const handleExportTags = () => {
-    window.open(`${apiClient.defaults.baseURL}/admin/export/tags`, '_blank')
-  }
+  const handleExportSkills = () => downloadCSV('/admin/export/skills', 'skills.csv')
+  const handleExportUsers = () => downloadCSV('/admin/export/users', 'users.csv')
+  const handleExportTags = () => downloadCSV('/admin/export/tags', 'tags.csv')
 
   return (
     <div className="flex flex-col gap-6">
