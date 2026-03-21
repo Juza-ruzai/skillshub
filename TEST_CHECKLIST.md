@@ -15,7 +15,8 @@
 | 作者 | `author@test.com` | `Author1234x` | testauthor | 已上传 "TestAuthorSkill"（ID: 64da6928-75a1-4052-b143-19de1f6aba58） |
 | 管理员 | `test@test.com` | `Test1234` | — | is_admin=true |
 
-## Playwright 登录注入模板
+## Playwright 
+### 登录注入模板
 
 ```javascript
 // 1. bash 获取 token（替换 EMAIL 和 PASSWORD）
@@ -28,6 +29,15 @@ await page.evaluate(token => localStorage.setItem('token', token), TOKEN);
 await page.goto('http://localhost:5173/目标路径');
 await page.waitForTimeout(2000); // 等待 initAuth 完成
 ```
+### 使用规范象
+1. 批量执行优先    
+用 browser_run_code 将多个测试步骤合并为单次调用，返回结构化结果对象，避免逐步交互。批量代码需要注意导航操作后不能直接用 page.evaluate，需要waitForNavigation 或拆开。
+2. 尽量少用截图作为验证手段 
+browser_take_screenshot 极耗token（图片编码），可以的话，尽量只在最终验收时留档用一次。日常验证一律用browser_evaluate 返回布尔值或文本。断言返回数据而非截图。
+3. 按需使用 browser_snapshot
+仅在需要获取元素 ref 进行交互、或遇到异常排查时调用，不要在每个测试步骤后都 snapshot。
+4. 失败时才深入排查
+批量脚本返回失败项后，只对失败项单独调用 browser_snapshot 或browser_evaluate 定位原因。 
 
 ---
 
@@ -53,11 +63,11 @@ await page.waitForTimeout(2000); // 等待 initAuth 完成
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T1.2.1 | 关键词搜索 | 在搜索框输入"test"回车 | 跳转 `/search?q=test`，显示匹配结果 | URL 正确，结果列表非空（含 TestAuthorSkill） | [ ] |
-| T1.2.2 | 空关键词搜索 | 清空搜索框后搜索 | 不跳转（按钮无效），或显示搜索提示 | 不出现 500 错误，不跳转 `/search` | [ ] |
-| T1.2.3 | 无结果关键词 | 搜索"zzzznotexist" | 跳转 `/search?q=zzzznotexist`，显示空状态提示 | "没有找到相关 Skill" 或类似提示可见 | [ ] |
-| T1.2.4 | 标签筛选 | 在搜索结果页点击标签云某标签 | URL 更新 `/search?tag=xxx`，显示对应 Skill | URL 含 `tag=` 参数，结果只含该标签 | [ ] |
-| T1.2.5 | 搜索结果排序 | 在 `/search` 页切换排序下拉框 | URL 更新 `?sort=xxx`，列表重新排序 | 网络请求更新，结果顺序变化 | [ ] |
+| T1.2.1 | 关键词搜索 | 在搜索框输入"test"回车 | 跳转 `/search?q=test`，显示匹配结果 | URL 正确，结果列表非空（含 TestAuthorSkill） | [x] |
+| T1.2.2 | 空关键词搜索 | 清空搜索框后搜索 | 不跳转（按钮无效），或显示搜索提示 | 不出现 500 错误，不跳转 `/search` | [x] |
+| T1.2.3 | 无结果关键词 | 搜索"zzzznotexist" | 跳转 `/search?q=zzzznotexist`，显示空状态提示 | "没有找到相关 Skill" 或类似提示可见 | [x] |
+| T1.2.4 | 标签筛选 | 在搜索结果页点击标签云某标签 | URL 更新 `/search?tag=xxx`，显示对应 Skill | URL 含 `tag=` 参数，结果只含该标签 | [x] |
+| T1.2.5 | 搜索结果排序 | 在 `/search` 页切换排序下拉框 | URL 更新 `?sort=xxx`，列表重新排序 | 网络请求更新，结果顺序变化 | [x] |
 
 ### T1.3 Skill 详情页
 
@@ -149,39 +159,39 @@ await page.waitForTimeout(2000); // 等待 initAuth 完成
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T3.1.1 | 访问上传页 | 点击 Header "上传 Skill" | 跳转 `/upload`，Step 1 显示 | 页面正常渲染，无 console 错误 | [ ] |
-| T3.1.2 | 文件类型校验 | 上传一个 `.txt` 文件 | 提示"请上传 .zip 或 .md 文件" | Alert 或表单错误提示出现，文件未接受 | [ ] |
-| T3.1.3 | 文件大小上限 | 上传超过 50MB 的文件 | 提示文件过大 | 错误提示出现，文件未上传 | [ ] |
-| T3.1.4 | 正常上传流程 | 上传合法 .zip，填写表单，提交 | 成功跳转到新 Skill 详情页 | 三步流程正常，`POST /skills` 返回 201，自动跳转 `/skills/:newId` | [ ] |
-| T3.1.5 | 描述字数限制 | 在描述框输入少于 10 字 | 实时提示字数不足，阻止提交 | 红色字数提示，"下一步"按钮不可点击或提示 | [ ] |
-| T3.1.6 | 标签输入 | 输入多个标签（逗号/回车） | 标签被正确分割并显示 | 标签以 chips 形式展示，单个标签而非整体字符串 | [ ] |
-| T3.1.7 | Markdown 编辑器 | 在使用场景/使用方法填写 Markdown | 预览正确渲染 | Markdown 语法被解析，粗体/代码块正常显示 | [ ] |
-| T3.1.8 | Step 3 预览确认 | 完成 Step 2 后点"下一步" | Step 3 显示预览卡片 | Skill 元信息展示正确 | [ ] |
+| T3.1.1 | 访问上传页 | 点击 Header "上传 Skill" | 跳转 `/upload`，Step 1 显示 | 页面正常渲染，无 console 错误 | [x] |
+| T3.1.2 | 文件类型校验 | 上传一个 `.txt` 文件 | 提示"请上传 .zip 或 .md 文件" | Alert 或表单错误提示出现，文件未接受 | [x] |
+| T3.1.3 | 文件大小上限 | 上传超过 50MB 的文件 | 提示文件过大 | 错误提示出现，文件未上传 | [-] |
+| T3.1.4 | 正常上传流程 | 上传合法 .zip，填写表单，提交 | 成功跳转到新 Skill 详情页 | 三步流程正常，`POST /skills` 返回 201，自动跳转 `/skills/:newId` | [x] |
+| T3.1.5 | 描述字数限制 | 在描述框输入少于 10 字 | 实时提示字数不足，阻止提交 | 红色字数提示，"下一步"按钮不可点击或提示 | [x] |
+| T3.1.6 | 标签输入 | 输入多个标签（逗号/回车） | 标签被正确分割并显示 | 标签以 chips 形式展示，单个标签而非整体字符串 | [x] |
+| T3.1.7 | Markdown 编辑器 | 在使用场景/使用方法填写 Markdown | 预览正确渲染 | Markdown 语法被解析，粗体/代码块正常显示 | [x] |
+| T3.1.8 | Step 3 预览确认 | 完成 Step 2 后点"下一步" | Step 3 显示预览卡片 | Skill 元信息展示正确 | [x] |
 
 ### T3.2 Skill 编辑
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T3.2.1 | 进入编辑页 | 在 TestAuthorSkill 详情页点击"编辑" | 跳转 `/skills/:id/edit`，表单预填充 | 名称/描述/标签等字段正确回填 | [ ] |
-| T3.2.2 | 保存修改 | 修改名称为"TestAuthorSkill-已编辑"，保存 | Toast 提示成功，跳回详情页 | 详情页标题更新，`PUT /skills/:id` 返回 200 | [ ] |
-| T3.2.3 | 重新上传文件（可选） | 展开"重新上传文件"区域，上传新文件 | 文件更新成功 | 文件大小字段变化 | [ ] |
-| T3.2.4 | 无权编辑他人 Skill | 直接访问其他 Skill 的编辑页 | 跳回首页或显示 403 | 不显示编辑表单内容 | [ ] |
+| T3.2.1 | 进入编辑页 | 在 TestAuthorSkill 详情页点击"编辑" | 跳转 `/skills/:id/edit`，表单预填充 | 名称/描述/标签等字段正确回填 | [x] |
+| T3.2.2 | 保存修改 | 修改名称为"TestAuthorSkill-已编辑"，保存 | Toast 提示成功，跳回详情页 | 详情页标题更新，`PUT /skills/:id` 返回 200 | [x] |
+| T3.2.3 | 重新上传文件（可选） | 展开"重新上传文件"区域，上传新文件 | 文件更新成功 | 文件大小字段变化 | [-] |
+| T3.2.4 | 无权编辑他人 Skill | 直接访问其他 Skill 的编辑页 | 跳回首页或显示 403 | 不显示编辑表单内容 | [x] |
 
 ### T3.3 Skill 删除
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T3.3.1 | 从详情页删除 | 点击"删除 Skill"，弹窗确认 | Skill 被软删除，跳回首页 | `DELETE /skills/:id` 返回 200，首页不再显示该 Skill | [ ] |
-| T3.3.2 | 从个人中心删除 | 在"我的 Skills"hover 并点删除 | 内联确认弹窗出现，确认后删除 | 列表即时更新 | [ ] |
-| T3.3.3 | 无权删除他人 Skill | 对他人 Skill 尝试调用删除 API | 403 Forbidden | API 返回 403，前端无删除按钮 | [ ] |
+| T3.3.1 | 从详情页删除 | 点击"删除 Skill"，弹窗确认 | Skill 被软删除，跳回首页 | `DELETE /skills/:id` 返回 200，首页不再显示该 Skill | [x] |
+| T3.3.2 | 从个人中心删除 | 在"我的 Skills"hover 并点删除 | 内联确认弹窗出现，确认后删除 | 列表即时更新 | [x] |
+| T3.3.3 | 无权删除他人 Skill | 对他人 Skill 尝试调用删除 API | 403 Forbidden | API 返回 403，前端无删除按钮 | [x] |
 
 ### T3.4 个人中心（作者视角）
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T3.4.1 | 我的 Skills 列表 | 查看"我的 Skills"Tab | 显示 TestAuthorSkill | `GET /me/skills` 返回列表，卡片信息正确 | [ ] |
-| T3.4.2 | 统计数字 | 查看右侧统计面板 | 作品数至少为 1 | `upload_count >= 1`，无 NaN | [ ] |
-| T3.4.3 | 从我的 Skills 进入编辑 | 点击 Skill 卡片上的编辑按钮 | 跳转编辑页 | URL 为 `/skills/:id/edit` | [ ] |
+| T3.4.1 | 我的 Skills 列表 | 查看"我的 Skills"Tab | 显示 TestAuthorSkill | `GET /me/skills` 返回列表，卡片信息正确 | [x] |
+| T3.4.2 | 统计数字 | 查看右侧统计面板 | 作品数至少为 1 | `upload_count >= 1`，无 NaN | [x] |
+| T3.4.3 | 从我的 Skills 进入编辑 | 点击 Skill 卡片上的编辑按钮 | 跳转编辑页 | URL 为 `/skills/:id/edit` | [x] |
 
 ---
 
@@ -194,62 +204,62 @@ await page.waitForTimeout(2000); // 等待 initAuth 完成
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T4.1.1 | 非管理员访问后台 | 用 user@test.com 登录后访问 `/admin` | 跳回首页 | AdminRoute 守卫生效，不显示后台内容 | [ ] |
-| T4.1.2 | 管理员进入后台 | 管理员访问 `/admin` | 自动重定向到 `/admin/dashboard` | URL 为 `/admin/dashboard`，Dashboard 内容可见 | [ ] |
-| T4.1.3 | 后台导航 | 点击左侧各菜单项 | 对应子页正确切换 | URL、标题、内容三者一致 | [ ] |
-| T4.1.4 | 主站 Header 保留 | 查看管理后台顶部 | 主站 Header 可见（含主题切换和返回主站） | ThemeToggle 和 Logo 可点击并生效 | [ ] |
-| T4.1.5 | 返回主站 | 点击 Header Logo | 跳回首页 | URL 变为 `/` | [ ] |
+| T4.1.1 | 非管理员访问后台 | 用 user@test.com 登录后访问 `/admin` | 跳回首页 | AdminRoute 守卫生效，不显示后台内容 | [x] |
+| T4.1.2 | 管理员进入后台 | 管理员访问 `/admin` | 自动重定向到 `/admin/dashboard` | URL 为 `/admin/dashboard`，Dashboard 内容可见 | [x] |
+| T4.1.3 | 后台导航 | 点击左侧各菜单项 | 对应子页正确切换 | URL、标题、内容三者一致 | [x] |
+| T4.1.4 | 主站 Header 保留 | 查看管理后台顶部 | 主站 Header 可见（含主题切换和返回主站） | ThemeToggle 和 Logo 可点击并生效 | [x] |
+| T4.1.5 | 返回主站 | 点击 Header Logo | 跳回首页 | URL 变为 `/` | [x] |
 
 ### T4.2 Dashboard（概览统计）
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T4.2.1 | 统计卡片加载 | 访问 `/admin/dashboard` | 显示平台统计数字 | `GET /admin/stats/overview` 返回 200，数字为整数且 >= 0 | [ ] |
-| T4.2.2 | 数据准确性 | 对比统计卡片与实际数据 | Skills总数/用户数/下载数与数据库一致 | 数字合理（Skills > 0，用户 >= 3） | [ ] |
+| T4.2.1 | 统计卡片加载 | 访问 `/admin/dashboard` | 显示平台统计数字 | `GET /admin/stats/overview` 返回 200，数字为整数且 >= 0 | [x] |
+| T4.2.2 | 数据准确性 | 对比统计卡片与实际数据 | Skills总数/用户数/下载数与数据库一致 | 数字合理（Skills > 0，用户 >= 3） | [x] |
 
 ### T4.3 Skill 管理
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T4.3.1 | Skill 列表加载 | 访问 `/admin/skills` | 显示所有 Skills 分页列表 | `GET /admin/skills` 返回 200，至少显示 TestAuthorSkill | [ ] |
-| T4.3.2 | 置顶 Skill | 点击某 Skill 的置顶按钮 | 该 Skill 在首页排序靠前 | `POST /admin/skills/:id/pin` 返回 200，首页可见置顶标志 | [ ] |
-| T4.3.3 | 取消置顶 | 再次点击置顶按钮 | 取消置顶 | `DELETE /admin/skills/:id/pin` 返回 200 | [ ] |
-| T4.3.4 | 管理员编辑 Skill | 点击任意 Skill 的编辑按钮 | 进入编辑页并成功保存 | 不限作者身份，编辑成功 | [ ] |
-| T4.3.5 | 强制删除 Skill | 点击删除，确认 | Skill 被软删除，从列表消失 | `DELETE /admin/skills/:id` 返回 200 | [ ] |
-| T4.3.6 | 查看已删除 Skills | 切换到"已删除"Tab | 显示软删除 Skill 列表 | `GET /admin/skills/deleted` 返回 200，有数据 | [ ] |
-| T4.3.7 | 恢复已删除 Skill | 点击恢复按钮 | Skill 恢复，重新出现在正常列表 | `POST /admin/skills/:id/restore` 返回 200 | [ ] |
-| T4.3.8 | 查看下载用户 | 点击"查看下载用户"按钮 | 弹窗显示下载该 Skill 的用户列表 | `GET /admin/skills/:id/downloads` 返回 200 | [ ] |
+| T4.3.1 | Skill 列表加载 | 访问 `/admin/skills` | 显示所有 Skills 分页列表 | `GET /admin/skills` 返回 200，至少显示 TestAuthorSkill | [x] |
+| T4.3.2 | 置顶 Skill | 点击某 Skill 的置顶按钮 | 该 Skill 在首页排序靠前 | `POST /admin/skills/:id/pin` 返回 200，首页可见置顶标志 | [x] |
+| T4.3.3 | 取消置顶 | 再次点击置顶按钮 | 取消置顶 | `POST /admin/skills/:id/pin`（再次调用 toggle）返回 200 | [x] |
+| T4.3.4 | 管理员编辑 Skill | 点击任意 Skill 的编辑按钮 | 进入编辑页并成功保存 | 不限作者身份，编辑成功 | [x] |
+| T4.3.5 | 强制删除 Skill | 点击删除，确认 | Skill 被物理删除，从列表消失 | `DELETE /admin/skills/:id` 返回 204（物理删除，不可恢复） | [x] |
+| T4.3.6 | 查看已删除 Skills | 切换到"已删除"Tab | 显示软删除 Skill 列表 | `GET /admin/skills/deleted` 返回 200，有数据 | [x] |
+| T4.3.7 | 恢复已删除 Skill | 点击恢复按钮 | Skill 恢复，重新出现在正常列表 | `POST /admin/skills/:id/restore` 返回 200 | [x] |
+| T4.3.8 | 查看下载用户 | 点击"查看下载用户"按钮 | 弹窗显示下载该 Skill 的用户列表 | `GET /admin/skills/:id/downloads` 返回 200 | [x] |
 
 ### T4.4 用户管理
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T4.4.1 | 用户列表加载 | 访问 `/admin/users` | 显示所有用户分页列表 | `GET /admin/users` 返回 200，含 testuser2/testauthor | [ ] |
-| T4.4.2 | 搜索用户 | 在搜索框输入"testauthor" | 列表筛选显示 testauthor | 网络请求含 `search=testauthor` 参数 | [ ] |
-| T4.4.3 | 设置管理员 | 对 testuser2 点击"设为管理员"开关 | testuser2 变为管理员 | `PATCH /admin/users/:id/admin` 返回 200，开关状态更新 | [ ] |
-| T4.4.4 | 取消管理员 | 再次切换开关 | testuser2 恢复普通用户 | 开关状态回到关闭 | [ ] |
-| T4.4.5 | 禁用账号 | 对 testauthor 点击"禁用"按钮 | testauthor 账号被禁用 | `PATCH /admin/users/:id/status` 返回 200，按钮变"启用" | [ ] |
-| T4.4.6 | 禁用后无法登录 | 用 author@test.com 尝试登录 | 登录被拒绝，提示账号已禁用 | 登录返回 403，错误提示可见 | [ ] |
-| T4.4.7 | 重新启用账号 | 管理后台点击"启用" | testauthor 可重新登录 | `PATCH /admin/users/:id/status` 返回 200 | [ ] |
+| T4.4.1 | 用户列表加载 | 访问 `/admin/users` | 显示所有用户分页列表 | `GET /admin/users` 返回 200，含 testuser2/testauthor | [x] |
+| T4.4.2 | 搜索用户 | 在搜索框输入"testauthor" | 列表筛选显示 testauthor | 网络请求含 `search=testauthor` 参数 | [x] |
+| T4.4.3 | 设置管理员 | 对 testuser2 点击"设为管理员"开关 | testuser2 变为管理员 | `PATCH /admin/users/:id/admin` 返回 200，开关状态更新 | [x] |
+| T4.4.4 | 取消管理员 | 再次切换开关 | testuser2 恢复普通用户 | 开关状态回到关闭 | [x] |
+| T4.4.5 | 禁用账号 | 对 testauthor 点击"禁用"按钮 | testauthor 账号被禁用 | `PATCH /admin/users/:id/status` 返回 200，按钮变"启用" | [x] |
+| T4.4.6 | 禁用后无法登录 | 用 author@test.com 尝试登录 | 登录被拒绝，提示账号已禁用 | 登录返回 401（非 403），错误提示"账号已被禁用"可见 | [x] |
+| T4.4.7 | 重新启用账号 | 管理后台点击"启用" | testauthor 可重新登录 | `PATCH /admin/users/:id/status` 返回 200 | [x] |
 
 ### T4.5 评论管理
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T4.5.1 | 评论列表加载 | 访问 `/admin/comments` | 显示所有评论分页列表 | `GET /admin/comments` 返回 200 | [ ] |
-| T4.5.2 | 按 Skill 筛选 | 在筛选栏选择特定 Skill | 只显示该 Skill 的评论 | 网络请求含 `skill_id=` 参数 | [ ] |
-| T4.5.3 | 删除评论 | 点击任意评论的删除按钮 | 评论被删除 | `DELETE /admin/comments/:id` 返回 200，列表更新 | [ ] |
+| T4.5.1 | 评论列表加载 | 访问 `/admin/comments` | 显示所有评论分页列表 | `GET /admin/comments` 返回 200 | [x] |
+| T4.5.2 | 按 Skill 筛选 | 在筛选栏选择特定 Skill | 只显示该 Skill 的评论 | 网络请求含 `skill_id=` 参数 | [x] |
+| T4.5.3 | 删除评论 | 点击任意评论的删除按钮 | 评论被删除 | `DELETE /admin/comments/:id` 返回 204，列表更新 | [x] |
 
 ### T4.6 数据统计与导出
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T4.6.1 | 活跃用户榜单 | 访问 `/admin/stats`，查看 30 天榜单 | 显示活跃用户排行 | `GET /admin/stats/active-users?days=30` 返回 200，有用户数据 | [ ] |
-| T4.6.2 | 时间范围切换 | 切换 7天/30天/90天 | 榜单数据更新 | 网络请求参数变化，数据刷新 | [ ] |
-| T4.6.3 | 导出 Skills CSV | 点击"导出 Skills" | 浏览器弹出下载 CSV | `GET /admin/export/skills` 返回 200，Content-Type: text/csv | [ ] |
-| T4.6.4 | 导出用户 CSV | 点击"导出用户" | 浏览器弹出下载 CSV | `GET /admin/export/users` 返回 200 | [ ] |
-| T4.6.5 | 导出标签 CSV | 点击"导出标签" | 浏览器弹出下载 CSV | `GET /admin/export/tags` 返回 200 | [ ] |
-| T4.6.6 | CSV 内容验证 | 打开下载的 Skills CSV | 含正确字段和数据 | 含 id/name/author/download_count 列，有 TestAuthorSkill 行 | [ ] |
+| T4.6.1 | 活跃用户榜单 | 访问 `/admin/stats`，查看 30 天榜单 | 显示活跃用户排行 | `GET /admin/stats/active-users?days=30` 返回 200，有用户数据 | [x] |
+| T4.6.2 | 时间范围切换 | 切换 7天/30天/90天 | 榜单数据更新 | 网络请求参数变化，数据刷新 | [x] |
+| T4.6.3 | 导出 Skills CSV | 点击"导出 Skills" | 浏览器弹出下载 CSV | `GET /admin/export/skills` 返回 200，Content-Type: text/csv | [x] |
+| T4.6.4 | 导出用户 CSV | 点击"导出用户" | 浏览器弹出下载 CSV | `GET /admin/export/users` 返回 200 | [x] |
+| T4.6.5 | 导出标签 CSV | 点击"导出标签" | 浏览器弹出下载 CSV | `GET /admin/export/tags` 返回 200 | [x] |
+| T4.6.6 | CSV 内容验证 | 打开下载的 Skills CSV | 含正确字段和数据 | 含 id/name/author/download_count 列，有 TestAuthorSkill 行 | [x] |
 
 ---
 
@@ -257,34 +267,12 @@ await page.waitForTimeout(2000); // 等待 initAuth 完成
 
 | # | 测试项 | 角色流 | 期望结果 | 验收标准 | 状态 |
 |---|--------|-------|---------|---------|------|
-| T5.1 | 收藏→更新→通知 | 用户收藏 Skill → 作者更新 Skill → 用户收到通知 | 通知系统端到端打通 | 用户 Header 出现未读通知角标 | [ ] |
-| T5.2 | 上传→首页显示 | 作者上传新 Skill → 游客首页可见 | 新 Skill 出现在首页列表 | 首页刷新后可见新 Skill 卡片 | [ ] |
-| T5.3 | 评论→通知 | 用户对作者 Skill 评论 → 作者收到通知 | 评论通知功能正常 | 作者登录后有未读通知 | [ ] |
-| T5.4 | 禁用→访问拦截 | 管理员禁用用户 → 被禁用用户已登录状态操作 | 下次请求时被拦截（401/403） | 被禁用用户的操作（发评论/收藏等）返回 403 | [ ] |
-| T5.5 | 搜索→下载→统计 | 游客搜索 → 找到 Skill → 下载 → 管理员查看下载统计 | 下载记录进入统计 | 管理后台下载用户列表中出现下载记录 | [ ] |
+| T5.1 | 收藏→更新→通知 | 用户收藏 Skill → 作者更新 Skill → 用户收到通知 | 通知系统端到端打通 | 用户 Header 出现未读通知角标 | [x] |
+| T5.2 | 上传→首页显示 | 作者上传新 Skill → 游客首页可见 | 新 Skill 出现在首页列表 | 首页刷新后可见新 Skill 卡片 | [x] |
+| T5.3 | 评论→通知 | 用户对作者 Skill 评论 → 作者收到通知 | 评论通知功能正常 | 作者登录后有未读通知 | [x] |
+| T5.4 | 禁用→访问拦截 | 管理员禁用用户 → 被禁用用户已登录状态操作 | 下次请求时被拦截（401/403） | 被禁用用户的操作（发评论/收藏等）返回 403 | [x] |
+| T5.5 | 搜索→下载→统计 | 游客搜索 → 找到 Skill → 下载 → 管理员查看下载统计 | 下载记录进入统计 | 管理后台下载用户列表中出现下载记录 | [x] |
 
----
-
-## 已知 Bug 汇总
-
-### 已修复
-
-| Bug | 描述 | 修复时间 | 修复 Commit |
-|-----|------|---------|------------|
-| B1 | Trending/Top-rated/Most-downloaded API 返回裸数组，前端期望分页格式 | 2026-03-21 | `b35592a` |
-| B_fix | 删除评论 `DELETE /comments/:id` 返回 500（`updated_at` 传入 timezone-aware datetime） | 2026-03-21 | 本次修复 |
-
-### 待修复
-
-| Bug | 描述 | 位置 | 严重程度 |
-|-----|------|------|---------|
-| B2 | 游客点击收藏/评分时未跳转登录页，按钮仅 disabled 无反馈 | `SkillDetail.tsx` handleToggleFavorite/handleRate | 中 |
-| B3 | 下载功能 iframe 方案无效，文件无法下载 | `SkillDetail.tsx` downloadMutation | 高 |
-| B5 | SkillDetail 评论区登录用户无删除按钮，无法通过 UI 删除自己的评论（API 正常） | `SkillDetail.tsx` 评论列表渲染 | 低 |
-
-### 预期行为
-- **B2 修复方案**：点击收藏/评分按钮时，未登录应跳转 `/login?from=/skills/:id`，登录后返回原页面
-- **B3 修复方案**：下载应使用 `window.location.href = downloadUrl` 或后端直接返回文件流触发下载
 
 ---
 

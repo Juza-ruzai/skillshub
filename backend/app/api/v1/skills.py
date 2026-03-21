@@ -1,14 +1,26 @@
 """Skill API 路由."""
 
+from pathlib import Path
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+    status,
+)
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_current_user_optional
 from app.core.database import get_session
+from app.models.download_log import DownloadLog
 from app.models.favorite import Favorite
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
@@ -24,6 +36,7 @@ from app.schemas.skill import (
 )
 from app.services.favorite_service import FavoriteService
 from app.services.file_service import FileService
+from app.services.notification_service import NotificationService
 from app.services.rating_service import RatingService
 from app.services.skill_service import SkillService
 
@@ -31,6 +44,7 @@ router = APIRouter()
 skill_service = SkillService()
 rating_service = RatingService()
 favorite_service = FavoriteService()
+notification_service = NotificationService()
 
 
 async def _get_author_usernames(
@@ -387,6 +401,20 @@ async def update_skill(
         update_data=update_data.model_dump(exclude_none=True),
     )
 
+    # 通知所有收藏该 Skill 的用户（排除操作者本人）
+    fav_result = await db_session.execute(
+        select(Favorite.user_id).where(Favorite.skill_id == skill_id)  # type: ignore[call-overload]
+    )
+    fan_ids = [uid for uid in fav_result.scalars().all() if uid != current_user.id]
+    if fan_ids:
+        await notification_service.create_notifications_for_users(
+            db_session,
+            user_ids=fan_ids,
+            notification_type="skill_update",
+            skill_id=skill_id,
+            message=f"你收藏的 Skill「{updated.name}」已更新",
+        )
+
     return SkillResponse.model_validate(updated)
 
 
@@ -418,9 +446,11 @@ async def delete_skill(
 @router.post("/{skill_id}/download")
 async def download_skill(
     skill_id: UUID,
+    request: Request,
     db_session: AsyncSession = Depends(get_session),
+    current_user: User | None = Depends(get_current_user_optional),
 ) -> dict[str, str]:
-    """下载 Skill（增加下载计数）."""
+    """下载 Skill（增加下载计数并记录日志）."""
     skill = await skill_service.get_skill_by_id(db_session, skill_id)
 
     if not skill:
@@ -432,8 +462,18 @@ async def download_skill(
     # 增加下载计数
     await skill_service.increment_download_count(db_session, skill_id)
 
-    # TODO: 返回文件下载链接
-    return {"download_url": f"/api/v1/files/{skill_id}/package.zip"}
+    # 记录下载日志（登录用户记录 user_id，游客记录 IP）
+    ip = request.client.host if request.client else None
+    download_log = DownloadLog(
+        skill_id=skill_id,
+        user_id=current_user.id if current_user else None,
+        ip_address=ip,
+    )
+    db_session.add(download_log)
+    await db_session.commit()
+
+    filename = Path(skill.file_path).name
+    return {"download_url": f"/uploads/{skill_id}/{filename}"}
 
 
 @router.post("/{skill_id}/rate", response_model=RatingResponse)

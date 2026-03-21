@@ -3,10 +3,13 @@
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
+from sqlalchemy import select
 
 from app.api.deps import CurrentUser, DbDep
+from app.models.skill import Skill
 from app.schemas.comment import CommentCreate, CommentWithReplies
 from app.services.comment_service import CommentService
+from app.services.notification_service import NotificationService
 
 # 技能评论路由（获取和创建）
 skill_comments_router = APIRouter()
@@ -72,6 +75,19 @@ async def create_comment(
     )
     response = CommentWithReplies.model_validate(comment)
     response.username = current_user.username
+
+    # 通知 Skill 作者（排除自己评论自己的情况）
+    skill_result = await db.execute(select(Skill.author_id).where(Skill.id == skill_id))  # type: ignore[call-overload]
+    author_id = skill_result.scalar_one_or_none()
+    if author_id and author_id != current_user.id:
+        await NotificationService().create_notification(
+            db_session=db,
+            user_id=author_id,
+            notification_type="new_comment",
+            skill_id=skill_id,
+            message=f"{current_user.username} 评论了你的 Skill",
+        )
+
     return response
 
 

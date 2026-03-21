@@ -74,7 +74,7 @@ class CommentService:
         username_map: dict[UUID, str] = {}
         if user_ids:
             user_result = await db_session.execute(
-                select(User.id, User.username).where(User.id.in_(user_ids))  # type: ignore[attr-defined]
+                select(User.id, User.username).where(User.id.in_(user_ids))
             )
             username_map = dict(user_result.all())
 

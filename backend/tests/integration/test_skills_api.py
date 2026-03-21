@@ -34,10 +34,10 @@ class TestSkillListAuthorUsername:
         assert response.status_code == 200
         data = response.json()
 
-        if len(data) > 0:
-            for skill in data:
-                assert "author_username" in skill
-                assert skill["author_username"] != ""
+        assert "items" in data
+        for skill in data["items"]:
+            assert "author_username" in skill
+            assert skill["author_username"] != ""
 
     async def test_top_rated_skills_includes_author_username(
         self,
@@ -49,10 +49,10 @@ class TestSkillListAuthorUsername:
         assert response.status_code == 200
         data = response.json()
 
-        if len(data) > 0:
-            for skill in data:
-                assert "author_username" in skill
-                assert skill["author_username"] != ""
+        assert "items" in data
+        for skill in data["items"]:
+            assert "author_username" in skill
+            assert skill["author_username"] != ""
 
     async def test_most_downloaded_skills_includes_author_username(
         self,
@@ -64,7 +64,7 @@ class TestSkillListAuthorUsername:
         assert response.status_code == 200
         data = response.json()
 
-        if len(data) > 0:
-            for skill in data:
-                assert "author_username" in skill
-                assert skill["author_username"] != ""
+        assert "items" in data
+        for skill in data["items"]:
+            assert "author_username" in skill
+            assert skill["author_username"] != ""
