@@ -29,7 +29,7 @@ function CommentItem({
   const [replyContent, setReplyContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const isOwnComment = currentUserId === comment.userId
+  const isOwnComment = currentUserId === comment.user_id
 
   const handleSubmitReply = async () => {
     if (!replyContent.trim()) return
@@ -70,7 +70,7 @@ function CommentItem({
                 {comment.username}
               </span>
               <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                {formatDate(comment.createdAt)}
+                {formatDate(comment.created_at)}
               </span>
             </div>
 
@@ -201,7 +201,7 @@ export function CommentSection({
   }
 
   const handleReply = async (parentId: string, content: string) => {
-    await onSubmitComment({ content, parentId })
+    await onSubmitComment({ content, parent_id: parentId })
   }
 
   if (isLoading) {

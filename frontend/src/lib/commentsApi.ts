@@ -1,7 +1,7 @@
 import { apiClient } from './api'
-import type { CommentListResponse, CommentCreate, Comment } from '../types/comment'
+import type { CommentCreate, Comment, CommentWithReplies } from '../types/comment'
 
-export const getSkillComments = async (skillId: string): Promise<CommentListResponse> => {
+export const getSkillComments = async (skillId: string): Promise<CommentWithReplies[]> => {
   const response = await apiClient.get(`/skills/${skillId}/comments`)
   return response.data
 }

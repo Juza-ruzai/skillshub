@@ -1,27 +1,22 @@
-// 评论相关类型定义
+// 评论相关类型定义（字段名与后端 snake_case 保持一致）
 
 export interface Comment {
   id: string
-  skillId: string
-  userId: string
+  skill_id: string
+  user_id: string
   username: string
   content: string
-  parentId?: string
-  isDeleted?: boolean
-  createdAt: string
-  updatedAt: string
+  parent_id?: string
+  is_deleted?: boolean
+  created_at: string
+  updated_at: string
 }
 
 export interface CommentCreate {
   content: string
-  parentId?: string
+  parent_id?: string
 }
 
 export interface CommentWithReplies extends Comment {
   replies: CommentWithReplies[]
-}
-
-export interface CommentListResponse {
-  items: CommentWithReplies[]
-  total: number
 }

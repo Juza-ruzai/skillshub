@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import desc, func, or_, select
+from sqlalchemy import String, cast, desc, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select as sqlmodel_select
 
@@ -179,16 +179,10 @@ class SkillService:
             )
             query = query.where(search_filter)
 
-        # 标签筛选（SQLite 兼容方式）
+        # 标签筛选：cast JSON 列为字符串后做 LIKE 匹配
         if tag:
             tag_lower = tag.lower()
-            # 使用字符串匹配查找标签（SQLite 不支持 JSONB contains）
-            query = query.where(
-                or_(
-                    Skill.tags.like(f'%"{tag_lower}"%'),
-                    Skill.tags.like(f"%{tag_lower}%"),
-                )
-            )
+            query = query.where(cast(Skill.tags, String).ilike(f'%"{tag_lower}"%'))
 
         # 获取总数
         count_query = select(func.count()).select_from(query.subquery())

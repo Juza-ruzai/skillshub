@@ -26,7 +26,7 @@ import {
   downloadSkill,
   deleteSkill,
 } from '../lib/skillsApi'
-import { getSkillComments, postComment } from '../lib/commentsApi'
+import { getSkillComments, postComment, deleteComment } from '../lib/commentsApi'
 import { API_BASE_URL } from '../lib/api'
 import type { CommentCreate } from '../types/comment'
 
@@ -84,14 +84,13 @@ export default function SkillDetail(): JSX.Element {
   const downloadMutation = useMutation({
     mutationFn: () => downloadSkill(id!),
     onSuccess: (data) => {
-      // 使用隐藏的 iframe 下载，避免打开空白页
-      const iframe = document.createElement('iframe')
-      iframe.style.display = 'none'
-      iframe.src = data.url
-      document.body.appendChild(iframe)
-      setTimeout(() => {
-        document.body.removeChild(iframe)
-      }, 5000)
+      const fullUrl = `${new URL(API_BASE_URL).origin}${data.download_url}`
+      const link = document.createElement('a')
+      link.href = fullUrl
+      link.setAttribute('download', '')
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
       queryClient.invalidateQueries({ queryKey: ['skill', id] })
     },
   })
@@ -107,6 +106,14 @@ export default function SkillDetail(): JSX.Element {
   // 发表评论 mutation
   const commentMutation = useMutation({
     mutationFn: (data: CommentCreate) => postComment(id!, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['skill-comments', id] })
+    },
+  })
+
+  // 删除评论 mutation
+  const deleteCommentMutation = useMutation({
+    mutationFn: (commentId: string) => deleteComment(commentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skill-comments', id] })
     },
@@ -151,6 +158,11 @@ export default function SkillDetail(): JSX.Element {
   // 处理发表评论
   const handleSubmitComment = async (data: CommentCreate) => {
     await commentMutation.mutateAsync(data)
+  }
+
+  // 处理删除评论
+  const handleDeleteComment = async (commentId: string) => {
+    await deleteCommentMutation.mutateAsync(commentId)
   }
 
   // 骨架屏
@@ -487,13 +499,14 @@ export default function SkillDetail(): JSX.Element {
               style={{ color: 'var(--text-primary)' }}
             >
               <MessageCircle size={18} style={{ color: 'var(--accent-primary)' }} />
-              评论 ({commentsData?.total || 0})
+              评论 ({commentsData?.length || 0})
             </h2>
             <CommentSection
-              comments={commentsData?.items || []}
+              comments={commentsData || []}
               currentUserId={user?.id}
               isLoading={isLoadingComments}
               onSubmitComment={handleSubmitComment}
+              onDeleteComment={handleDeleteComment}
             />
           </section>
         </div>
@@ -537,7 +550,7 @@ export default function SkillDetail(): JSX.Element {
                 评分
               </p>
               <div className="flex items-center gap-3">
-                <StarRating value={skill.user_rating || 0} readonly={!user} onChange={handleRate} />
+                <StarRating value={skill.user_rating || 0} readonly={false} onChange={handleRate} />
                 <span
                   className="text-2xl font-bold"
                   style={{
@@ -561,7 +574,7 @@ export default function SkillDetail(): JSX.Element {
               data-testid="favorite-button"
               data-favorited={skill.is_favorite}
               onClick={handleToggleFavorite}
-              disabled={!user || favoriteMutation.isPending}
+              disabled={favoriteMutation.isPending}
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 background: skill.is_favorite ? 'rgba(239,68,68,0.08)' : 'transparent',

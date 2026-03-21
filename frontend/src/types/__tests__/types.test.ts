@@ -67,16 +67,16 @@ describe('类型定义', () => {
   describe('Comment 类型', () => {
     it('Comment 应该包含所有必需字段', () => {
       expectTypeOf<Comment>().toHaveProperty('id')
-      expectTypeOf<Comment>().toHaveProperty('skillId')
-      expectTypeOf<Comment>().toHaveProperty('userId')
+      expectTypeOf<Comment>().toHaveProperty('skill_id')
+      expectTypeOf<Comment>().toHaveProperty('user_id')
       expectTypeOf<Comment>().toHaveProperty('username')
       expectTypeOf<Comment>().toHaveProperty('content')
-      expectTypeOf<Comment>().toHaveProperty('createdAt')
+      expectTypeOf<Comment>().toHaveProperty('created_at')
     })
 
     it('CommentCreate 应该包含创建评论必需字段', () => {
       expectTypeOf<CommentCreate>().toHaveProperty('content')
-      expectTypeOf<CommentCreate>().toHaveProperty('parentId')
+      expectTypeOf<CommentCreate>().toHaveProperty('parent_id')
     })
 
     it('CommentWithReplies 应该支持嵌套回复', () => {
