@@ -129,5 +129,5 @@ class CommentService:
             raise PermissionError("无权删除此评论")
 
         comment.is_deleted = True
-        comment.updated_at = datetime.now(UTC)
+        comment.updated_at = datetime.now(UTC).replace(tzinfo=None)
         await db_session.commit()
