@@ -754,15 +754,13 @@ M6.9 管理员后台 → [✅验收] → 部署上线
 
 ---
 
-## 已知 Bug 列表（待修复）
+## 已知 Bug 列表（已全部修复）
 
-> 以下 Bug 已确认存在，暂未影响核心流程，安排在后续迭代中修复。
-
-| # | 优先级 | 位置 | 现象 | 根本原因 | 修复建议 |
-|---|--------|------|------|----------|----------|
-| B1 | 🟡 中 | 详情页 `SkillDetail.tsx` | 作者信息显示 `Invalid Date`，作者名显示 `?` | `GET /skills/{id}` 的 `author_username` 硬编码为空字符串（`skills.py` 第 304 行）；前端 `created_at` 日期解析异常 | 后端：同 `list_skills` 一样批量查询作者信息；前端：检查日期字段 camelCase 映射 |
-| B2 | 🟡 中 | 详情页下载按钮 | 显示 `下载 (NaN undefined)` | `SkillResponse.rating_avg` 为 `Decimal` 类型，Pydantic 序列化后为字符串 `"0.0"`；`file_size` 单位格式化收到意外值 | 后端 schema 将 `rating_avg` 改为 `float`；前端做 `parseFloat()` 兜底处理 |
-| B3 | 🟢 低 | 数据库迁移 | `users.is_active` 字段通过 `ALTER TABLE` 直接添加，无 Alembic 迁移文件 | 临时修复未补写迁移 | 在 `backend/alembic/versions/` 补写迁移：`op.add_column('users', sa.Column('is_active', sa.Boolean(), nullable=False, server_default='true'))` |
+| # | 优先级 | 位置 | 状态 | 说明 |
+|---|--------|------|------|------|
+| B1 | 🟡 中 | 详情页作者信息 | ✅ 已修复（代码已正确） | 后端 `get_skill_detail` 已正确调用 `_get_author_usernames` 查询作者名；前端 `new Date(created_at)` 解析 ISO 字符串正常 |
+| B2 | 🟡 中 | 详情页下载按钮 | ✅ 已修复 | 后端路由已显式 `float(skill.rating_avg)`，`file_size` 始终返回 `int`；`formatFileSize` 已加防御性判断 `!bytes \|\| bytes <= 0` |
+| B3 | 🟢 低 | 数据库迁移 | ✅ 已修复 | 补写 `alembic/versions/a1b2c3d4e5f6_add_is_active_and_download_logs.py`，包含 `users.is_active` 字段和 `download_logs` 表 |
 
 ---
 
