@@ -1,4 +1,5 @@
 """管理后台 API 路由."""
+
 import csv
 import io
 from datetime import datetime, timedelta
@@ -547,7 +548,9 @@ async def get_skill_downloads(
                 "user_id": str(log.DownloadLog.user_id) if log.DownloadLog.user_id else None,
                 "username": log.User.username if log.User else None,
                 "ip_address": log.DownloadLog.ip_address,
-                "created_at": log.DownloadLog.created_at.isoformat() if log.DownloadLog.created_at else None,
+                "created_at": log.DownloadLog.created_at.isoformat()
+                if log.DownloadLog.created_at
+                else None,
             }
             for log in logs
         ],
@@ -597,9 +600,7 @@ async def list_users(
     total = count_result.scalar()
 
     # 获取用户列表
-    result = await db.execute(
-        query.order_by(User.created_at.desc()).offset(skip).limit(limit)
-    )
+    result = await db.execute(query.order_by(User.created_at.desc()).offset(skip).limit(limit))
     users = result.scalars().all()
 
     return {
@@ -729,7 +730,11 @@ async def list_comments(
     Returns:
         评论列表
     """
-    query = select(Comment, User, Skill).join(User, Comment.user_id == User.id).join(Skill, Comment.skill_id == Skill.id)
+    query = (
+        select(Comment, User, Skill)
+        .join(User, Comment.user_id == User.id)
+        .join(Skill, Comment.skill_id == Skill.id)
+    )
 
     if skill_id:
         query = query.where(Comment.skill_id == skill_id)
@@ -747,9 +752,7 @@ async def list_comments(
     total = count_result.scalar()
 
     # 获取评论列表
-    result = await db.execute(
-        query.order_by(Comment.created_at.desc()).offset(skip).limit(limit)
-    )
+    result = await db.execute(query.order_by(Comment.created_at.desc()).offset(skip).limit(limit))
     comments = result.all()
 
     return {
@@ -762,7 +765,9 @@ async def list_comments(
                 "user_id": str(comment.Comment.user_id),
                 "username": comment.User.username,
                 "is_deleted": comment.Comment.is_deleted,
-                "created_at": comment.Comment.created_at.isoformat() if comment.Comment.created_at else None,
+                "created_at": comment.Comment.created_at.isoformat()
+                if comment.Comment.created_at
+                else None,
             }
             for comment in comments
         ],
@@ -858,11 +863,19 @@ async def get_active_users(
             func.count(func.distinct(Comment.id)).label("comment_count"),
             func.count(func.distinct(Skill.id)).label("upload_count"),
         )
-        .outerjoin(DownloadLog, (DownloadLog.user_id == User.id) & (DownloadLog.created_at >= since))
+        .outerjoin(
+            DownloadLog, (DownloadLog.user_id == User.id) & (DownloadLog.created_at >= since)
+        )
         .outerjoin(Comment, (Comment.user_id == User.id) & (Comment.created_at >= since))
         .outerjoin(Skill, (Skill.author_id == User.id) & (Skill.created_at >= since))
         .group_by(User.id, User.username)
-        .order_by((func.count(func.distinct(DownloadLog.id)) + func.count(func.distinct(Comment.id)) + func.count(func.distinct(Skill.id))).desc())
+        .order_by(
+            (
+                func.count(func.distinct(DownloadLog.id))
+                + func.count(func.distinct(Comment.id))
+                + func.count(func.distinct(Skill.id))
+            ).desc()
+        )
         .limit(limit)
     )
     users = result.all()
@@ -906,9 +919,7 @@ async def export_users_csv(
     writer = csv.writer(output)
 
     # 写入表头
-    writer.writerow(
-        ["id", "username", "email", "is_admin", "is_active", "created_at"]
-    )
+    writer.writerow(["id", "username", "email", "is_admin", "is_active", "created_at"])
 
     # 写入数据
     for user in users:

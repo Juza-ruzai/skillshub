@@ -105,7 +105,7 @@ export default function SkillDetail(): JSX.Element {
   })
 
   // 判断是否作者
-  const isAuthor = user?.id === skill?.authorId
+  const isAuthor = user?.id === skill?.author_id
 
   // 处理评分
   const handleRate = (score: number) => {
@@ -244,18 +244,18 @@ export default function SkillDetail(): JSX.Element {
                 className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
                 style={{ background: 'var(--btn-gradient)' }}
               >
-                {skill.authorUsername?.charAt(0).toUpperCase() || '?'}
+                {skill.author_username?.charAt(0).toUpperCase() || '?'}
               </div>
               <span className="font-medium" style={{ color: 'var(--text-primary)' }}>
-                {skill.authorUsername}
+                {skill.author_username}
               </span>
               <span className="flex items-center gap-1">
                 <Calendar size={14} />
-                {new Date(skill.createdAt).toLocaleDateString('zh-CN')}
+                {new Date(skill.created_at).toLocaleDateString('zh-CN')}
               </span>
               <span className="flex items-center gap-1">
                 <Eye size={14} />
-                {skill.viewCount} 浏览
+                {skill.view_count} 浏览
               </span>
             </div>
           </div>
@@ -290,7 +290,7 @@ export default function SkillDetail(): JSX.Element {
           </section>
 
           {/* 使用场景 */}
-          {skill.usageScenario && (
+          {skill.usage_scenario && (
             <section
               className="rounded-2xl p-6"
               style={{
@@ -309,13 +309,13 @@ export default function SkillDetail(): JSX.Element {
                 使用场景
               </h2>
               <p style={{ color: 'var(--text-secondary)' }} className="whitespace-pre-wrap">
-                {skill.usageScenario}
+                {skill.usage_scenario}
               </p>
             </section>
           )}
 
           {/* 使用方法 */}
-          {skill.usageMethod && (
+          {skill.usage_method && (
             <section
               className="rounded-2xl p-6"
               style={{
@@ -340,13 +340,13 @@ export default function SkillDetail(): JSX.Element {
                   border: '1px solid var(--card-border)',
                 }}
               >
-                <MarkdownPreview content={skill.usageMethod} />
+                <MarkdownPreview content={skill.usage_method} />
               </div>
             </section>
           )}
 
           {/* 演示图片 */}
-          {skill.demoImages && skill.demoImages.length > 0 && (
+          {skill.demo_images && skill.demo_images.length > 0 && (
             <section
               className="rounded-2xl p-6"
               style={{
@@ -365,7 +365,7 @@ export default function SkillDetail(): JSX.Element {
                 效果演示
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {skill.demoImages.map((image, index) => (
+                {skill.demo_images.map((image, index) => (
                   <div
                     key={index}
                     className="rounded-xl overflow-hidden"
@@ -396,7 +396,7 @@ export default function SkillDetail(): JSX.Element {
           )}
 
           {/* 文件树 */}
-          {skill.fileTree && skill.fileTree.length > 0 && (
+          {skill.file_tree && skill.file_tree.length > 0 && (
             <section
               className="rounded-2xl p-6"
               style={{
@@ -421,7 +421,7 @@ export default function SkillDetail(): JSX.Element {
                   border: '1px solid var(--card-border)',
                 }}
               >
-                <FileTree data={skill.fileTree} />
+                <FileTree data={skill.file_tree} />
               </div>
             </section>
           )}
@@ -514,7 +514,7 @@ export default function SkillDetail(): JSX.Element {
               ) : (
                 <Download size={20} />
               )}
-              下载 ({formatFileSize(skill.fileSize)})
+              下载 ({formatFileSize(skill.file_size)})
             </button>
 
             {/* 评分区 */}
@@ -523,7 +523,7 @@ export default function SkillDetail(): JSX.Element {
                 评分
               </p>
               <div className="flex items-center gap-3">
-                <StarRating value={skill.userRating || 0} readonly={!user} onChange={handleRate} />
+                <StarRating value={skill.user_rating || 0} readonly={!user} onChange={handleRate} />
                 <span
                   className="text-2xl font-bold"
                   style={{
@@ -533,10 +533,10 @@ export default function SkillDetail(): JSX.Element {
                     backgroundClip: 'text',
                   }}
                 >
-                  {skill.ratingAvg?.toFixed(1) || '0.0'}
+                  {skill.rating_avg?.toFixed(1) || '0.0'}
                 </span>
                 <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                  ({skill.ratingCount} 评分)
+                  ({skill.rating_count} 评分)
                 </span>
               </div>
             </div>
@@ -545,23 +545,23 @@ export default function SkillDetail(): JSX.Element {
             <button
               type="button"
               data-testid="favorite-button"
-              data-favorited={skill.isFavorite}
+              data-favorited={skill.is_favorite}
               onClick={handleToggleFavorite}
               disabled={!user || favoriteMutation.isPending}
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
-                background: skill.isFavorite ? 'rgba(239,68,68,0.08)' : 'transparent',
-                borderColor: skill.isFavorite ? 'rgba(239,68,68,0.3)' : 'var(--card-border)',
-                color: skill.isFavorite ? '#ef4444' : 'var(--text-secondary)',
+                background: skill.is_favorite ? 'rgba(239,68,68,0.08)' : 'transparent',
+                borderColor: skill.is_favorite ? 'rgba(239,68,68,0.3)' : 'var(--card-border)',
+                color: skill.is_favorite ? '#ef4444' : 'var(--text-secondary)',
               }}
             >
               {favoriteMutation.isPending ? (
                 <Loader2 size={18} className="animate-spin" />
               ) : (
-                <Heart size={18} className={skill.isFavorite ? 'fill-current' : ''} />
+                <Heart size={18} className={skill.is_favorite ? 'fill-current' : ''} />
               )}
-              {skill.isFavorite ? '已收藏' : '收藏'}
-              <span style={{ color: 'var(--text-tertiary)' }}>({skill.favoriteCount})</span>
+              {skill.is_favorite ? '已收藏' : '收藏'}
+              <span style={{ color: 'var(--text-tertiary)' }}>({skill.favorite_count})</span>
             </button>
 
             {/* 统计信息 - 玻璃拟态卡片 */}
@@ -585,7 +585,7 @@ export default function SkillDetail(): JSX.Element {
                     backgroundClip: 'text',
                   }}
                 >
-                  {skill.viewCount}
+                  {skill.view_count}
                 </p>
                 <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                   浏览
@@ -607,7 +607,7 @@ export default function SkillDetail(): JSX.Element {
                     backgroundClip: 'text',
                   }}
                 >
-                  {skill.downloadCount}
+                  {skill.download_count}
                 </p>
                 <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                   下载
@@ -629,7 +629,7 @@ export default function SkillDetail(): JSX.Element {
                     backgroundClip: 'text',
                   }}
                 >
-                  {skill.favoriteCount}
+                  {skill.favorite_count}
                 </p>
                 <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
                   收藏

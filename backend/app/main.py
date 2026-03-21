@@ -1,4 +1,5 @@
 """FastAPI 应用入口."""
+
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -12,6 +13,7 @@ from app.api.v1.auth import router as auth_router
 from app.api.v1.comments import comments_router, skill_comments_router
 from app.api.v1.notifications import router as notifications_router
 from app.api.v1.skills import router as skills_router
+from app.api.v1.stats import router as stats_router
 from app.api.v1.tags import router as tags_router
 from app.api.v1.users import router as users_router
 from app.core.config import get_settings
@@ -65,15 +67,15 @@ app.include_router(
 # 评论删除路由
 app.include_router(comments_router, prefix="/api/v1/comments", tags=["评论"])
 # 通知路由
-app.include_router(
-    notifications_router, prefix="/api/v1/users/me/notifications", tags=["通知"]
-)
+app.include_router(notifications_router, prefix="/api/v1/users/me/notifications", tags=["通知"])
 # 管理后台路由
 app.include_router(admin_router, prefix="/api/v1/admin", tags=["管理后台"])
 # 用户路由
 app.include_router(users_router, prefix="/api/v1/users", tags=["用户"])
 # 标签路由（公开访问）
 app.include_router(tags_router, prefix="/api/v1/tags", tags=["标签"])
+# 公开统计路由（无需鉴权）
+app.include_router(stats_router, prefix="/api/v1/stats", tags=["统计"])
 
 # 静态文件服务（上传的文件）
 app.mount("/uploads", StaticFiles(directory=str(settings.upload_path)), name="uploads")
@@ -103,4 +105,5 @@ async def health_check() -> dict[str, str]:
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

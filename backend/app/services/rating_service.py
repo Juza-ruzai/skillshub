@@ -1,4 +1,5 @@
 """评分服务层 - 处理 Skill 评分的业务逻辑."""
+
 from decimal import Decimal
 from uuid import UUID
 

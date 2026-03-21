@@ -1,4 +1,5 @@
 """通用 Schema 定义."""
+
 from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, computed_field

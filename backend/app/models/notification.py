@@ -1,4 +1,5 @@
 """通知模型."""
+
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
@@ -7,6 +8,7 @@ from sqlmodel import Field, SQLModel
 
 class NotificationBase(SQLModel):
     """通知基础字段."""
+
     type: str = Field(max_length=50)  # skill_update, etc.
     message: str = Field(max_length=255)
     is_read: bool = Field(default=False)
@@ -14,6 +16,7 @@ class NotificationBase(SQLModel):
 
 class Notification(NotificationBase, table=True):
     """通知表模型."""
+
     __tablename__ = "notifications"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)

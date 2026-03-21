@@ -1,4 +1,5 @@
 """数据模型模块."""
+
 from app.models.comment import Comment
 from app.models.download_log import DownloadLog
 from app.models.favorite import Favorite

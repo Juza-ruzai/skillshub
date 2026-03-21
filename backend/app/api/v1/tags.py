@@ -1,4 +1,5 @@
 """标签 API 路由（公开访问）."""
+
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -23,9 +24,7 @@ async def list_tags(
     Returns:
         标签列表，按使用次数降序排列
     """
-    result = await db_session.execute(
-        select(Tag).order_by(desc(Tag.usage_count))
-    )
+    result = await db_session.execute(select(Tag).order_by(desc(Tag.usage_count)))
     tags = result.scalars().all()
 
     return {

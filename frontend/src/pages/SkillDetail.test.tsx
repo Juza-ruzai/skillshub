@@ -40,12 +40,12 @@ const mockSkill: Skill = {
   id: 'skill-123',
   name: 'PDF Processor',
   description: 'A skill for processing PDF files',
-  usageScenario: 'Use when you need to extract text from PDF',
-  usageMethod: 'Upload PDF and run the script',
-  demoImages: [{ url: '/demo.png', caption: 'Demo' }],
-  filePath: '/uploads/skill-123/package.zip',
-  fileSize: 1024,
-  fileTree: [
+  usage_scenario: 'Use when you need to extract text from PDF',
+  usage_method: 'Upload PDF and run the script',
+  demo_images: [{ url: '/demo.png', caption: 'Demo' }],
+  file_path: '/uploads/skill-123/package.zip',
+  file_size: 1024,
+  file_tree: [
     {
       name: 'scripts',
       type: 'directory',
@@ -54,19 +54,19 @@ const mockSkill: Skill = {
     { name: 'README.md', type: 'file', path: 'README.md' },
   ],
   tags: ['pdf', 'automation'],
-  authorId: 'user-123',
-  authorUsername: 'john_doe',
-  isDeleted: false,
-  isPinned: false,
-  downloadCount: 100,
-  viewCount: 500,
-  favoriteCount: 50,
-  ratingAvg: 4.5,
-  ratingCount: 20,
-  isFavorite: false,
-  userRating: 0,
-  createdAt: '2026-01-01T00:00:00Z',
-  updatedAt: '2026-01-01T00:00:00Z',
+  author_id: 'user-123',
+  author_username: 'john_doe',
+  is_deleted: false,
+  is_pinned: false,
+  download_count: 100,
+  view_count: 500,
+  favorite_count: 50,
+  rating_avg: 4.5,
+  rating_count: 20,
+  is_favorite: false,
+  user_rating: 0,
+  created_at: '2026-01-01T00:00:00Z',
+  updated_at: '2026-01-01T00:00:00Z',
 }
 
 const mockComments: CommentWithReplies[] = [
@@ -364,7 +364,7 @@ describe('SkillDetail Page', () => {
     it('should allow logged-in user to favorite/unfavorite skill', async () => {
       mockToggleFavorite.mockResolvedValue({ isFavorite: true })
 
-      const skillNotFavorited = { ...mockSkill, isFavorite: false }
+      const skillNotFavorited = { ...mockSkill, is_favorite: false }
       mockGetSkillDetail.mockResolvedValue(skillNotFavorited)
 
       vi.mocked(authHook.useAuth).mockReturnValue({
@@ -396,7 +396,7 @@ describe('SkillDetail Page', () => {
     })
 
     it('should show correct favorite state', async () => {
-      const skillFavorited = { ...mockSkill, isFavorite: true }
+      const skillFavorited = { ...mockSkill, is_favorite: true }
       mockGetSkillDetail.mockResolvedValue(skillFavorited)
 
       vi.mocked(authHook.useAuth).mockReturnValue({

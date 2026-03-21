@@ -1,4 +1,5 @@
 """JWT、密码加密和认证依赖."""
+
 from datetime import UTC, datetime, timedelta
 from typing import Any
 

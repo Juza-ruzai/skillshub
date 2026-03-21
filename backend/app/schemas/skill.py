@@ -1,6 +1,6 @@
 """Skill 相关 Pydantic Schema."""
+
 from datetime import datetime
-from decimal import Decimal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -85,7 +85,7 @@ class SkillResponse(BaseModel):
     is_pinned: bool = False
     download_count: int = 0
     view_count: int = 0
-    rating_avg: Decimal = Decimal("0.0")
+    rating_avg: float = 0.0
     rating_count: int = 0
     created_at: datetime
     updated_at: datetime
@@ -103,7 +103,8 @@ class SkillListResponse(BaseModel):
     author_id: UUID
     author_username: str
     download_count: int = 0
-    rating_avg: Decimal = Decimal("0.0")
+    favorite_count: int = 0
+    rating_avg: float = 0.0
     rating_count: int = 0
     created_at: datetime
 
@@ -129,7 +130,8 @@ class SkillDetailResponse(BaseModel):
     user_rating: int | None = None
     download_count: int = 0
     view_count: int = 0
-    rating_avg: Decimal = Decimal("0.0")
+    favorite_count: int = 0
+    rating_avg: float = 0.0
     rating_count: int = 0
     created_at: datetime
     updated_at: datetime

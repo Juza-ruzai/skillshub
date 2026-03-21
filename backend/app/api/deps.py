@@ -1,4 +1,5 @@
 """API 依赖注入."""
+
 from collections.abc import AsyncGenerator
 from typing import Annotated
 from uuid import UUID

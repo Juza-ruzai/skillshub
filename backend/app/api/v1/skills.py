@@ -1,13 +1,15 @@
 """Skill API 路由."""
+
 from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_current_user, get_current_user_optional
 from app.core.database import get_session
+from app.models.favorite import Favorite
 from app.models.user import User
 from app.schemas.common import PaginatedResponse
 from app.schemas.skill import (
@@ -49,10 +51,25 @@ async def _get_author_usernames(
 
     from sqlalchemy import column
 
-    result = await db_session.execute(
+    result: Any = await db_session.execute(
         select(column("id"), column("username")).select_from(User).where(User.id.in_(author_ids))  # type: ignore[attr-defined]
     )
     return dict(result.all())
+
+
+async def _get_favorite_counts(
+    db_session: AsyncSession,
+    skill_ids: set[UUID],
+) -> dict[UUID, int]:
+    """批量获取 Skill 收藏数."""
+    if not skill_ids:
+        return {}
+    result = await db_session.execute(
+        select(Favorite.skill_id, func.count(Favorite.user_id).label("cnt"))  # type: ignore[arg-type, call-overload]
+        .where(Favorite.skill_id.in_(skill_ids))  # type: ignore[attr-defined]
+        .group_by(Favorite.skill_id)
+    )
+    return {row.skill_id: row.cnt for row in result.all()}
 
 
 @router.get("", response_model=PaginatedResponse[SkillListResponse])
@@ -74,6 +91,10 @@ async def list_skills(
     author_ids = {skill.author_id for skill in skills}
     author_map = await _get_author_usernames(db_session, author_ids)
 
+    # 批量获取收藏数
+    skill_ids = {skill.id for skill in skills}
+    favorite_map = await _get_favorite_counts(db_session, skill_ids)
+
     # 转换为响应模型
     items = []
     for skill in skills:
@@ -86,7 +107,8 @@ async def list_skills(
                 author_id=skill.author_id,
                 author_username=author_map.get(skill.author_id, "未知用户"),
                 download_count=skill.download_count,
-                rating_avg=skill.rating_avg,
+                favorite_count=favorite_map.get(skill.id, 0),
+                rating_avg=float(skill.rating_avg),
                 rating_count=skill.rating_count,
                 created_at=skill.created_at,
             )
@@ -112,6 +134,10 @@ async def get_trending_skills(
     author_ids = {skill.author_id for skill in skills}
     author_map = await _get_author_usernames(db_session, author_ids)
 
+    # 批量获取收藏数
+    skill_ids = {skill.id for skill in skills}
+    favorite_map = await _get_favorite_counts(db_session, skill_ids)
+
     return [
         SkillListResponse(
             id=skill.id,
@@ -121,7 +147,8 @@ async def get_trending_skills(
             author_id=skill.author_id,
             author_username=author_map.get(skill.author_id, "未知用户"),
             download_count=skill.download_count,
-            rating_avg=skill.rating_avg,
+            favorite_count=favorite_map.get(skill.id, 0),
+            rating_avg=float(skill.rating_avg),
             rating_count=skill.rating_count,
             created_at=skill.created_at,
         )
@@ -141,6 +168,10 @@ async def get_top_rated_skills(
     author_ids = {skill.author_id for skill in skills}
     author_map = await _get_author_usernames(db_session, author_ids)
 
+    # 批量获取收藏数
+    skill_ids = {skill.id for skill in skills}
+    favorite_map = await _get_favorite_counts(db_session, skill_ids)
+
     return [
         SkillListResponse(
             id=skill.id,
@@ -150,7 +181,8 @@ async def get_top_rated_skills(
             author_id=skill.author_id,
             author_username=author_map.get(skill.author_id, "未知用户"),
             download_count=skill.download_count,
-            rating_avg=skill.rating_avg,
+            favorite_count=favorite_map.get(skill.id, 0),
+            rating_avg=float(skill.rating_avg),
             rating_count=skill.rating_count,
             created_at=skill.created_at,
         )
@@ -170,6 +202,10 @@ async def get_most_downloaded_skills(
     author_ids = {skill.author_id for skill in skills}
     author_map = await _get_author_usernames(db_session, author_ids)
 
+    # 批量获取收藏数
+    skill_ids = {skill.id for skill in skills}
+    favorite_map = await _get_favorite_counts(db_session, skill_ids)
+
     return [
         SkillListResponse(
             id=skill.id,
@@ -179,7 +215,8 @@ async def get_most_downloaded_skills(
             author_id=skill.author_id,
             author_username=author_map.get(skill.author_id, "未知用户"),
             download_count=skill.download_count,
-            rating_avg=skill.rating_avg,
+            favorite_count=favorite_map.get(skill.id, 0),
+            rating_avg=float(skill.rating_avg),
             rating_count=skill.rating_count,
             created_at=skill.created_at,
         )
@@ -270,6 +307,9 @@ async def get_skill_detail(
             detail="Skill 不存在",
         )
 
+    # 在 commit 前保存 author_id，避免被 session commit 影响
+    author_id = skill.author_id
+
     # 增加浏览计数
     await skill_service.increment_view_count(db_session, skill_id)
 
@@ -289,6 +329,13 @@ async def get_skill_detail(
             user_id=current_user.id,
         )
 
+    # 查询作者用户名
+    author_map = await _get_author_usernames(db_session, {author_id})
+    author_username = author_map.get(author_id, "未知用户")
+
+    # 查询收藏数
+    favorite_count = await favorite_service.get_favorite_count(db_session, skill_id=skill_id)
+
     return SkillDetailResponse(
         id=skill.id,
         name=skill.name,
@@ -301,12 +348,13 @@ async def get_skill_detail(
         file_tree=skill.file_tree,
         tags=skill.tags,
         author_id=skill.author_id,
-        author_username="",
+        author_username=author_username,
         is_favorite=is_favorite,
         user_rating=user_rating,
         download_count=skill.download_count,
         view_count=skill.view_count + 1,
-        rating_avg=skill.rating_avg,
+        favorite_count=favorite_count,
+        rating_avg=float(skill.rating_avg),
         rating_count=skill.rating_count,
         created_at=skill.created_at,
         updated_at=skill.updated_at,

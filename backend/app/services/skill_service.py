@@ -1,4 +1,5 @@
 """Skill 服务层 - 处理 Skill 的业务逻辑."""
+
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from typing import Any
@@ -197,7 +198,7 @@ class SkillService:
             query = query.where(
                 or_(
                     Skill.tags.like(f'%"{tag_lower}"%'),
-                    Skill.tags.like(f'%{tag_lower}%'),
+                    Skill.tags.like(f"%{tag_lower}%"),
                 )
             )
 
@@ -349,9 +350,8 @@ class SkillService:
         from app.models.rating import Rating
 
         # 计算平均评分
-        query = (
-            select(func.avg(Rating.score), func.count(Rating.score))
-            .where(Rating.skill_id == skill_id)
+        query = select(func.avg(Rating.score), func.count(Rating.score)).where(
+            Rating.skill_id == skill_id
         )
         result = await db_session.execute(query)
         avg_score, count = result.one_or_none() or (0, 0)

@@ -35,10 +35,10 @@ describe('类型定义', () => {
       expectTypeOf<Skill>().toHaveProperty('id')
       expectTypeOf<Skill>().toHaveProperty('name')
       expectTypeOf<Skill>().toHaveProperty('description')
-      expectTypeOf<Skill>().toHaveProperty('authorId')
-      expectTypeOf<Skill>().toHaveProperty('ratingAvg')
-      expectTypeOf<Skill>().toHaveProperty('downloadCount')
-      expectTypeOf<Skill>().toHaveProperty('favoriteCount')
+      expectTypeOf<Skill>().toHaveProperty('author_id')
+      expectTypeOf<Skill>().toHaveProperty('rating_avg')
+      expectTypeOf<Skill>().toHaveProperty('download_count')
+      expectTypeOf<Skill>().toHaveProperty('favorite_count')
     })
 
     it('SkillCreate 应该包含创建 Skill 必需字段', () => {
@@ -52,15 +52,15 @@ describe('类型定义', () => {
       expectTypeOf<SkillListResponse>().toHaveProperty('items')
       expectTypeOf<SkillListResponse>().toHaveProperty('total')
       expectTypeOf<SkillListResponse>().toHaveProperty('page')
-      expectTypeOf<SkillListResponse>().toHaveProperty('pageSize')
+      expectTypeOf<SkillListResponse>().toHaveProperty('page_size')
     })
 
     it('SkillDetail 应该包含详情页必需字段', () => {
       expectTypeOf<SkillDetail>().toHaveProperty('id')
-      expectTypeOf<SkillDetail>().toHaveProperty('fileTree')
+      expectTypeOf<SkillDetail>().toHaveProperty('file_tree')
       expectTypeOf<SkillDetail>().toHaveProperty('content')
-      expectTypeOf<SkillDetail>().toHaveProperty('isFavorite')
-      expectTypeOf<SkillDetail>().toHaveProperty('userRating')
+      expectTypeOf<SkillDetail>().toHaveProperty('is_favorite')
+      expectTypeOf<SkillDetail>().toHaveProperty('user_rating')
     })
   })
 

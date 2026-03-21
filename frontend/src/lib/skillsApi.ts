@@ -63,7 +63,7 @@ export const rateSkill = async (id: string, score: number): Promise<void> => {
   await apiClient.post(`/skills/${id}/rate`, { score })
 }
 
-export const toggleFavorite = async (id: string): Promise<{ isFavorite: boolean }> => {
+export const toggleFavorite = async (id: string): Promise<{ is_favorited: boolean }> => {
   const response = await apiClient.post(`/skills/${id}/favorite`)
   return response.data
 }
@@ -85,5 +85,16 @@ export const getTopRatedSkills = async (): Promise<Skill[]> => {
 
 export const getMostDownloadedSkills = async (): Promise<Skill[]> => {
   const response = await apiClient.get('/skills/most-downloaded')
+  return response.data
+}
+
+export interface PublicStats {
+  total_skills: number
+  total_downloads: number
+  total_users: number
+}
+
+export const getPublicStats = async (): Promise<PublicStats> => {
+  const response = await apiClient.get('/stats/public')
   return response.data
 }

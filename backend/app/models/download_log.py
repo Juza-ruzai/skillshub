@@ -1,4 +1,5 @@
 """下载日志模型."""
+
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
@@ -7,6 +8,7 @@ from sqlmodel import Field, SQLModel
 
 class DownloadLog(SQLModel, table=True):
     """下载记录表."""
+
     __tablename__ = "download_logs"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)

@@ -46,7 +46,7 @@
 2.完成验收标准，全部完成后给我汇报
 ### 前端开发
 采用"开发一个页面 → 验收一个页面 → 确认后再继续"的方式，确保每一步都符合 Design.md规范。
-1.开发页面前，你先和我说一下这个页面的开发计划，大致的页面是如何设计的？ 
+1.开发页面前，你先和我说一下这个页面的开发计划，大致的页面是如何设计的？我需要确认你的想法是否符合我的意图
 2.开发页面后，使用playwright进行验证
 
 ## 前后端API调试
@@ -86,12 +86,11 @@ npm run type-check   # TypeScript 类型检查
 npm run lint:fix && npm run type-check
 ```
 
-## Windows 环境操作规范
+## Windows 终端进程操作规范
 ### 进程/端口管理
 - **禁止**使用 bash 的 `kill` 命令杀 Windows 进程，bash 的 kill 对 Windows PID 无效
 - 查端口占用：`netstat -ano | grep :PORT`（bash）或 `netstat -ano | findstr :PORT`（PowerShell）
-- 杀进程：只能在 PowerShell/CMD 中执行 `taskkill /f /pid <PID>`，不要在 bash 中尝试
-- 如需关闭端口，**直接告知用户执行** `taskkill /f /pid <PID>`，不要自己尝试
+- 杀进程：在 PowerShell/CMD 中执行 `taskkill /f /pid <PID>`，不要在 bash 中尝试
 ### 开发服务器
 - 前端默认端口：**5173**（`cd frontend && npm run dev`）
 - 后端默认端口：**8000**（`cd backend && python -m app.main`）

@@ -1,4 +1,5 @@
 """Skill 模型."""
+
 from datetime import UTC, datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
@@ -9,6 +10,7 @@ from sqlmodel import Field, SQLModel
 
 class SkillBase(SQLModel):
     """Skill 基础字段."""
+
     name: str = Field(max_length=100, index=True)
     description: str
     usage_scenario: str
@@ -28,6 +30,7 @@ class SkillBase(SQLModel):
 
 class Skill(SkillBase, table=True):
     """Skill 表模型."""
+
     __tablename__ = "skills"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)

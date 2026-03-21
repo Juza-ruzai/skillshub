@@ -1,4 +1,5 @@
 """收藏服务层 - 处理 Skill 收藏的业务逻辑."""
+
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -118,9 +119,7 @@ class FavoriteService:
             收藏数量
         """
         result = await db_session.execute(
-            select(func.count(Favorite.skill_id)).where(
-                Favorite.skill_id == skill_id
-            )
+            select(func.count(Favorite.skill_id)).where(Favorite.skill_id == skill_id)
         )
         count = result.scalar_one_or_none()
         return count or 0

@@ -1,4 +1,5 @@
 """评论服务层 - 处理评论的业务逻辑."""
+
 from datetime import UTC, datetime
 from uuid import UUID
 
@@ -118,9 +119,7 @@ class CommentService:
             ValueError: 评论不存在
             PermissionError: 无权删除
         """
-        result = await db_session.execute(
-            select(Comment).where(Comment.id == comment_id)
-        )
+        result = await db_session.execute(select(Comment).where(Comment.id == comment_id))
         comment = result.scalar_one_or_none()
 
         if comment is None:

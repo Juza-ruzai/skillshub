@@ -1,4 +1,5 @@
 """用户 Schema 定义."""
+
 from datetime import datetime
 from uuid import UUID
 

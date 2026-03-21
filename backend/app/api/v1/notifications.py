@@ -1,4 +1,5 @@
 """通知 API 路由."""
+
 from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import CurrentUser, DbDep
@@ -40,9 +41,7 @@ async def get_notifications(
     )
 
     return NotificationListResponse(
-        notifications=[
-            NotificationResponse.model_validate(n) for n in notifications
-        ],
+        notifications=[NotificationResponse.model_validate(n) for n in notifications],
         unread_count=unread_count,
     )
 
@@ -78,13 +77,9 @@ async def mark_as_read(
         )
         return {"message": "通知已标记为已读"}
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=str(e)
-        ) from e
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e)) from e
     except PermissionError as e:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail=str(e)
-        ) from e
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e)) from e
 
 
 @router.post(

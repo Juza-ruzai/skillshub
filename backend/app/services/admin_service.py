@@ -1,4 +1,5 @@
 """Admin 服务层."""
+
 import csv
 import io
 from datetime import UTC, datetime, timedelta
@@ -272,7 +273,11 @@ class AdminService:
         Returns:
             (评论列表, 总数)
         """
-        query = select(Comment, User, Skill).join(User, Comment.user_id == User.id).join(Skill, Comment.skill_id == Skill.id)
+        query = (
+            select(Comment, User, Skill)
+            .join(User, Comment.user_id == User.id)
+            .join(Skill, Comment.skill_id == Skill.id)
+        )
 
         if skill_id:
             query = query.where(Comment.skill_id == skill_id)
@@ -362,11 +367,19 @@ class AdminService:
                 func.count(func.distinct(Comment.id)).label("comment_count"),
                 func.count(func.distinct(Skill.id)).label("upload_count"),
             )
-            .outerjoin(DownloadLog, (DownloadLog.user_id == User.id) & (DownloadLog.created_at >= since))
+            .outerjoin(
+                DownloadLog, (DownloadLog.user_id == User.id) & (DownloadLog.created_at >= since)
+            )
             .outerjoin(Comment, (Comment.user_id == User.id) & (Comment.created_at >= since))
             .outerjoin(Skill, (Skill.author_id == User.id) & (Skill.created_at >= since))
             .group_by(User.id, User.username)
-            .order_by((func.count(func.distinct(DownloadLog.id)) + func.count(func.distinct(Comment.id)) + func.count(func.distinct(Skill.id))).desc())
+            .order_by(
+                (
+                    func.count(func.distinct(DownloadLog.id))
+                    + func.count(func.distinct(Comment.id))
+                    + func.count(func.distinct(Skill.id))
+                ).desc()
+            )
             .limit(limit)
         )
         users = result.all()
@@ -398,14 +411,16 @@ class AdminService:
         writer.writerow(["id", "username", "email", "is_admin", "is_active", "created_at"])
 
         for user in users:
-            writer.writerow([
-                str(user.id),
-                user.username,
-                user.email,
-                user.is_admin,
-                user.is_active,
-                user.created_at.isoformat() if user.created_at else "",
-            ])
+            writer.writerow(
+                [
+                    str(user.id),
+                    user.username,
+                    user.email,
+                    user.is_admin,
+                    user.is_active,
+                    user.created_at.isoformat() if user.created_at else "",
+                ]
+            )
 
         output.seek(0)
         return output.getvalue()
@@ -425,12 +440,14 @@ class AdminService:
         writer.writerow(["id", "name", "usage_count", "created_at"])
 
         for tag in tags:
-            writer.writerow([
-                str(tag.id),
-                tag.name,
-                tag.usage_count,
-                tag.created_at.isoformat() if tag.created_at else "",
-            ])
+            writer.writerow(
+                [
+                    str(tag.id),
+                    tag.name,
+                    tag.usage_count,
+                    tag.created_at.isoformat() if tag.created_at else "",
+                ]
+            )
 
         output.seek(0)
         return output.getvalue()

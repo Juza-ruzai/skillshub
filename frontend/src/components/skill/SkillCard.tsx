@@ -33,27 +33,27 @@ export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
         <p className="mt-1 text-sm text-gray-600 line-clamp-2">{skill.description}</p>
 
         {/* Author */}
-        <p className="mt-2 text-xs text-gray-500">by {skill.authorUsername || 'Unknown'}</p>
+        <p className="mt-2 text-xs text-gray-500">by {skill.author_username || 'Unknown'}</p>
 
         {/* Stats */}
         <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
           {/* Rating */}
           <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-yellow-400 fill-current" />
-            <span>{skill.ratingAvg.toFixed(1)}</span>
-            <span className="text-gray-400">({skill.ratingCount})</span>
+            <span>{skill.rating_avg.toFixed(1)}</span>
+            <span className="text-gray-400">({skill.rating_count})</span>
           </div>
 
           {/* Downloads */}
           <div className="flex items-center gap-1">
             <Download className="w-4 h-4" />
-            <span>{skill.downloadCount}</span>
+            <span>{skill.download_count}</span>
           </div>
 
           {/* Favorites */}
           <div className="flex items-center gap-1">
             <Heart className="w-4 h-4" />
-            <span>{skill.favoriteCount}</span>
+            <span>{skill.favorite_count}</span>
           </div>
         </div>
       </div>

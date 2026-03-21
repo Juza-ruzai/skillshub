@@ -1,4 +1,5 @@
 """应用配置管理."""
+
 from functools import lru_cache
 from pathlib import Path
 

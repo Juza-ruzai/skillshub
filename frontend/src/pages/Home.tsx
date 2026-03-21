@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Search, X, Pin, Sparkles, Download, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
+import { getPublicStats } from '@/lib/skillsApi'
 import { SkillList } from '@/components/skill/SkillList'
 import { Pagination } from '@/components/common/Pagination'
 import type { Skill, SkillListResponse } from '@/types/skill'
@@ -48,7 +49,7 @@ const fetchSkills = async (params: FetchSkillsParams): Promise<SkillListResponse
       page,
       page_size: pageSize,
       ...(tag && { tag }),
-      ...(q && { q }),
+      ...(q && { search: q }),
     },
   })
 
@@ -156,6 +157,12 @@ export function Home(): JSX.Element {
       }),
   })
 
+  const { data: statsData } = useQuery({
+    queryKey: ['public-stats'],
+    queryFn: getPublicStats,
+    staleTime: 60_000,
+  })
+
   const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab)
     setPage(1)
@@ -205,23 +212,20 @@ export function Home(): JSX.Element {
 
   const sortedSkills = data?.items
     ? [...data.items].sort((a, b) => {
-        if (a.isPinned && !b.isPinned) return -1
-        if (!a.isPinned && b.isPinned) return 1
+        if (a.is_pinned && !b.is_pinned) return -1
+        if (!a.is_pinned && b.is_pinned) return 1
         return 0
       })
     : []
 
   const errorMessage = error ? '加载失败，请稍后重试' : null
 
-  // Hero stats: use real data if available, else placeholders
-  const totalSkills = data?.total ?? '--'
-  const totalDownloads = sortedSkills.reduce((sum, s) => sum + (s.downloadCount ?? 0), 0)
+  // Hero stats: from public stats API
+  const totalSkills = statsData?.total_skills ?? '--'
+  const totalDownloads = statsData?.total_downloads ?? 0
   const totalDownloadsDisplay =
-    totalDownloads > 0
-      ? totalDownloads > 1000
-        ? `${(totalDownloads / 1000).toFixed(1)}k`
-        : String(totalDownloads)
-      : '--'
+    totalDownloads > 1000 ? `${(totalDownloads / 1000).toFixed(1)}k` : String(totalDownloads)
+  const totalUsers = statsData?.total_users ?? '--'
 
   return (
     <div>
@@ -267,8 +271,8 @@ export function Home(): JSX.Element {
             icon={<Download className="h-6 w-6" style={{ color: 'var(--accent-primary)' }} />}
           />
           <StatRing
-            value="50"
-            label="活跃用户"
+            value={String(totalUsers)}
+            label="注册用户"
             progress={0.9}
             icon={<Users className="h-6 w-6" style={{ color: 'var(--accent-primary)' }} />}
           />
@@ -406,13 +410,13 @@ export function Home(): JSX.Element {
           <div
             key={skill.id}
             data-testid="skill-card"
-            data-pinned={skill.isPinned}
+            data-pinned={skill.is_pinned}
             className="relative rounded-2xl cursor-pointer group"
             style={{
               background: 'var(--card-bg)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
-              border: `1px solid ${skill.isPinned ? 'rgba(59,130,246,0.3)' : 'var(--card-border)'}`,
+              border: `1px solid ${skill.is_pinned ? 'rgba(59,130,246,0.3)' : 'var(--card-border)'}`,
               boxShadow: 'var(--card-shadow)',
               transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
@@ -432,7 +436,7 @@ export function Home(): JSX.Element {
             }}
           >
             {/* Pin badge */}
-            {skill.isPinned && (
+            {skill.is_pinned && (
               <div className="absolute top-3 right-3 z-10">
                 <span
                   className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full text-white"
@@ -471,9 +475,9 @@ export function Home(): JSX.Element {
                 className="flex items-center gap-3 text-xs mb-3"
                 style={{ color: 'var(--text-tertiary)' }}
               >
-                <span title="评分">⭐ {(skill.ratingAvg ?? 0).toFixed(1)}</span>
-                <span title="下载">↓ {skill.downloadCount ?? 0}</span>
-                <span title="收藏">♥ {skill.favoriteCount ?? 0}</span>
+                <span title="评分">⭐ {(skill.rating_avg ?? 0).toFixed(1)}</span>
+                <span title="下载">↓ {skill.download_count ?? 0}</span>
+                <span title="收藏">♥ {skill.favorite_count ?? 0}</span>
               </div>
 
               {/* Tags */}
@@ -496,7 +500,7 @@ export function Home(): JSX.Element {
               )}
 
               {/* Author */}
-              {skill.authorUsername && (
+              {skill.author_username && (
                 <div
                   className="mt-3 pt-3 text-xs flex items-center gap-1"
                   style={{
@@ -508,9 +512,9 @@ export function Home(): JSX.Element {
                     className="inline-flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-bold"
                     style={{ background: 'var(--btn-gradient)' }}
                   >
-                    {skill.authorUsername.charAt(0).toUpperCase()}
+                    {skill.author_username.charAt(0).toUpperCase()}
                   </span>
-                  <span>{skill.authorUsername}</span>
+                  <span>{skill.author_username}</span>
                 </div>
               )}
             </div>
