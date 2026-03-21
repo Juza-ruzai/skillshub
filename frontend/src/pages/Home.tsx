@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useState, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Search, X, Pin, Sparkles, Download, Users } from 'lucide-react'
 import { apiClient } from '@/lib/api'
@@ -14,8 +14,6 @@ interface FetchSkillsParams {
   tab: TabType
   page: number
   pageSize: number
-  tag?: string
-  q?: string
 }
 
 const TAB_ENDPOINTS: Record<TabType, string> = {
@@ -41,16 +39,11 @@ const getSkillIcon = (id: string): string => {
 }
 
 const fetchSkills = async (params: FetchSkillsParams): Promise<SkillListResponse> => {
-  const { tab, page, pageSize, tag, q } = params
+  const { tab, page, pageSize } = params
   const endpoint = TAB_ENDPOINTS[tab]
 
   const response = await apiClient.get<SkillListResponse>(endpoint, {
-    params: {
-      page,
-      page_size: pageSize,
-      ...(tag && { tag }),
-      ...(q && { search: q }),
-    },
+    params: { page, page_size: pageSize },
   })
 
   return response.data
@@ -130,31 +123,15 @@ function StatRing({ value, label, icon, progress }: StatRingProps): JSX.Element 
 }
 
 export function Home(): JSX.Element {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState<TabType>('hot')
   const [page, setPage] = useState(1)
   const [searchInput, setSearchInput] = useState('')
   const pageSize = 20
 
-  const tagFilter = searchParams.get('tag') || undefined
-  const searchQuery = searchParams.get('q') || undefined
-
-  useEffect(() => {
-    if (searchQuery) {
-      setSearchInput(searchQuery)
-    }
-  }, [searchQuery])
-
   const { data, isLoading, error } = useQuery({
-    queryKey: ['skills', activeTab, page, tagFilter, searchQuery],
-    queryFn: () =>
-      fetchSkills({
-        tab: activeTab,
-        page,
-        pageSize,
-        tag: tagFilter,
-        q: searchQuery,
-      }),
+    queryKey: ['skills', activeTab, page],
+    queryFn: () => fetchSkills({ tab: activeTab, page, pageSize }),
   })
 
   const { data: statsData } = useQuery({
@@ -174,15 +151,11 @@ export function Home(): JSX.Element {
   }, [])
 
   const handleSearch = useCallback(() => {
-    const next = new URLSearchParams(searchParams)
-    if (searchInput.trim()) {
-      next.set('q', searchInput.trim())
-    } else {
-      next.delete('q')
+    const trimmed = searchInput.trim()
+    if (trimmed) {
+      navigate(`/search?q=${encodeURIComponent(trimmed)}`)
     }
-    setSearchParams(next)
-    setPage(1)
-  }, [searchInput, searchParams, setSearchParams])
+  }, [searchInput, navigate])
 
   const handleSearchKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -190,21 +163,6 @@ export function Home(): JSX.Element {
     },
     [handleSearch]
   )
-
-  const handleClearSearch = useCallback(() => {
-    setSearchInput('')
-    const next = new URLSearchParams(searchParams)
-    next.delete('q')
-    setSearchParams(next)
-    setPage(1)
-  }, [searchParams, setSearchParams])
-
-  const handleClearTagFilter = useCallback(() => {
-    const next = new URLSearchParams(searchParams)
-    next.delete('tag')
-    setSearchParams(next)
-    setPage(1)
-  }, [searchParams, setSearchParams])
 
   const handleSkillClick = useCallback((skill: Skill) => {
     window.location.href = `/skills/${skill.id}`
@@ -218,7 +176,7 @@ export function Home(): JSX.Element {
       })
     : []
 
-  const errorMessage = error ? '加载失败，请稍后重试' : null
+  const errorMessage = error != null ? '加载失败，请稍后重试' : null
 
   // Hero stats: from public stats API
   const totalSkills = statsData?.total_skills ?? '--'
@@ -303,7 +261,7 @@ export function Home(): JSX.Element {
             {searchInput && (
               <button
                 type="button"
-                onClick={handleClearSearch}
+                onClick={() => setSearchInput('')}
                 className="p-1 mr-1 rounded-lg transition-colors"
                 style={{ color: 'var(--text-tertiary)' }}
               >
@@ -358,53 +316,12 @@ export function Home(): JSX.Element {
         })}
       </div>
 
-      {/* ===== Active Filters ===== */}
-      {(tagFilter || searchQuery) && (
-        <div className="mb-4 flex items-center gap-2 flex-wrap">
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            筛选:
-          </span>
-          {tagFilter && (
-            <span
-              className="inline-flex items-center gap-1 px-3 py-1 text-sm rounded-full"
-              style={{
-                background: 'rgba(59,130,246,0.1)',
-                color: 'var(--accent-primary)',
-                border: '1px solid rgba(59,130,246,0.2)',
-              }}
-            >
-              标签: {tagFilter}
-              <button type="button" onClick={handleClearTagFilter} className="ml-1">
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
-          {searchQuery && (
-            <span
-              className="inline-flex items-center gap-1 px-3 py-1 text-sm rounded-full"
-              style={{
-                background: 'rgba(6,182,212,0.1)',
-                color: 'var(--accent-secondary)',
-                border: '1px solid rgba(6,182,212,0.2)',
-              }}
-            >
-              搜索: {searchQuery}
-              <button type="button" onClick={handleClearSearch} className="ml-1">
-                <X className="h-3 w-3" />
-              </button>
-            </span>
-          )}
-        </div>
-      )}
-
       {/* ===== Skill List ===== */}
       <SkillList
         skills={sortedSkills}
         loading={isLoading}
         error={errorMessage}
-        emptyText={
-          searchQuery || tagFilter ? '没有找到相关 Skill，尝试其他关键词或标签' : '暂无 Skill'
-        }
+        emptyText="暂无 Skill"
         onSkillClick={handleSkillClick}
         renderSkillCard={(skill) => (
           <div

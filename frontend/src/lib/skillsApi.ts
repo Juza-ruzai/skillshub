@@ -68,7 +68,7 @@ export const toggleFavorite = async (id: string): Promise<{ is_favorited: boolea
   return response.data
 }
 
-export const downloadSkill = async (id: string): Promise<{ url: string }> => {
+export const downloadSkill = async (id: string): Promise<{ download_url: string }> => {
   const response = await apiClient.post(`/skills/${id}/download`)
   return response.data
 }
@@ -97,4 +97,14 @@ export interface PublicStats {
 export const getPublicStats = async (): Promise<PublicStats> => {
   const response = await apiClient.get('/stats/public')
   return response.data
+}
+
+export interface TagItem {
+  name: string
+  count: number
+}
+
+export const getTags = async (): Promise<TagItem[]> => {
+  const response = await apiClient.get<{ items: { name: string; usage_count: number }[] }>('/tags')
+  return response.data.items.map((t) => ({ name: t.name, count: t.usage_count }))
 }

@@ -5,6 +5,7 @@ import { AdminRoute } from './components/AdminRoute'
 import { Layout } from './components/layout/Layout'
 
 import { Home } from './pages/Home'
+import { SearchResults } from './pages/SearchResults'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import SkillDetail from './pages/SkillDetail'
@@ -40,7 +41,7 @@ function App() {
           {/* Layout-wrapped routes */}
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/search" element={<Home />} />
+            <Route path="/search" element={<SearchResults />} />
             <Route path="/skills/:id" element={<SkillDetail />} />
 
             {/* Private routes inside layout */}
