@@ -48,9 +48,12 @@
 采用"开发一个页面 → 验收一个页面 → 确认后再继续"的方式，确保每一步都符合 Design.md规范。
 1.开发页面前，你先和我说一下这个页面的开发计划，大致的页面是如何设计的？我需要确认你的想法是否符合我的意图
 2.开发页面后，使用playwright进行验证
-
-## 前后端API调试
+### 前后端API调试
 使用fastapi的openapi.json查看精准接口文档
+### 修复BUG
+使用superpowers 的 superpowers:systematic-debugging 技能进行修复
+### 进度控制
+带有checkbox的进度控制类文档，例如PROGRESS.md和TEST_CHECKLIST.md，当完成对应任务后需要自主更新进度类文档
 
 ## 代码质量要求
 ### 后端
@@ -87,15 +90,21 @@ npm run lint:fix && npm run type-check
 ```
 
 ## Windows 终端进程操作规范
-### 进程/端口管理
-- **禁止**使用 bash 的 `kill` 命令杀 Windows 进程，bash 的 kill 对 Windows PID 无效
-- 查端口占用：`netstat -ano | grep :PORT`（bash）或 `netstat -ano | findstr :PORT`（PowerShell）
-- 杀进程：在 PowerShell/CMD 中执行 `taskkill /f /pid <PID>`，不要在 bash 中尝试
-### 开发服务器
+### powershell中的进程/端口管理
+- 查端口占用： `netstat -ano | findstr :PORT`
+- 杀进程：在 PowerShell/CMD 中执行 `taskkill /f /pid <PID>`
+### 启动服务器
 - 前端默认端口：**5173**（`cd frontend && npm run dev`）
 - 后端默认端口：**8000**（`cd backend && python -m app.main`）
 - 启动前先确认端口未被占用，**不允许自动换端口**，如有占用先关闭被占用的端口
 
-## Git 提交规范（精简）
+## Git 提交规范
+### 提交时机（原子化提交）
+- 每个独立 Bug 修复完成或者一个子宫内开发后立即 commit（不要攒）
+- 每个功能子步骤完成后 commit（不要等整个功能完）
+- 每轮对话结束前必须 commit，不留 dirty 状态跨会话
+### 提交格式
 <type>(<scope>): <subject>
-类型：feat(新功能)、fix(修复)、docs(文档)、refactor(重构)、test(测试)、chore(构建)
+- 类型：feat(新功能)、fix(修复)、docs(文档)、refactor(重构)、test(测试)、chore(构建)
+- 内容：用中文描述
+- 修复bug时必填：根因：XXX 修复：XXX 
