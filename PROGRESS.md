@@ -1,8 +1,22 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-21
+> 最后更新：2026-03-22
 > **当前状态：前后端全部完成，进入前后端联调与 Bug 修复阶段**
+
+## 最新更新 (2026-03-22)
+
+### 新增功能
+
+| 功能 | 说明 | 状态 |
+|------|------|------|
+| **SkillDetail 布局重构** | 标签云移到右侧互动区顶部；文件树移到使用方法下方 | ✅ 已完成 |
+| **文件预览功能** | 点击文件树中的 `.md` 文件可在下方展开预览 | ✅ 已完成 |
+| **Markdown 编辑器图片上传** | 使用场景/使用方法编辑器支持拖拽/粘贴图片上传 | ✅ 已完成 |
+
+### 新增 API
+- `GET /skills/{id}/files/{path}` - 获取 Skill 包内文本文件内容
+- `POST /skills/{id}/content-images` - 上传编辑器内图片（限 2MB）
 
 ---
 
@@ -94,6 +108,10 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B9 | 🟡 中 | 搜索页标签云不显示 | ✅ 已修复 | `Tag` 表永远为空（skill 创建时未同步），`GET /api/v1/tags/` 改为从 `skills.tags` JSON 列聚合，Python Counter 实现，兼容 PostgreSQL 和 SQLite 测试环境 |
 | B10 | 🔴 高 | 通知服务未集成 | ✅ 已修复 | `update_skill` 路由补充收藏者批量通知（`skill_update` 类型）；`comments.py` 补充作者单条通知（`new_comment` 类型）；两处均排除自操作场景 |
 | B11 | 🟡 中 | 下载日志未写入 | ✅ 已修复 | `download_skill` 路由增加 `Request` + 可选 `current_user` 参数，每次下载创建 `DownloadLog`；登录用户记录 `user_id`，游客记录 `ip_address` |
+| B12 | 🔴 高 | CORS 配置字段名错误 | ✅ 已修复 | `config.py` 中字段名 `CORSallowed_origins: List[str]` 与环境变量 `ALLOWED_ORIGINS` 不匹配，导致 pydantic-settings 解析报错；根因：pydantic v2 对 `List[str]` 要求 JSON 格式；修复：改为 `allowed_origins: str`，用 `cors_origins` property 手动 split |
+| B13 | 🔴 高 | 上传 Skill 未解压 zip / file_tree 始终 None | ✅ 已修复 | `create_skill` 路由调用 `save_upload_file` 只保存 zip，从未调用 `extract_zip_file()`，导致 `extracted/` 目录不存在、`file_tree` 永远 None；修复：在保存文件后补充解压逻辑并将 `children` 数组写入 `skill.file_tree`，同时对已有 3 个 Skill 执行 DB 回填 |
+| B14 | 🔴 高 | `GET /skills/{id}/files/{path}` 404 | ✅ 已修复 | `get_skill_file` 在 `Path(skill.file_path).parent/` 查找文件，但文件实际在 `extracted/` 子目录；修复：优先检查 `extracted/` 是否存在，存在则从该目录解析文件路径 |
+| B15 | 🟡 中 | `file_tree` 类型 dict vs list 不一致 | ✅ 已修复 | `file_service.get_file_tree()` 返回根文件夹 `dict`，而 `SkillDetailResponse`/`SkillResponse` 中声明为 `dict \| None`，导致 pydantic v2 在保存 list 时抛 ValidationError；前端 `file_tree.length` 对 dict 求值也为 false；修复：三处均改为 `list \| None`，提取 `children` 数组存储 |
 
 > 新 Bug 在联调过程中持续补充此表。
 
@@ -135,6 +153,19 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 - T4.3.5 强制删除：实现为物理删除（DELETE 返回 204），非软删除（清单描述有误）
 - T4.4.6 禁用后登录：返回 401（非 403），HTTP 语义正确，"账号已被禁用"提示正常显示
 - T4.6.1 active-users 响应格式为 `{items: [...], days: N}` 非裸数组
+
+### T6 测试结果（2026-03-22）
+
+| 模块 | 通过 | 跳过 | 失败 |
+|------|------|------|------|
+| T6.1 SkillDetail 布局 | 2/2 | 0 | 0 |
+| T6.2 文件预览 | 4/5 | 0 | 1（T6.2.4 关闭预览按钮） |
+| T6.3 Markdown 图片上传 | 未测 | — | — |
+
+**备注**：
+- T6.1 全部通过：标签云确在右侧第一位，文件树确在使用方法后、评论前
+- T6.2.4 失败：Playwright 脚本找不到关闭按钮，需单独复测（源码存在关闭逻辑，可能是选择器问题）
+- T6.3 图片上传测试待执行（需作者登录后完成 Step1 才能获得 skillId）
 
 ### T5 测试结果（2026-03-22）
 
