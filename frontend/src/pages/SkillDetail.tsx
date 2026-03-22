@@ -13,6 +13,8 @@ import {
   Sparkles,
   FolderOpen,
   MessageCircle,
+  FileText,
+  X,
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { StarRating } from '../components/common/StarRating'
@@ -27,7 +29,7 @@ import {
   deleteSkill,
 } from '../lib/skillsApi'
 import { getSkillComments, postComment, deleteComment } from '../lib/commentsApi'
-import { API_BASE_URL } from '../lib/api'
+import { API_BASE_URL, apiClient } from '../lib/api'
 import type { CommentCreate } from '../types/comment'
 
 // Skill icon emoji pool
@@ -45,6 +47,10 @@ export default function SkillDetail(): JSX.Element {
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [previewFile, setPreviewFile] = useState<string | null>(null)
+  const [previewContent, setPreviewContent] = useState<string>('')
+  const [isPreviewLoading, setIsPreviewLoading] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
 
   // 获取 Skill 详情
   const {
@@ -121,6 +127,32 @@ export default function SkillDetail(): JSX.Element {
 
   // 判断是否作者
   const isAuthor = user?.id === skill?.author_id
+
+  // 获取文件内容
+  const fetchFileContent = async (filePath: string) => {
+    if (!id) return
+    setIsPreviewLoading(true)
+    try {
+      const response = await apiClient.get(`/skills/${id}/files/${filePath}`)
+      setPreviewContent(response.data.content)
+      setPreviewFile(filePath)
+      setShowPreview(true)
+    } catch (error) {
+      console.error('Failed to fetch file content:', error)
+      setPreviewContent('无法加载文件内容')
+      setShowPreview(true)
+    } finally {
+      setIsPreviewLoading(false)
+    }
+  }
+
+  // 处理文件点击
+  const handleFileClick = (path: string) => {
+    const lowerPath = path.toLowerCase()
+    if (lowerPath.endsWith('.md') || lowerPath.endsWith('.txt') || lowerPath.endsWith('.json')) {
+      fetchFileContent(path)
+    }
+  }
 
   // 处理评分
   const handleRate = (score: number) => {
@@ -310,9 +342,7 @@ export default function SkillDetail(): JSX.Element {
               <Sparkles size={18} style={{ color: 'var(--accent-primary)' }} />
               简介
             </h2>
-            <p style={{ color: 'var(--text-secondary)' }} className="whitespace-pre-wrap">
-              {skill.description}
-            </p>
+            <MarkdownPreview content={skill.description} />
           </section>
 
           {/* 使用场景 */}
@@ -334,9 +364,7 @@ export default function SkillDetail(): JSX.Element {
                 <Sparkles size={18} style={{ color: 'var(--accent-primary)' }} />
                 使用场景
               </h2>
-              <p style={{ color: 'var(--text-secondary)' }} className="whitespace-pre-wrap">
-                {skill.usage_scenario}
-              </p>
+              <MarkdownPreview content={skill.usage_scenario} />
             </section>
           )}
 
@@ -421,7 +449,7 @@ export default function SkillDetail(): JSX.Element {
             </section>
           )}
 
-          {/* 文件树 */}
+          {/* 文件树和预览 */}
           {skill.file_tree && skill.file_tree.length > 0 && (
             <section
               className="rounded-2xl p-6"
@@ -447,41 +475,71 @@ export default function SkillDetail(): JSX.Element {
                   border: '1px solid var(--card-border)',
                 }}
               >
-                <FileTree data={skill.file_tree} />
+                <FileTree data={skill.file_tree} onFileClick={handleFileClick} />
               </div>
+
+              {/* 文件预览区域 */}
+              {showPreview && (
+                <div className="mt-4">
+                  <div
+                    className="flex items-center justify-between mb-3"
+                    style={{
+                      padding: '12px 16px',
+                      background: 'rgba(59,130,246,0.08)',
+                      border: '1px solid rgba(59,130,246,0.2)',
+                      borderRadius: '12px 12px 0 0',
+                      borderBottom: 'none',
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <FileText size={18} style={{ color: 'var(--accent-primary)' }} />
+                      <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                        {previewFile}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPreview(false)}
+                      className="p-1 rounded-lg transition-colors"
+                      style={{ color: 'var(--text-tertiary)' }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(239,68,68,0.1)'
+                        e.currentTarget.style.color = '#ef4444'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent'
+                        e.currentTarget.style.color = 'var(--text-tertiary)'
+                      }}
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <div
+                    className="rounded-xl p-4"
+                    style={{
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid var(--card-border)',
+                      borderRadius: '0 0 12px 12px',
+                      maxHeight: '500px',
+                      overflowY: 'auto',
+                    }}
+                  >
+                    {isPreviewLoading ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2
+                          size={24}
+                          className="animate-spin"
+                          style={{ color: 'var(--accent-primary)' }}
+                        />
+                      </div>
+                    ) : (
+                      <MarkdownPreview content={previewContent} />
+                    )}
+                  </div>
+                </div>
+              )}
             </section>
           )}
-
-          {/* 标签 */}
-          <section
-            className="rounded-2xl p-6"
-            style={{
-              background: 'var(--card-bg)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid var(--card-border)',
-              boxShadow: 'var(--card-shadow)',
-            }}
-          >
-            <h2 className="text-lg font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-              标签
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {skill.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="px-3 py-1.5 rounded-full text-sm transition-all duration-200 hover:scale-105"
-                  style={{
-                    background: 'rgba(59,130,246,0.1)',
-                    color: 'var(--accent-primary)',
-                    border: '1px solid rgba(59,130,246,0.2)',
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </section>
 
           {/* 评论区 */}
           <section
@@ -513,6 +571,40 @@ export default function SkillDetail(): JSX.Element {
 
         {/* 右侧：互动区 */}
         <div className="space-y-6">
+          {/* 标签云卡片 */}
+          {skill.tags.length > 0 && (
+            <div
+              className="rounded-2xl p-5"
+              style={{
+                background: 'var(--card-bg)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid var(--card-border)',
+                boxShadow: 'var(--card-shadow)',
+              }}
+            >
+              <h3 className="text-sm font-medium mb-3" style={{ color: 'var(--text-secondary)' }}>
+                标签
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {skill.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="px-3 py-1.5 rounded-full text-sm transition-all duration-200 hover:scale-105 cursor-pointer"
+                    style={{
+                      background: 'rgba(59,130,246,0.1)',
+                      color: 'var(--accent-primary)',
+                      border: '1px solid rgba(59,130,246,0.2)',
+                    }}
+                    onClick={() => navigate(`/search?tag=${encodeURIComponent(tag)}`)}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 操作卡片 */}
           <div
             className="rounded-2xl p-6 space-y-5"

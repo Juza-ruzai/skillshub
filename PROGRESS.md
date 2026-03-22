@@ -13,6 +13,8 @@
 | **SkillDetail 布局重构** | 标签云移到右侧互动区顶部；文件树移到使用方法下方 | ✅ 已完成 |
 | **文件预览功能** | 点击文件树中的 `.md` 文件可在下方展开预览 | ✅ 已完成 |
 | **Markdown 编辑器图片上传** | 使用场景/使用方法编辑器支持拖拽/粘贴图片上传 | ✅ 已完成 |
+| **编辑器并排预览（Side-by-side）** | SkillUpload / SkillEdit 工具栏新增 Side-by-side 和 Fullscreen 按钮 | ✅ 已完成 |
+| **详情页 Markdown 渲染修复** | `description`（简介）和 `usage_scenario`（使用场景）由纯文本改为 `MarkdownPreview` 渲染 | ✅ 已完成 |
 
 ### 新增 API
 - `GET /skills/{id}/files/{path}` - 获取 Skill 包内文本文件内容
@@ -153,6 +155,19 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 - T4.3.5 强制删除：实现为物理删除（DELETE 返回 204），非软删除（清单描述有误）
 - T4.4.6 禁用后登录：返回 401（非 403），HTTP 语义正确，"账号已被禁用"提示正常显示
 - T4.6.1 active-users 响应格式为 `{items: [...], days: N}` 非裸数组
+
+### T7 测试结果（2026-03-22）
+
+| 模块 | 通过 | 跳过 | 失败 |
+|------|------|------|------|
+| T7.1 工具栏功能（9 项） | 9/9 | 0 | 0 |
+| T7.2 输入体验（5 项） | 4/5 | 1（T7.2.4 图片粘贴，需手动验收） | 0 |
+| T7.3 详情页 MD 渲染（6 项） | 6/6 | 0 | 0 |
+
+**备注**：
+- T7.1.5 无序列表：EasyMDE 输出 `* item`（非 `- item`），为标准 Markdown 语法，测试脚本期望值已修正
+- T7.1.9 Side-by-side：`.editor-preview-side` 正常出现，并排预览功能有效（新增功能）
+- T7.3 全通：`description`/`usage_scenario` 改用 `MarkdownPreview` 后，`strong/em/li/h1/code` 全部正确渲染，无裸露 `**` 符号
 
 ### T6 测试结果（2026-03-22）
 

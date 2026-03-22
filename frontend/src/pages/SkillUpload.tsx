@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../lib/api'
+import { uploadContentImage } from '../lib/skillsApi'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
@@ -486,8 +487,8 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
   )
 }
 
-// Markdown 编辑器配置
-const mdEditorOptions: EasyMDE.Options = {
+// Markdown 编辑器配置（带图片上传）
+const createMdEditorOptions = (skillId: string | null): EasyMDE.Options => ({
   spellChecker: false,
   status: false,
   toolbar: [
@@ -503,10 +504,27 @@ const mdEditorOptions: EasyMDE.Options = {
     'image',
     '|',
     'preview',
+    'side-by-side',
+    'fullscreen',
+    '|',
     'guide',
   ],
-  placeholder: '开始编写内容...支持 Markdown 语法',
-}
+  placeholder: '开始编写内容...支持 Markdown 语法\n\n💡 提示：可直接拖拽或粘贴图片到编辑器中',
+  // 图片上传配置
+  imageUploadFunction: skillId
+    ? (file, onSuccess, onError) => {
+        uploadContentImage(skillId, file)
+          .then((data) => {
+            onSuccess(data.url)
+          })
+          .catch((error) => {
+            onError(`上传失败: ${error instanceof Error ? error.message : '未知错误'}`)
+          })
+      }
+    : undefined,
+  // 允许拖拽图片
+  autosave: undefined,
+})
 
 // 主页面组件
 export default function SkillUpload() {
@@ -846,7 +864,7 @@ export default function SkillUpload() {
           <SimpleMDE
             value={metadata.usageScenario}
             onChange={(value) => setMetadata((prev) => ({ ...prev, usageScenario: value }))}
-            options={mdEditorOptions}
+            options={createMdEditorOptions(createdSkillId)}
           />
         </div>
         {validationErrors.usageScenario && (
@@ -892,7 +910,7 @@ export default function SkillUpload() {
           <SimpleMDE
             value={metadata.usageMethod}
             onChange={(value) => setMetadata((prev) => ({ ...prev, usageMethod: value }))}
-            options={mdEditorOptions}
+            options={createMdEditorOptions(createdSkillId)}
           />
         </div>
         {validationErrors.usageMethod && (
