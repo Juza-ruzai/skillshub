@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../lib/api'
 import { uploadContentImage } from '../lib/skillsApi'
@@ -507,6 +507,7 @@ const createMdEditorOptions = (skillId: string | null): EasyMDE.Options => ({
     'guide',
   ],
   placeholder: '开始编写内容...支持 Markdown 语法\n\n💡 提示：可直接拖拽或粘贴图片到编辑器中',
+  uploadImage: true,
   // 图片上传配置
   imageUploadFunction: skillId
     ? (file, onSuccess, onError) => {
@@ -696,6 +697,16 @@ export default function SkillUpload() {
     }
   }
 
+  // 稳定的 Markdown 编辑器配置（避免每次渲染重建 EasyMDE 实例）
+  const mdEditorOptionsScenario = useMemo(
+    () => createMdEditorOptions(createdSkillId),
+    [createdSkillId]
+  )
+  const mdEditorOptionsMethod = useMemo(
+    () => createMdEditorOptions(createdSkillId),
+    [createdSkillId]
+  )
+
   // 渲染 Step 1
   const renderStep1 = () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -861,7 +872,7 @@ export default function SkillUpload() {
           <SimpleMDE
             value={metadata.usageScenario}
             onChange={(value) => setMetadata((prev) => ({ ...prev, usageScenario: value }))}
-            options={createMdEditorOptions(createdSkillId)}
+            options={mdEditorOptionsScenario}
           />
         </div>
         <div
@@ -937,7 +948,7 @@ export default function SkillUpload() {
           <SimpleMDE
             value={metadata.usageMethod}
             onChange={(value) => setMetadata((prev) => ({ ...prev, usageMethod: value }))}
-            options={createMdEditorOptions(createdSkillId)}
+            options={mdEditorOptionsMethod}
           />
         </div>
         <div

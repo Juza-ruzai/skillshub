@@ -1,7 +1,8 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../lib/api'
+import { uploadContentImage } from '../lib/skillsApi'
 import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -365,7 +366,8 @@ const mdEditorOptions: EasyMDE.Options = {
     '|',
     'guide',
   ],
-  placeholder: '开始编写内容...支持 Markdown 语法',
+  placeholder: '开始编写内容...支持 Markdown 语法\n\n💡 提示：可直接拖拽或粘贴图片到编辑器中',
+  uploadImage: true,
 }
 
 // 主页面组件
@@ -531,6 +533,38 @@ export default function SkillEdit() {
   const handleCancel = () => {
     navigate(`/skills/${id}`)
   }
+
+  // 稳定的 Markdown 编辑器配置（带图片上传，必须在所有 early return 之前声明）
+  const mdEditorOptionsScenario = useMemo(
+    () => ({
+      ...mdEditorOptions,
+      imageUploadFunction: id
+        ? (file: File, onSuccess: (url: string) => void, onError: (error: string) => void) => {
+            uploadContentImage(id, file)
+              .then((data) => onSuccess(data.url))
+              .catch((error: unknown) =>
+                onError(`上传失败: ${error instanceof Error ? error.message : '未知错误'}`)
+              )
+          }
+        : undefined,
+    }),
+    [id]
+  )
+  const mdEditorOptionsMethod = useMemo(
+    () => ({
+      ...mdEditorOptions,
+      imageUploadFunction: id
+        ? (file: File, onSuccess: (url: string) => void, onError: (error: string) => void) => {
+            uploadContentImage(id, file)
+              .then((data) => onSuccess(data.url))
+              .catch((error: unknown) =>
+                onError(`上传失败: ${error instanceof Error ? error.message : '未知错误'}`)
+              )
+          }
+        : undefined,
+    }),
+    [id]
+  )
 
   // 加载骨架屏
   if (isLoadingSkill) {
@@ -823,7 +857,7 @@ export default function SkillEdit() {
               <SimpleMDE
                 value={metadata.usageScenario}
                 onChange={(value) => setMetadata((prev) => ({ ...prev, usageScenario: value }))}
-                options={mdEditorOptions}
+                options={mdEditorOptionsScenario}
               />
             </div>
             <div
@@ -899,7 +933,7 @@ export default function SkillEdit() {
               <SimpleMDE
                 value={metadata.usageMethod}
                 onChange={(value) => setMetadata((prev) => ({ ...prev, usageMethod: value }))}
-                options={mdEditorOptions}
+                options={mdEditorOptionsMethod}
               />
             </div>
             <div

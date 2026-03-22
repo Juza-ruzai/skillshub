@@ -114,6 +114,9 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B13 | 🔴 高 | 上传 Skill 未解压 zip / file_tree 始终 None | ✅ 已修复 | `create_skill` 路由调用 `save_upload_file` 只保存 zip，从未调用 `extract_zip_file()`，导致 `extracted/` 目录不存在、`file_tree` 永远 None；修复：在保存文件后补充解压逻辑并将 `children` 数组写入 `skill.file_tree`，同时对已有 3 个 Skill 执行 DB 回填 |
 | B14 | 🔴 高 | `GET /skills/{id}/files/{path}` 404 | ✅ 已修复 | `get_skill_file` 在 `Path(skill.file_path).parent/` 查找文件，但文件实际在 `extracted/` 子目录；修复：优先检查 `extracted/` 是否存在，存在则从该目录解析文件路径 |
 | B15 | 🟡 中 | `file_tree` 类型 dict vs list 不一致 | ✅ 已修复 | `file_service.get_file_tree()` 返回根文件夹 `dict`，而 `SkillDetailResponse`/`SkillResponse` 中声明为 `dict \| None`，导致 pydantic v2 在保存 list 时抛 ValidationError；前端 `file_tree.length` 对 dict 求值也为 false；修复：三处均改为 `list \| None`，提取 `children` 数组存储 |
+| B16 | 🔴 高 | `@tailwindcss/typography` 未安装，MarkdownPreview 样式全部失效 | ✅ 已修复 | `tailwind.config.js` `plugins: []` 为空，`prose`/`prose-slate` 类无实际 CSS 输出；根因：漏装插件；表现：标题无大号字体、链接无蓝色、列表无缩进符号 |
+| B17 | 🟡 中 | 编辑器图片拖拽/粘贴上传不可用 | ✅ 已修复 | 根因：`createMdEditorOptions` 缺少 `uploadImage: true`；EasyMDE 仅在该选项为 true 时才注册 paste/drop 事件拦截器，否则只有工具栏按钮有效；修复：在 SkillUpload.tsx 和 SkillEdit.tsx 均补加 `uploadImage: true` |
+| B18 | 🟡 中 | MarkdownPreview 链接无蓝色高亮 | ✅ 已修复 | 同 B16 根因：`prose` 未生效，`<a>` 标签无蓝色/下划线样式；随 B16 同步修复 |
 
 > 新 Bug 在联调过程中持续补充此表。
 
