@@ -295,17 +295,17 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 | T6.2.1 | 可点击文件有"预览"提示 | 访问含 .md 文件的 Skill 详情页，查看文件树 | .md 文件行右侧显示"预览"文字提示 | 页面中存在文本"预览"，且对应 .md 文件节点 | [x] |
 | T6.2.2 | 点击 .md 文件触发预览 | 点击文件树中的 SKILL.md | 预览区在文件树下方展开，调用后端 API | `GET /skills/{id}/files/SKILL.md` 返回 200，预览区 DOM 出现 | [x] |
 | T6.2.3 | 预览内容正确渲染 | 预览展开后查看内容 | 显示非空的 Markdown 渲染内容 | 预览区内有文本内容，不是加载中状态 | [x] |
-| T6.2.4 | 关闭预览 | 点击预览区右上角 X 按钮 | 预览区消失 | `showPreview` 区域从 DOM 中移除 | [ ] |
+| T6.2.4 | 关闭预览 | 点击预览区右上角 X 按钮 | 预览区消失 | `showPreview` 区域从 DOM 中移除 | [x] |
 | T6.2.5 | 后端文件内容 API | 直接请求 `GET /skills/{id}/files/SKILL.md` | 返回文件内容 | 响应 200，body 含 `content` 字段，值为字符串 | [x] |
 
 ### T6.3 Markdown 编辑器图片上传
 
 | # | 测试项 | 操作 | 期望结果 | 验收标准 | 状态 |
 |---|--------|------|---------|---------|------|
-| T6.3.1 | 上传页 Step2 编辑器含图片工具栏 | 完成 Step1 上传文件后，进入 Step2，查看编辑器工具栏 | 工具栏中有图片上传图标（image 按钮） | 编辑器 toolbar 中存在 `title="Image"` 或 class 含 `image` 的按钮 | [ ] |
-| T6.3.2 | 图片上传 API 可达 | 用已有 skillId，通过 fetch 上传一张 1x1 PNG 到 `POST /skills/{id}/content-images` | 返回 200，body 含 `url` 字段 | 响应 JSON `{ url: "..." }` 中 url 为非空字符串 | [ ] |
-| T6.3.3 | 图片大小限制 | 上传超过 2MB 的文件到 `POST /skills/{id}/content-images` | 返回 413 或 422 | API 拒绝超大文件，状态码 ≥ 400 | [ ] |
-| T6.3.4 | 编辑页同样支持图片上传 | 以作者身份进入编辑页，查看编辑器工具栏 | 工具栏有图片上传按钮 | 编辑器 toolbar 中存在图片按钮 | [ ] |
+| T6.3.1 | 上传页 Step2 编辑器含图片工具栏 | 完成 Step1 上传文件后，进入 Step2，查看编辑器工具栏 | 工具栏中有图片上传图标（image 按钮） | 编辑器 toolbar 中存在 `title="Image"` 或 class 含 `image` 的按钮 | [x] |
+| T6.3.2 | 图片上传 API 可达 | 用已有 skillId，通过 fetch 上传一张 1x1 PNG 到 `POST /skills/{id}/content-images` | 返回 200，body 含 `url` 字段 | 响应 JSON `{ url: "..." }` 中 url 为非空字符串 | [x] |
+| T6.3.3 | 图片大小限制 | 上传超过 2MB 的文件到 `POST /skills/{id}/content-images` | 返回 413 或 422 | API 拒绝超大文件，状态码 ≥ 400 | [x] |
+| T6.3.4 | 编辑页同样支持图片上传 | 以作者身份进入编辑页，查看编辑器工具栏 | 工具栏有图片上传按钮 | 编辑器 toolbar 中存在图片按钮 | [x] |
 
 ---
 
