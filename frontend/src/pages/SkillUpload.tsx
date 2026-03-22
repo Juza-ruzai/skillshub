@@ -21,6 +21,7 @@ import {
 } from 'lucide-react'
 import type EasyMDE from 'easymde'
 import 'easymde/dist/easymde.min.css'
+import { MarkdownPreview } from '../components/common/MarkdownPreview'
 
 // 上传步骤类型
 type UploadStep = 1 | 2 | 3
@@ -503,10 +504,6 @@ const createMdEditorOptions = (skillId: string | null): EasyMDE.Options => ({
     'link',
     'image',
     '|',
-    'preview',
-    'side-by-side',
-    'fullscreen',
-    '|',
     'guide',
   ],
   placeholder: '开始编写内容...支持 Markdown 语法\n\n💡 提示：可直接拖拽或粘贴图片到编辑器中',
@@ -867,6 +864,36 @@ export default function SkillUpload() {
             options={createMdEditorOptions(createdSkillId)}
           />
         </div>
+        <div
+          style={{
+            marginTop: '8px',
+            borderRadius: '12px',
+            border: '1px solid var(--card-border)',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              padding: '6px 12px',
+              borderBottom: '1px solid var(--card-border)',
+              fontSize: '12px',
+              fontWeight: 500,
+              color: 'var(--text-tertiary)',
+              background: 'rgba(59,130,246,0.04)',
+            }}
+          >
+            预览
+          </div>
+          <div style={{ padding: '12px 16px', minHeight: '60px' }}>
+            {metadata.usageScenario.trim() ? (
+              <MarkdownPreview content={metadata.usageScenario} />
+            ) : (
+              <span style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>
+                在上方输入内容后，预览将在此显示…
+              </span>
+            )}
+          </div>
+        </div>
         {validationErrors.usageScenario && (
           <div
             style={{
@@ -912,6 +939,36 @@ export default function SkillUpload() {
             onChange={(value) => setMetadata((prev) => ({ ...prev, usageMethod: value }))}
             options={createMdEditorOptions(createdSkillId)}
           />
+        </div>
+        <div
+          style={{
+            marginTop: '8px',
+            borderRadius: '12px',
+            border: '1px solid var(--card-border)',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              padding: '6px 12px',
+              borderBottom: '1px solid var(--card-border)',
+              fontSize: '12px',
+              fontWeight: 500,
+              color: 'var(--text-tertiary)',
+              background: 'rgba(59,130,246,0.04)',
+            }}
+          >
+            预览
+          </div>
+          <div style={{ padding: '12px 16px', minHeight: '60px' }}>
+            {metadata.usageMethod.trim() ? (
+              <MarkdownPreview content={metadata.usageMethod} />
+            ) : (
+              <span style={{ color: 'var(--text-tertiary)', fontSize: '13px' }}>
+                在上方输入内容后，预览将在此显示…
+              </span>
+            )}
+          </div>
         </div>
         {validationErrors.usageMethod && (
           <div
