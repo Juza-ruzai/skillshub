@@ -392,11 +392,12 @@ export default function SkillEdit() {
     enabled: !!id,
   })
 
-  // 权限检查：非作者重定向
+  // 权限检查：非作者且非管理员重定向
   useEffect(() => {
     if (skill && user) {
       const isAuthor = user.id === skill.author_id
-      if (!isAuthor) {
+      const isAdmin = user.is_admin
+      if (!isAuthor && !isAdmin) {
         navigate('/')
       }
     }

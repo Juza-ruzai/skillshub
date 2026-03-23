@@ -762,9 +762,12 @@ async def upload_cover(
 
     cover_path.write_bytes(content)
 
-    # 更新数据库中的 cover_url
-    cover_url = f"/uploads/{skill_id}/{filename}"
-    skill.cover_url = cover_url
+    # 更新数据库中的 cover_url（添加时间戳参数防止浏览器缓存）
+    import time
+
+    timestamp = int(time.time())
+    cover_url = f"/uploads/{skill_id}/{filename}?t={timestamp}"
+    skill.cover_url = f"/uploads/{skill_id}/{filename}"
     db_session.add(skill)
     await db_session.commit()
     await db_session.refresh(skill)
