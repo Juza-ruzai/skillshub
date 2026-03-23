@@ -365,15 +365,29 @@ export function Home(): JSX.Element {
               </div>
             )}
 
-            {/* Card image area — gradient bg + unique emoji per skill */}
+            {/* Card image area — cover image or gradient bg + emoji fallback */}
             <div
-              className="h-28 rounded-t-2xl flex items-center justify-center text-4xl"
+              className="h-28 rounded-t-2xl flex items-center justify-center text-4xl overflow-hidden"
               style={{
-                background:
-                  'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(6,182,212,0.08) 100%)',
+                background: skill.cover_url
+                  ? 'transparent'
+                  : 'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(6,182,212,0.08) 100%)',
               }}
             >
-              {getSkillIcon(skill.id)}
+              {skill.cover_url ? (
+                <img
+                  src={skill.cover_url}
+                  alt={skill.name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // 加载失败时隐藏图片，显示 emoji
+                    e.currentTarget.style.display = 'none'
+                    e.currentTarget.parentElement!.innerHTML = getSkillIcon(skill.id)
+                  }}
+                />
+              ) : (
+                getSkillIcon(skill.id)
+              )}
             </div>
 
             <div className="p-4">
