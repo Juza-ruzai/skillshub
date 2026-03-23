@@ -2,5 +2,8 @@
 .claude/
 .playwright-mcp/
 
+# Dependencies
+node_modules/
+
 # User uploaded files
 uploads/skills/
