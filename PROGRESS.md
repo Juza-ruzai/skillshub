@@ -121,6 +121,7 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B20 | 🟡 中 | 文件树默认完全展开，不够简洁 | ✅ 已修复 | 改进：文件树默认只展开根目录，子文件夹默认收起，用户可手动展开；显示简洁美观 |
 | B21 | 🔴 高 | uploads 路径配置错误 | ✅ 已修复 | 根因：`.env.backend` 中 `UPLOAD_DIR=./uploads` 指向 `backend/uploads`，而非项目根目录的 `uploads/skills`；修复：改为 `UPLOAD_DIR=../uploads/skills`，确保静态文件服务正确指向根目录 |
 | B22 | 🔴 高 | 封面 API 返回 cover_url 为 null | ✅ 已修复 | 根因：`get_skill_detail` 函数返回 `SkillDetailResponse` 时遗漏了 `cover_url` 字段；修复：添加 `cover_url=skill.cover_url` |
+| B23 | 🔴 高 | 列表 API 未返回 cover_url | ✅ 已修复 | 根因：`list_skills`/`get_trending_skills`/`get_top_rated_skills`/`get_most_downloaded_skills` 四个函数在构建 `SkillListResponse` 时遗漏 `cover_url=skill.cover_url`；修复：四处均添加 `cover_url=skill.cover_url` |
 
 > 新 Bug 在联调过程中持续补充此表。
 
@@ -206,6 +207,26 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 - T5.2 全流程验证：作者通过 API 上传新 Skill，游客首页和搜索页均立即可见 ✅
 - T5.1/T5.3 根本原因：`NotificationService` 完整实现但从未在业务路由中被调用
 - T5.5 根本原因：`download_skill` 路由只调用 `increment_download_count`，未写 `DownloadLog` 记录
+
+### T8 测试结果（2026-03-23）
+
+| 模块 | 通过 | 跳过 | 失败 |
+|------|------|------|------|
+| T8.1 上传页封面上传（6 项） | 4/6 | 2 | 0 |
+| T8.2 编辑页封面修改（4 项） | 3/4 | 1 | 0 |
+| T8.3 首页卡片封面显示（3 项） | 1/3 | 1 | 1（B23） |
+| T8.4 详情页封面显示（2 项） | 2/2 | 0 | 0 |
+| T8.5 封面 API 测试（3 项） | 2/3 | 1 | 0 |
+
+**备注**：
+- T8.1.3/T8.1.4：文件类型/大小校验代码逻辑正确（`alert` 提示），Playwright 无法直接测试隐藏 input
+- T8.1.5/T8.1.6：需要完整上传流程才能测试
+- T8.2.1：编辑页封面回填正确显示
+- T8.2.3：修改封面 API 测试通过
+- T8.3.1 **失败**：列表 API 未返回 `cover_url`（B23）
+- T8.3.2：无封面卡片显示 Package 图标占位 ✅
+- T8.4.1/T8.4.2：详情页封面显示/隐藏逻辑正确
+- T8.5.1/T8.5.3：封面上传 API 和返回字段测试通过
 
 ---
 
