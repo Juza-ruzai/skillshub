@@ -117,6 +117,7 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B16 | 🔴 高 | `@tailwindcss/typography` 未安装，MarkdownPreview 样式全部失效 | ✅ 已修复 | `tailwind.config.js` `plugins: []` 为空，`prose`/`prose-slate` 类无实际 CSS 输出；根因：漏装插件；表现：标题无大号字体、链接无蓝色、列表无缩进符号 |
 | B17 | 🟡 中 | 编辑器图片拖拽/粘贴上传不可用 | ✅ 已修复 | 根因：`createMdEditorOptions` 缺少 `uploadImage: true`；EasyMDE 仅在该选项为 true 时才注册 paste/drop 事件拦截器，否则只有工具栏按钮有效；修复：在 SkillUpload.tsx 和 SkillEdit.tsx 均补加 `uploadImage: true` |
 | B18 | 🟡 中 | MarkdownPreview 链接无蓝色高亮 | ✅ 已修复 | 同 B16 根因：`prose` 未生效，`<a>` 标签无蓝色/下划线样式；随 B16 同步修复 |
+| B19 | 🔴 高 | 文件树不显示（压缩包内容不可见） | ✅ 已修复 | 根因：后端 `file_service.py` 返回 `type: "folder"`，但前端 `FileTree.tsx` 期望 `type: "directory"`；修复：将后端 `"folder"` 改为 `"directory"`，并对已有 7 个 Skill 执行 DB 回填 |
 
 > 新 Bug 在联调过程中持续补充此表。
 
@@ -281,6 +282,5 @@ cd frontend && npm run lint:fix && npm run type-check
 | [PRD.md](./PRD.md) | 产品需求文档 v1.2 |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | 架构设计文档 v1.1 |
 | [CLAUDE.md](./CLAUDE.md) | 编程规范 |
-| [design-system.md](./design-system.md) | 视觉设计系统 v1.0 |
 
 *本文档随项目进展持续更新。*

@@ -201,7 +201,7 @@ class FileService:
 
             return {
                 "name": name,
-                "type": "folder",
+                "type": "directory",
                 "children": children,
             }
 

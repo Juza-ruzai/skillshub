@@ -12,8 +12,8 @@
 |------|------|------|--------|------|
 | 游客 | — | — | — | 不登录 |
 | 普通用户 | `user@test.com` | `User1234x` | testuser2 | 无上传记录 |
-| 作者 | `author@test.com` | `Author1234x` | testauthor | 已上传 "TestAuthorSkill"（ID: 64da6928-75a1-4052-b143-19de1f6aba58） |
-| 管理员 | `test@test.com` | `Test1234` | — | is_admin=true |
+| 作者 | `author@test.com` | `Author1234x` | testauthor | 已上传 "TestAuthorSkill"|
+| 管理员 | `test@test.com` | `Test1234` | testuser | is_admin=true |
 
 ## Playwright 
 ### 登录注入模板
@@ -297,6 +297,7 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 | T6.2.3 | 预览内容正确渲染 | 预览展开后查看内容 | 显示非空的 Markdown 渲染内容 | 预览区内有文本内容，不是加载中状态 | [x] |
 | T6.2.4 | 关闭预览 | 点击预览区右上角 X 按钮 | 预览区消失 | `showPreview` 区域从 DOM 中移除 | [x] |
 | T6.2.5 | 后端文件内容 API | 直接请求 `GET /skills/{id}/files/SKILL.md` | 返回文件内容 | 响应 200，body 含 `content` 字段，值为字符串 | [x] |
+| T6.2.6 | 文件树渲染（B19 修复） | 访问含 zip 解压内容的 Skill 详情页 | 文件树正确显示文件夹和文件结构 | API 返回 `type: "directory"` 而非 `"folder"`，前端显示文件夹图标（FolderOpen/Folder），可展开/收起 | [x] |
 
 ### T6.3 Markdown 编辑器图片上传
 
