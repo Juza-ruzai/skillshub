@@ -29,8 +29,8 @@ function FileTreeItem({
   isClickable,
   highlightPattern,
 }: FileTreeItemProps): JSX.Element {
-  // 默认只展开到二级目录（depth < 2），更深层级默认收起
-  const [isExpanded, setIsExpanded] = useState(depth < 2)
+  // 默认只展开根目录（depth < 1），子文件夹默认收起
+  const [isExpanded, setIsExpanded] = useState(depth < 1)
   const currentPath = path ? `${path}/${node.name}` : node.name
 
   const handleClick = useCallback(() => {
