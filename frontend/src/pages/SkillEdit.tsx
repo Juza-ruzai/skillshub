@@ -1131,6 +1131,26 @@ export default function SkillEdit() {
                     gap: '8px',
                   }}
                 >
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: 'rgba(59, 130, 246, 0.9)',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                    }}
+                  >
+                    <ImagePlus size={14} />
+                    更换
+                  </button>
                   {coverFile && (
                     <button
                       type="button"
