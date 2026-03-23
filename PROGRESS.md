@@ -123,6 +123,8 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B22 | 🔴 高 | 封面 API 返回 cover_url 为 null | ✅ 已修复 | 根因：`get_skill_detail` 函数返回 `SkillDetailResponse` 时遗漏了 `cover_url` 字段；修复：添加 `cover_url=skill.cover_url` |
 | B23 | 🔴 高 | 列表 API 未返回 cover_url | ✅ 已修复 | 根因：`list_skills`/`get_trending_skills`/`get_top_rated_skills`/`get_most_downloaded_skills` 四个函数在构建 `SkillListResponse` 时遗漏 `cover_url=skill.cover_url`；修复：四处均添加 `cover_url=skill.cover_url` |
 | B24 | 🟡 中 | 编辑页封面交互冗余 | ✅ 已修复 | 原有两个按钮（"更换封面"+"X删除"）交互冗余，X 按钮点击无反应（JS 事件穿透问题）；修复：移除"更换封面"按钮，只保留"移除封面"按钮，使用 CSS `:hover` 替代 JS 事件控制悬浮显示 |
+| B25 | 🟡 中 | 封面修改后显示旧图 | ✅ 已修复 | 根因：浏览器缓存旧封面图片，导致用户误以为"无法保存"；修复：封面上传 API 返回带时间戳的 URL（`?t=timestamp`）强制刷新浏览器缓存 |
+| B26 | 🔴 高 | 管理员无法编辑他人 Skill | ✅ 已修复 | 根因：前端 `SkillEdit.tsx` 权限检查只判断 `isAuthor`，未考虑 `is_admin`；修复：增加 `isAdmin` 判断条件 |
 
 > 新 Bug 在联调过程中持续补充此表。
 
