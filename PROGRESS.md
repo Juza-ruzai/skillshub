@@ -122,6 +122,7 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B21 | 🔴 高 | uploads 路径配置错误 | ✅ 已修复 | 根因：`.env.backend` 中 `UPLOAD_DIR=./uploads` 指向 `backend/uploads`，而非项目根目录的 `uploads/skills`；修复：改为 `UPLOAD_DIR=../uploads/skills`，确保静态文件服务正确指向根目录 |
 | B22 | 🔴 高 | 封面 API 返回 cover_url 为 null | ✅ 已修复 | 根因：`get_skill_detail` 函数返回 `SkillDetailResponse` 时遗漏了 `cover_url` 字段；修复：添加 `cover_url=skill.cover_url` |
 | B23 | 🔴 高 | 列表 API 未返回 cover_url | ✅ 已修复 | 根因：`list_skills`/`get_trending_skills`/`get_top_rated_skills`/`get_most_downloaded_skills` 四个函数在构建 `SkillListResponse` 时遗漏 `cover_url=skill.cover_url`；修复：四处均添加 `cover_url=skill.cover_url` |
+| B24 | 🟡 中 | 编辑页封面交互冗余 | ✅ 已修复 | 原有两个按钮（"更换封面"+"X删除"）交互冗余，X 按钮点击无反应（JS 事件穿透问题）；修复：移除"更换封面"按钮，只保留"移除封面"按钮，使用 CSS `:hover` 替代 JS 事件控制悬浮显示 |
 
 > 新 Bug 在联调过程中持续补充此表。
 
