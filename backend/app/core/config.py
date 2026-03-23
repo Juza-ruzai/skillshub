@@ -24,11 +24,11 @@ class Settings(BaseSettings):
     refresh_token_expire_days: int = 7
 
     # File Storage
-    upload_dir: str = "./uploads"
+    upload_dir: str = "../uploads/skills"
     max_file_size: int = 52428800
 
-    # CORS
-    allowed_origins: str = "http://localhost:5173"
+    # CORS (逗号分隔字符串，兼容 .env 文件格式)
+    allowed_origins: str = "http://localhost:5173,http://localhost:5174"
 
     # Environment
     environment: str = "development"

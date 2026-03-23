@@ -1,1 +1,6 @@
 .worktrees/
+.claude/
+.playwright-mcp/
+
+# User uploaded files
+uploads/skills/
