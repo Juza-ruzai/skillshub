@@ -298,6 +298,16 @@ async def create_skill(
 
     # 更新文件路径
     skill.file_path = new_file_path
+
+    # 如果是 zip，解压并构建文件树（只保存 children 数组，与前端 FileTreeNode[] 类型兼容）
+    if new_file_path.lower().endswith(".zip"):
+        file_service.extract_zip_file(skill.id, new_file_path)
+        raw_tree = file_service.get_file_tree(skill.id)
+        if raw_tree and isinstance(raw_tree, dict) and raw_tree.get("type") == "folder":
+            skill.file_tree = raw_tree.get("children", [])
+        elif raw_tree:
+            skill.file_tree = [raw_tree]
+
     await db_session.commit()
 
     return SkillResponse.model_validate(skill)
@@ -354,6 +364,7 @@ async def get_skill_detail(
         usage_scenario=skill.usage_scenario,
         usage_method=skill.usage_method,
         demo_images=skill.demo_images,
+        cover_url=skill.cover_url,
         file_path=skill.file_path,
         file_size=skill.file_size,
         file_tree=skill.file_tree,
@@ -550,3 +561,208 @@ async def toggle_favorite(
             is_favorited=False,
             created_at=None,
         )
+
+
+@router.get("/{skill_id}/files/{file_path:path}")
+async def get_skill_file(
+    skill_id: UUID,
+    file_path: str,
+    db_session: AsyncSession = Depends(get_session),
+) -> dict[str, str]:
+    """获取 Skill 包内指定文件的内容.
+
+    用于预览 SKILL.md、README.md 等文本文件.
+    """
+    skill = await skill_service.get_skill_by_id(db_session, skill_id)
+    if not skill:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill 不存在",
+        )
+
+    # 安全检查：防止路径遍历攻击
+    if ".." in file_path or file_path.startswith("/"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="非法的文件路径",
+        )
+
+    # 构建文件完整路径（优先从 extracted 目录读取，兼容 zip 上传）
+    upload_dir = Path(skill.file_path).parent
+    extracted_dir = upload_dir / "extracted"
+    full_path = extracted_dir / file_path if extracted_dir.exists() else upload_dir / file_path
+
+    # 确保文件在允许的目录范围内
+    try:
+        full_path.resolve().relative_to(upload_dir.resolve())
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="文件路径超出允许范围",
+        ) from e
+
+    if not full_path.exists():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="文件不存在",
+        )
+
+    if not full_path.is_file():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="不是有效的文件",
+        )
+
+    # 检查文件类型（只允许文本文件）
+    allowed_extensions = {".md", ".txt", ".json", ".yaml", ".yml", ".py", ".js", ".ts", ".sh"}
+    if full_path.suffix.lower() not in allowed_extensions:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="不支持的文件类型",
+        )
+
+    # 读取文件内容
+    try:
+        content = full_path.read_text(encoding="utf-8")
+    except UnicodeDecodeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="无法解码文件内容（可能不是文本文件）",
+        ) from e
+
+    return {"content": content}
+
+
+@router.post("/{skill_id}/content-images")
+async def upload_content_image(
+    skill_id: UUID,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db_session: AsyncSession = Depends(get_session),
+) -> dict[str, str]:
+    """上传编辑器内的图片.
+
+    用于 usage_scenario 和 usage_method 编辑器中的图片上传.
+    """
+    skill = await skill_service.get_skill_by_id(db_session, skill_id)
+    if not skill:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill 不存在",
+        )
+
+    # 检查权限（作者或管理员）
+    if skill.author_id != current_user.id and not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="无权上传图片到该 Skill",
+        )
+
+    # 验证文件类型
+    allowed_types = {"image/jpeg", "image/png", "image/gif", "image/webp"}
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"不支持的图片格式，只允许: {', '.join(allowed_types)}",
+        )
+
+    # 读取文件内容
+    content = await file.read()
+
+    # 限制图片大小（最大 2MB）
+    max_size = 2 * 1024 * 1024  # 2MB
+    if len(content) > max_size:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="图片大小超过限制（最大 2MB）",
+        )
+
+    # 保存图片到 content-images 目录
+    upload_dir = Path(skill.file_path).parent / "content-images"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    # 生成唯一文件名
+    import uuid
+
+    ext = Path(file.filename or ".png").suffix
+    if ext.lower() not in {".jpg", ".jpeg", ".png", ".gif", ".webp"}:
+        ext = ".png"
+
+    filename = f"{uuid.uuid4()}{ext}"
+    file_path = upload_dir / filename
+
+    file_path.write_bytes(content)
+
+    # 返回可访问的 URL
+    return {"url": f"/uploads/{skill_id}/content-images/{filename}"}
+
+
+@router.post("/{skill_id}/cover")
+async def upload_cover(
+    skill_id: UUID,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db_session: AsyncSession = Depends(get_session),
+) -> dict[str, str]:
+    """上传 Skill 封面图片.
+
+    封面图片用于在首页卡片和详情页展示。
+    支持 jpg、png、webp 格式，最大 2MB。
+    """
+    skill = await skill_service.get_skill_by_id(db_session, skill_id)
+    if not skill:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill 不存在",
+        )
+
+    # 检查权限（作者或管理员）
+    if skill.author_id != current_user.id and not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="无权上传封面到该 Skill",
+        )
+
+    # 验证文件类型
+    allowed_types = {"image/jpeg", "image/png", "image/webp"}
+    if file.content_type not in allowed_types:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="不支持的图片格式，只允许: jpg, png, webp",
+        )
+
+    # 读取文件内容
+    content = await file.read()
+
+    # 限制图片大小（最大 2MB）
+    max_size = 2 * 1024 * 1024
+    if len(content) > max_size:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="图片大小超过限制（最大 2MB）",
+        )
+
+    # 保存封面到 skill 目录
+    ext = Path(file.filename or ".png").suffix
+    if ext.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+        ext = ".png"
+
+    filename = f"cover{ext}"
+    cover_path = Path(skill.file_path).parent / filename
+
+    # 删除旧封面（如果存在不同扩展名）
+    for old_ext in [".jpg", ".jpeg", ".png", ".webp"]:
+        old_file = Path(skill.file_path).parent / f"cover{old_ext}"
+        if old_file.exists() and old_file != cover_path:
+            old_file.unlink()
+
+    cover_path.write_bytes(content)
+
+    # 更新数据库中的 cover_url
+    cover_url = f"/uploads/{skill_id}/{filename}"
+    skill.cover_url = cover_url
+    db_session.add(skill)
+    await db_session.commit()
+    await db_session.refresh(skill)
+
+    return {"cover_url": cover_url}

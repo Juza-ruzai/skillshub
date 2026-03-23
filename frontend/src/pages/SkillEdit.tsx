@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../lib/api'
-import { uploadContentImage } from '../lib/skillsApi'
+import { uploadContentImage, uploadCover } from '../lib/skillsApi'
 import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -20,6 +20,7 @@ import {
   Package,
   RotateCcw,
   Loader2,
+  ImagePlus,
 } from 'lucide-react'
 import type EasyMDE from 'easymde'
 import 'easymde/dist/easymde.min.css'
@@ -417,6 +418,12 @@ export default function SkillEdit() {
   const [selectedFile, setSelectedFile] = useState<UploadedFile | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
 
+  // 封面图片状态
+  const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [isUploadingCover, setIsUploadingCover] = useState(false)
+  const coverInputRef = useRef<HTMLInputElement>(null)
+
   // 保存状态和 Toast
   const [isSaving, setIsSaving] = useState(false)
   const [showSuccessToast, setShowSuccessToast] = useState(false)
@@ -432,6 +439,10 @@ export default function SkillEdit() {
         usageMethod: skill.usage_method || '',
         tags: skill.tags || [],
       })
+      // 预填充封面
+      if (skill.cover_url) {
+        setCoverPreview(skill.cover_url)
+      }
     }
   }, [skill])
 
@@ -448,6 +459,67 @@ export default function SkillEdit() {
 
   const handleClearFile = () => {
     setSelectedFile(null)
+  }
+
+  // 封面图片处理
+  const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // 验证文件类型
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      alert('只支持 jpg、png、webp 格式的图片')
+      return
+    }
+
+    // 验证文件大小
+    if (file.size > 2 * 1024 * 1024) {
+      alert('图片大小不能超过 2MB')
+      return
+    }
+
+    setCoverFile(file)
+
+    // 创建预览
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setCoverPreview(event.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleUploadCover = async () => {
+    if (!coverFile || !id) return
+
+    setIsUploadingCover(true)
+    try {
+      await uploadCover(id, coverFile)
+      // 刷新数据
+      queryClient.invalidateQueries({ queryKey: ['skill', id] })
+      // 重新从服务器获取最新封面 URL
+      setCoverFile(null)
+    } catch (error) {
+      console.error('Cover upload error:', error)
+      alert('封面上传失败，请重试')
+    } finally {
+      setIsUploadingCover(false)
+    }
+  }
+
+  const handleRemoveCover = () => {
+    setCoverFile(null)
+    // 如果是本地预览（新选择的文件），清除预览；如果是已保存的封面，恢复显示
+    if (skill?.cover_url && coverPreview === skill.cover_url) {
+      // 不做任何操作，保持显示
+    } else if (!skill?.cover_url) {
+      setCoverPreview(null)
+    } else {
+      setCoverPreview(skill.cover_url)
+    }
+    if (coverInputRef.current) {
+      coverInputRef.current.value = ''
+    }
   }
 
   // 验证表单
@@ -1009,6 +1081,143 @@ export default function SkillEdit() {
             >
               最多 10 个标签，用于搜索和分类
             </div>
+          </div>
+
+          {/* 封面图片 */}
+          <div>
+            <Label
+              style={{
+                display: 'block',
+                marginBottom: '8px',
+                color: 'var(--text-primary)',
+                fontSize: '14px',
+                fontWeight: 500,
+              }}
+            >
+              封面图片{' '}
+              <span style={{ color: 'var(--text-tertiary)', fontWeight: 400 }}>(可选)</span>
+            </Label>
+            <input
+              ref={coverInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleCoverSelect}
+              style={{ display: 'none' }}
+            />
+            {coverPreview ? (
+              <div
+                style={{
+                  position: 'relative',
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  border: '1px solid var(--card-border)',
+                }}
+              >
+                <img
+                  src={coverPreview}
+                  alt="封面预览"
+                  style={{
+                    width: '100%',
+                    aspectRatio: '16/9',
+                    objectFit: 'cover',
+                  }}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '8px',
+                    right: '8px',
+                    display: 'flex',
+                    gap: '8px',
+                  }}
+                >
+                  {coverFile && (
+                    <button
+                      type="button"
+                      onClick={handleUploadCover}
+                      disabled={isUploadingCover}
+                      style={{
+                        padding: '8px 16px',
+                        borderRadius: '8px',
+                        border: 'none',
+                        background: 'var(--btn-gradient)',
+                        color: 'white',
+                        fontSize: '13px',
+                        fontWeight: 500,
+                        cursor: isUploadingCover ? 'wait' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      {isUploadingCover ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin" />
+                          上传中...
+                        </>
+                      ) : (
+                        <>
+                          <Upload size={14} />
+                          上传封面
+                        </>
+                      )}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleRemoveCover}
+                    disabled={isUploadingCover}
+                    style={{
+                      padding: '8px',
+                      borderRadius: '8px',
+                      border: 'none',
+                      background: 'rgba(239, 68, 68, 0.9)',
+                      color: 'white',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                style={{
+                  width: '100%',
+                  aspectRatio: '16/9',
+                  borderRadius: '12px',
+                  border: '2px dashed var(--card-border)',
+                  background: 'var(--card-bg)',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  color: 'var(--text-tertiary)',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--accent-primary)'
+                  e.currentTarget.style.color = 'var(--accent-primary)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--card-border)'
+                  e.currentTarget.style.color = 'var(--text-tertiary)'
+                }}
+              >
+                <ImagePlus size={32} />
+                <span style={{ fontSize: '14px' }}>点击上传封面图片</span>
+                <span style={{ fontSize: '12px', opacity: 0.7 }}>
+                  支持 jpg、png、webp，建议 16:9 比例，最大 2MB
+                </span>
+              </button>
+            )}
           </div>
 
           {/* 文件重新上传（可选） */}

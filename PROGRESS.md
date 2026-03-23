@@ -120,6 +120,7 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B19 | 🔴 高 | 文件树不显示（压缩包内容不可见） | ✅ 已修复 | 根因：后端 `file_service.py` 返回 `type: "folder"`，但前端 `FileTree.tsx` 期望 `type: "directory"`；修复：将后端 `"folder"` 改为 `"directory"`，并对已有 7 个 Skill 执行 DB 回填 |
 | B20 | 🟡 中 | 文件树默认完全展开，不够简洁 | ✅ 已修复 | 改进：文件树默认只展开根目录，子文件夹默认收起，用户可手动展开；显示简洁美观 |
 | B21 | 🔴 高 | uploads 路径配置错误 | ✅ 已修复 | 根因：`.env.backend` 中 `UPLOAD_DIR=./uploads` 指向 `backend/uploads`，而非项目根目录的 `uploads/skills`；修复：改为 `UPLOAD_DIR=../uploads/skills`，确保静态文件服务正确指向根目录 |
+| B22 | 🔴 高 | 封面 API 返回 cover_url 为 null | ✅ 已修复 | 根因：`get_skill_detail` 函数返回 `SkillDetailResponse` 时遗漏了 `cover_url` 字段；修复：添加 `cover_url=skill.cover_url` |
 
 > 新 Bug 在联调过程中持续补充此表。
 
