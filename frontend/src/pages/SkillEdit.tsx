@@ -421,7 +421,6 @@ export default function SkillEdit() {
   // 封面图片状态
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
-  const [isUploadingCover, setIsUploadingCover] = useState(false)
   const coverInputRef = useRef<HTMLInputElement>(null)
 
   // 保存状态和 Toast
@@ -489,34 +488,10 @@ export default function SkillEdit() {
     reader.readAsDataURL(file)
   }
 
-  const handleUploadCover = async () => {
-    if (!coverFile || !id) return
-
-    setIsUploadingCover(true)
-    try {
-      await uploadCover(id, coverFile)
-      // 刷新数据
-      queryClient.invalidateQueries({ queryKey: ['skill', id] })
-      // 重新从服务器获取最新封面 URL
-      setCoverFile(null)
-    } catch (error) {
-      console.error('Cover upload error:', error)
-      alert('封面上传失败，请重试')
-    } finally {
-      setIsUploadingCover(false)
-    }
-  }
-
+  // 清除封面预览（只是清除本地状态，不删除服务器上的文件）
   const handleRemoveCover = () => {
     setCoverFile(null)
-    // 如果是本地预览（新选择的文件），清除预览；如果是已保存的封面，恢复显示
-    if (skill?.cover_url && coverPreview === skill.cover_url) {
-      // 不做任何操作，保持显示
-    } else if (!skill?.cover_url) {
-      setCoverPreview(null)
-    } else {
-      setCoverPreview(skill.cover_url)
-    }
+    setCoverPreview(null)
     if (coverInputRef.current) {
       coverInputRef.current.value = ''
     }
@@ -560,7 +535,12 @@ export default function SkillEdit() {
     setSaveError(null)
 
     try {
-      // 先更新元数据
+      // 1. 如果有新封面，先上传封面
+      if (coverFile) {
+        await uploadCover(id, coverFile)
+      }
+
+      // 2. 更新元数据
       await apiClient.put(`/skills/${id}`, {
         name: metadata.name,
         description: metadata.description,
@@ -569,7 +549,7 @@ export default function SkillEdit() {
         tags: metadata.tags,
       })
 
-      // 如果有重新上传文件
+      // 3. 如果有重新上传文件
       if (selectedFile) {
         const formData = new FormData()
         formData.append('file', selectedFile.file)
@@ -1122,25 +1102,31 @@ export default function SkillEdit() {
                     objectFit: 'cover',
                   }}
                 />
+                {/* 悬浮删除按钮 - 使用 CSS hover 更可靠 */}
                 <div
+                  className="cover-overlay"
                   style={{
                     position: 'absolute',
-                    top: '8px',
-                    right: '8px',
+                    inset: 0,
+                    background: 'rgba(0, 0, 0, 0.4)',
                     display: 'flex',
-                    gap: '8px',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    opacity: 0,
+                    transition: 'opacity 0.2s',
+                    cursor: 'pointer',
                   }}
+                  onClick={handleRemoveCover}
                 >
                   <button
                     type="button"
-                    onClick={() => coverInputRef.current?.click()}
                     style={{
-                      padding: '8px 16px',
+                      padding: '12px 24px',
                       borderRadius: '8px',
                       border: 'none',
-                      background: 'rgba(59, 130, 246, 0.9)',
+                      background: 'rgba(239, 68, 68, 0.95)',
                       color: 'white',
-                      fontSize: '13px',
+                      fontSize: '14px',
                       fontWeight: 500,
                       cursor: 'pointer',
                       display: 'flex',
@@ -1148,58 +1134,8 @@ export default function SkillEdit() {
                       gap: '6px',
                     }}
                   >
-                    <ImagePlus size={14} />
-                    更换
-                  </button>
-                  {coverFile && (
-                    <button
-                      type="button"
-                      onClick={handleUploadCover}
-                      disabled={isUploadingCover}
-                      style={{
-                        padding: '8px 16px',
-                        borderRadius: '8px',
-                        border: 'none',
-                        background: 'var(--btn-gradient)',
-                        color: 'white',
-                        fontSize: '13px',
-                        fontWeight: 500,
-                        cursor: isUploadingCover ? 'wait' : 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                      }}
-                    >
-                      {isUploadingCover ? (
-                        <>
-                          <Loader2 size={14} className="animate-spin" />
-                          上传中...
-                        </>
-                      ) : (
-                        <>
-                          <Upload size={14} />
-                          上传封面
-                        </>
-                      )}
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={handleRemoveCover}
-                    disabled={isUploadingCover}
-                    style={{
-                      padding: '8px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      background: 'rgba(239, 68, 68, 0.9)',
-                      color: 'white',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <X size={14} />
+                    <X size={16} />
+                    移除封面
                   </button>
                 </div>
               </div>
@@ -1384,6 +1320,10 @@ export default function SkillEdit() {
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        /* 封面悬浮删除按钮 */
+        .cover-overlay:hover {
+          opacity: 1 !important;
         }
       `}</style>
     </div>
