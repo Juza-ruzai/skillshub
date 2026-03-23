@@ -1,7 +1,7 @@
 # OpenClaw Skills Hub - 项目进度文档
 
 > 本文档记录 OpenClaw Skills Hub 的完整施工计划与当前进度
-> 最后更新：2026-03-22
+> 最后更新：2026-03-23
 > **当前状态：前后端全部完成，进入前后端联调与 Bug 修复阶段**
 
 ## 最新更新 (2026-03-22)
@@ -119,6 +119,7 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B18 | 🟡 中 | MarkdownPreview 链接无蓝色高亮 | ✅ 已修复 | 同 B16 根因：`prose` 未生效，`<a>` 标签无蓝色/下划线样式；随 B16 同步修复 |
 | B19 | 🔴 高 | 文件树不显示（压缩包内容不可见） | ✅ 已修复 | 根因：后端 `file_service.py` 返回 `type: "folder"`，但前端 `FileTree.tsx` 期望 `type: "directory"`；修复：将后端 `"folder"` 改为 `"directory"`，并对已有 7 个 Skill 执行 DB 回填 |
 | B20 | 🟡 中 | 文件树默认完全展开，不够简洁 | ✅ 已修复 | 改进：文件树默认只展开根目录，子文件夹默认收起，用户可手动展开；显示简洁美观 |
+| B21 | 🔴 高 | uploads 路径配置错误 | ✅ 已修复 | 根因：`.env.backend` 中 `UPLOAD_DIR=./uploads` 指向 `backend/uploads`，而非项目根目录的 `uploads/skills`；修复：改为 `UPLOAD_DIR=../uploads/skills`，确保静态文件服务正确指向根目录 |
 
 > 新 Bug 在联调过程中持续补充此表。
 
