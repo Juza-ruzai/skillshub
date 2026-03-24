@@ -2,7 +2,7 @@ import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '../lib/api'
-import { uploadContentImage, uploadCover } from '../lib/skillsApi'
+import { uploadContentImage, uploadCover, deleteCover } from '../lib/skillsApi'
 import { useAuth } from '../hooks/useAuth'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
@@ -422,6 +422,7 @@ export default function SkillEdit() {
   // 封面图片状态
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [coverRemoved, setCoverRemoved] = useState(false)
   const coverInputRef = useRef<HTMLInputElement>(null)
 
   // 保存状态和 Toast
@@ -480,6 +481,7 @@ export default function SkillEdit() {
     }
 
     setCoverFile(file)
+    setCoverRemoved(false)
 
     // 创建预览
     const reader = new FileReader()
@@ -489,10 +491,11 @@ export default function SkillEdit() {
     reader.readAsDataURL(file)
   }
 
-  // 清除封面预览（只是清除本地状态，不删除服务器上的文件）
+  // 清除封面预览（标记为已删除，保存时会调用 API 删除）
   const handleRemoveCover = () => {
     setCoverFile(null)
     setCoverPreview(null)
+    setCoverRemoved(true)
     if (coverInputRef.current) {
       coverInputRef.current.value = ''
     }
@@ -536,12 +539,17 @@ export default function SkillEdit() {
     setSaveError(null)
 
     try {
-      // 1. 如果有新封面，先上传封面
+      // 1. 如果删除了封面，先调用删除 API
+      if (coverRemoved) {
+        await deleteCover(id)
+      }
+
+      // 2. 如果有新封面，上传封面
       if (coverFile) {
         await uploadCover(id, coverFile)
       }
 
-      // 2. 更新元数据
+      // 3. 更新元数据
       await apiClient.put(`/skills/${id}`, {
         name: metadata.name,
         description: metadata.description,
@@ -550,7 +558,7 @@ export default function SkillEdit() {
         tags: metadata.tags,
       })
 
-      // 3. 如果有重新上传文件
+      // 4. 如果有重新上传文件
       if (selectedFile) {
         const formData = new FormData()
         formData.append('file', selectedFile.file)

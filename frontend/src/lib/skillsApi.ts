@@ -108,3 +108,44 @@ export const getTags = async (): Promise<TagItem[]> => {
   const response = await apiClient.get<{ items: { name: string; usage_count: number }[] }>('/tags')
   return response.data.items.map((t) => ({ name: t.name, count: t.usage_count }))
 }
+
+// 上传编辑器内图片
+export const uploadContentImage = async (skillId: string, file: File): Promise<{ url: string }> => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await apiClient.post(`/skills/${skillId}/content-images`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return response.data
+}
+
+// 上传封面图片
+export const uploadCover = async (skillId: string, file: File): Promise<{ cover_url: string }> => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const response = await apiClient.post(`/skills/${skillId}/cover`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  })
+  return response.data
+}
+
+// 删除封面图片
+export const deleteCover = async (skillId: string): Promise<{ message: string }> => {
+  const response = await apiClient.delete(`/skills/${skillId}/cover`)
+  return response.data
+}
+
+// 获取 Skill 文件内容（用于预览 SKILL.md）
+export const getSkillFileContent = async (
+  skillId: string,
+  filePath: string
+): Promise<{ content: string }> => {
+  const response = await apiClient.get(`/skills/${skillId}/files/${filePath}`)
+  return response.data
+}

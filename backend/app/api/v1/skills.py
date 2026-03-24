@@ -773,3 +773,39 @@ async def upload_cover(
     await db_session.refresh(skill)
 
     return {"cover_url": cover_url}
+
+
+@router.delete("/{skill_id}/cover")
+async def delete_cover(
+    skill_id: UUID,
+    current_user: User = Depends(get_current_user),
+    db_session: AsyncSession = Depends(get_session),
+) -> dict[str, str]:
+    """删除 Skill 封面图片."""
+    skill = await skill_service.get_skill_by_id(db_session, skill_id)
+    if not skill:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Skill 不存在",
+        )
+
+    # 检查权限（作者或管理员）
+    if skill.author_id != current_user.id and not current_user.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="无权删除该 Skill 的封面",
+        )
+
+    # 删除封面文件
+    if skill.cover_url:
+        for ext in [".jpg", ".jpeg", ".png", ".webp"]:
+            cover_file = Path(skill.file_path).parent / f"cover{ext}"
+            if cover_file.exists():
+                cover_file.unlink()
+
+        # 清除数据库中的 cover_url
+        skill.cover_url = None
+        db_session.add(skill)
+        await db_session.commit()
+
+    return {"message": "封面已删除"}
