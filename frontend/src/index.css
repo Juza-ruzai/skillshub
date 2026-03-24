@@ -281,6 +281,7 @@
     font-family: 'Inter', 'Noto Sans SC', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-y: scroll; /* 始终显示滚动条轨道，防止导航栏跳动 */
   }
 
   body {
