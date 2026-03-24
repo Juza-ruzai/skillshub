@@ -62,6 +62,14 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 1. 失败时才深入排查
 批量脚本返回失败项后，只对失败项单独调用 browser_snapshot 或browser_evaluate 定位原因。 
 
+## 测试账户
+| 角色 | 邮箱 | 密码 | 用户名 | 备注 |
+|------|------|------|--------|------|
+| 游客 | — | — | — | 不登录 |
+| 普通用户 | `user@test.com` | `User1234x` | testuser2 | 无上传记录 |
+| 作者 | `author@test.com` | `Author1234x` | testauthor | 已上传 "TestAuthorSkill"|
+| 管理员 | `test@test.com` | `Test1234` | testuser | is_admin=true |
+
 ---
 
 ## Phase 0: 设计系统重构
@@ -303,6 +311,7 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 
 | 日期 | 变更内容 |
 |------|---------|
+| 2026-03-24 | Bug 修复：修复 4 个已知 Bug（--btn-gradient 未定义、管理后台 Tab、用户评论列表、主题切换过渡） |
 | 2026-03-24 | Phase 3 完成：Login、Register、UserProfile、SkillUpload、SkillEdit 页面优化 - 移除玻璃拟态、渐变文字，简化表单样式 |
 | 2026-03-24 | Phase 1 完成：Header、Home、SkillCard 优化 - 移除渐变文字、玻璃拟态，统一设计语言 |
 | 2026-03-24 | Phase 2 完成：SkillDetail 页面优化 - 移除玻璃拟态、渐变文字，优化文件树组件 |
@@ -312,52 +321,29 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 
 ## 🐛 已知 Bug 列表
 
-> 优先级：🔴 高 | 🟡 中 | 🟢 低
+> 最后更新：2026-03-24
 
-### 🔴 高优先级
+### ✅ 已修复（2026-03-24）
 
-#### BUG-001: `--btn-gradient` CSS 变量未定义
-- **现象**：亮色模式下登录/注册按钮不显示（背景透明 + 白色文字）
-- **根因**：`--btn-gradient` 变量在 `index.css` 中未定义，但多处组件使用
-- **影响范围**：Login、Register、UserProfile、SkillUpload、SkillEdit、AdminDashboard、AdminSkills、AdminUsers、AdminComments、AdminStats 等所有使用 `var(--btn-gradient)` 的按钮
-- **修复方案**：在 `index.css` 的 `:root` 和 `[data-theme='dark']` 中定义 `--btn-gradient` 变量
+#### ~~BUG-001: `--btn-gradient` CSS 变量未定义~~
+- **根因**：`--btn-gradient` 变量在 `index.css` 中未定义
+- **修复**：在 `:root` 和 `[data-theme='dark']` 中定义 `--btn-gradient` 渐变变量
 
-#### BUG-002: 管理后台亮色模式下选中板块颜色不显示
-- **现象**：管理后台 Tab 切换时，"正常"和"已删除"选中状态在亮色模式下不可见
-- **根因**：待排查（可能与 Tab 组件的激活态颜色有关）
-- **影响范围**：AdminSkills、AdminUsers、AdminComments、AdminStats
-- **修复方案**：待定
+#### ~~BUG-002: 管理后台亮色模式下选中板块颜色不显示~~
+- **根因**：同 BUG-001
+- **修复**：同 BUG-001
 
-#### BUG-003: 个人中心"我的评论"列表不显示
-- **现象**：UserComments 页面中评论所属的 Skill 列表不显示（亮色和暗色均不显示）
-- **根因**：待排查
-- **影响范围**：UserComments.tsx
-- **修复方案**：待定
+#### ~~BUG-003: 个人中心"我的评论"列表不显示~~
+- **根因**：同 BUG-001，渐变文字因变量未定义而透明
+- **修复**：同 BUG-001
 
-### 🟡 中优先级
-
-#### BUG-004: 主题切换时文字颜色缓慢过渡
-- **现象**：切换主题时，所有文字颜色会有 0.2s 的过渡动画，视觉上不流畅
-- **根因**：`index.css` 第 262-271 行的全局 transition 设置了 `color 0.2s ease`
-- **影响范围**：全局所有文字
-- **修复方案**：移除 `color` 的 transition，只保留 `background-color` 和 `border-color`
-
-```css
-/* 当前代码（有问题） */
-*,
-*::before,
-*::after {
-  transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease,
-    color 0.2s ease,  /* ← 移除这行 */
-    box-shadow 0.3s ease;
-}
-```
+#### ~~BUG-004: 主题切换时文字颜色缓慢过渡~~
+- **根因**：全局 transition 包含 `color 0.2s ease`
+- **修复**：移除 `color` 的 transition
 
 ---
 
-*Bug 列表持续更新中，修复后请标记为 ✅ 已修复*
+*所有已知 Bug 已修复 ✅*
 
 ---
 
