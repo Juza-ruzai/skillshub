@@ -19,8 +19,10 @@ export default function AdminLayout(): JSX.Element {
         <aside
           className="hidden lg:flex flex-col w-56 flex-shrink-0 py-6 px-3 gap-1"
           style={{
-            background: 'var(--bg-elevated)',
-            borderRight: '1px solid var(--border-subtle)',
+            background: 'var(--card-bg)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            borderRight: '1px solid var(--card-border)',
           }}
         >
           <div className="px-3 mb-4">
@@ -36,12 +38,14 @@ export default function AdminLayout(): JSX.Element {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive ? '' : 'hover:bg-[var(--bg-hover)]'}`
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  isActive ? 'text-white' : 'hover:opacity-80'
+                }`
               }
               style={({ isActive }) =>
                 isActive
-                  ? { background: 'var(--accent-primary)', color: '#fff' }
-                  : { color: 'var(--text-secondary)' }
+                  ? { background: 'var(--btn-gradient)', color: '#fff' }
+                  : { color: 'var(--text-muted)' }
               }
             >
               {item.icon}
@@ -54,8 +58,9 @@ export default function AdminLayout(): JSX.Element {
         <div
           className="lg:hidden fixed bottom-0 left-0 right-0 z-40 flex border-t"
           style={{
-            background: 'var(--bg-elevated)',
-            borderColor: 'var(--border-subtle)',
+            background: 'var(--card-bg)',
+            backdropFilter: 'blur(20px)',
+            borderColor: 'var(--card-border)',
           }}
         >
           {NAV_ITEMS.map((item) => (
@@ -65,7 +70,7 @@ export default function AdminLayout(): JSX.Element {
               className="flex-1 flex flex-col items-center py-2 gap-0.5 text-xs"
               style={({ isActive }) =>
                 isActive
-                  ? { color: 'var(--accent-primary)' }
+                  ? { color: 'var(--accent-primary, #3b82f6)' }
                   : { color: 'var(--text-muted)' }
               }
             >

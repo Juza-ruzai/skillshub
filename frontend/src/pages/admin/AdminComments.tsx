@@ -52,10 +52,17 @@ export default function AdminComments(): JSX.Element {
   const currentPage = Math.floor(skip / PAGE_SIZE) + 1
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+        <h1
+          className="text-2xl font-bold mb-1"
+          style={{
+            background: 'var(--btn-gradient)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           评论管理
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -64,7 +71,7 @@ export default function AdminComments(): JSX.Element {
       </div>
 
       {/* Filters */}
-      <div className="flex gap-2 flex-wrap items-center">
+      <div className="flex gap-2 flex-wrap">
         {(
           [
             { label: '全部', value: null },
@@ -78,21 +85,17 @@ export default function AdminComments(): JSX.Element {
               setFilterDeleted(f.value as boolean | null)
               setSkip(0)
             }}
-            className="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all"
             style={
               filterDeleted === f.value
-                ? { background: 'var(--accent-primary)', color: '#fff' }
-                : {
-                    background: 'var(--bg-elevated)',
-                    color: 'var(--text-secondary)',
-                    border: '1px solid var(--border-subtle)',
-                  }
+                ? { background: 'var(--btn-gradient)', color: '#fff' }
+                : { background: 'var(--card-border)', color: 'var(--text-muted)' }
             }
           >
             {f.label}
           </button>
         ))}
-        <span className="ml-auto text-sm" style={{ color: 'var(--text-muted)' }}>
+        <span className="ml-auto text-sm self-center" style={{ color: 'var(--text-muted)' }}>
           共 {total} 条
         </span>
       </div>
@@ -105,22 +108,22 @@ export default function AdminComments(): JSX.Element {
       ) : error ? (
         <div
           className="flex items-center gap-3 p-4 rounded-xl"
-          style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-subtle)',
-          }}
+          style={{ background: 'var(--card-bg)', border: '1px solid var(--card-border)' }}
         >
           <AlertCircle size={18} className="text-red-400" />
-          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+          <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
             加载失败，请刷新重试
           </span>
         </div>
       ) : (
         <div
-          className="rounded-xl overflow-hidden"
+          className="rounded-2xl overflow-hidden"
           style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-subtle)',
+            background: 'var(--card-bg)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid var(--card-border)',
+            boxShadow: 'var(--card-shadow)',
           }}
         >
           {data?.items.length === 0 ? (
@@ -128,14 +131,11 @@ export default function AdminComments(): JSX.Element {
               暂无评论数据
             </div>
           ) : (
-            <div
-              className="divide-y"
-              style={{ borderColor: 'var(--border-subtle)' }}
-            >
+            <div className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
               {data?.items.map((comment) => (
                 <div
                   key={comment.id}
-                  className="flex items-start gap-4 p-4 hover:bg-[var(--bg-hover)] transition-colors"
+                  className="flex items-start gap-4 p-4 hover:opacity-90 transition-opacity"
                 >
                   {/* Content */}
                   <div className="flex-1 min-w-0">
@@ -149,14 +149,11 @@ export default function AdminComments(): JSX.Element {
                       <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                         评论于
                       </span>
-                      <span
-                        className="text-xs font-medium"
-                        style={{ color: 'var(--text-secondary)' }}
-                      >
+                      <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>
                         {comment.skill_name}
                       </span>
                       {comment.is_deleted && (
-                        <span className="px-1.5 py-0.5 rounded text-xs bg-red-500/15 text-red-400">
+                        <span className="px-1.5 py-0.5 rounded text-xs bg-red-500/20 text-red-400">
                           已删除
                         </span>
                       )}
@@ -176,7 +173,7 @@ export default function AdminComments(): JSX.Element {
                     <button
                       onClick={() => setDeleteId(comment.id)}
                       title="删除评论"
-                      className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors flex-shrink-0"
+                      className="p-1.5 rounded-lg text-red-400 hover:bg-red-400/10 transition-colors flex-shrink-0"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -194,12 +191,8 @@ export default function AdminComments(): JSX.Element {
           <button
             onClick={() => setSkip(Math.max(0, skip - PAGE_SIZE))}
             disabled={currentPage <= 1}
-            className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40 transition-colors hover:bg-[var(--bg-hover)]"
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-            }}
+            className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40"
+            style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
           >
             上一页
           </button>
@@ -209,12 +202,8 @@ export default function AdminComments(): JSX.Element {
           <button
             onClick={() => setSkip(skip + PAGE_SIZE)}
             disabled={currentPage >= totalPages}
-            className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40 transition-colors hover:bg-[var(--bg-hover)]"
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-subtle)',
-              color: 'var(--text-secondary)',
-            }}
+            className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40"
+            style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
           >
             下一页
           </button>
@@ -225,35 +214,38 @@ export default function AdminComments(): JSX.Element {
       {deleteId !== null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={() => setDeleteId(null)}
         >
           <div
-            className="w-full max-w-sm p-6 rounded-xl"
+            className="w-full max-w-sm p-6 rounded-2xl"
             style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-subtle)',
+              background: 'var(--card-bg)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid var(--card-border)',
+              boxShadow: 'var(--card-shadow)',
             }}
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               确认删除评论
             </h3>
-            <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>
               确定要删除这条评论吗？此操作将进行软删除。
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteId(null)}
-                className="px-4 py-2 rounded-lg text-sm transition-colors hover:bg-[var(--bg-hover)]"
-                style={{ color: 'var(--text-secondary)' }}
+                className="px-4 py-2 rounded-xl text-sm"
+                style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
               >
                 取消
               </button>
               <button
                 onClick={() => deleteMutation.mutate(deleteId)}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 transition-colors"
               >
                 {deleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
                 删除

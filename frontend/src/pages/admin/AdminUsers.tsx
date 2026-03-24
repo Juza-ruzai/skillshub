@@ -43,6 +43,14 @@ export default function AdminUsers(): JSX.Element {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
   })
 
+  const cardStyle = {
+    background: 'var(--card-bg)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid var(--card-border)',
+    boxShadow: 'var(--card-shadow)',
+  }
+
   const items = data?.items ?? []
   const total = data?.total ?? 0
   const totalPages = Math.ceil(total / PAGE_SIZE)
@@ -51,7 +59,14 @@ export default function AdminUsers(): JSX.Element {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+        <h1
+          className="text-2xl font-bold mb-1"
+          style={{
+            background: 'var(--btn-gradient)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           用户管理
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -74,23 +89,17 @@ export default function AdminUsers(): JSX.Element {
             setSkip(0)
           }}
           placeholder="搜索用户名或邮箱..."
-          className="w-full pl-9 pr-4 py-2.5 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[var(--accent-primary)]/30 transition-shadow"
+          className="w-full pl-9 pr-4 py-2.5 rounded-xl text-sm outline-none"
           style={{
-            background: 'var(--bg-elevated)',
-            border: '1px solid var(--border-subtle)',
+            background: 'var(--card-bg)',
+            border: '1px solid var(--card-border)',
             color: 'var(--text-primary)',
           }}
         />
       </div>
 
       {/* Table */}
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{
-          background: 'var(--bg-elevated)',
-          border: '1px solid var(--border-subtle)',
-        }}
-      >
+      <div className="rounded-2xl overflow-hidden" style={cardStyle}>
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 size={28} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
@@ -108,8 +117,8 @@ export default function AdminUsers(): JSX.Element {
               <thead>
                 <tr
                   style={{
-                    borderBottom: '1px solid var(--border-subtle)',
-                    background: 'var(--bg-hover)',
+                    borderBottom: '1px solid var(--card-border)',
+                    background: 'var(--card-border)',
                   }}
                 >
                   {['用户', '邮箱', '注册时间', '状态', '操作'].map((h) => (
@@ -129,15 +138,15 @@ export default function AdminUsers(): JSX.Element {
                     key={u.id}
                     style={{
                       borderBottom:
-                        i < items.length - 1 ? '1px solid var(--border-subtle)' : undefined,
+                        i < items.length - 1 ? '1px solid var(--card-border)' : undefined,
                     }}
-                    className="hover:bg-[var(--bg-hover)] transition-colors"
+                    className="hover:opacity-80 transition-opacity"
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <div
                           className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
-                          style={{ background: 'var(--accent-primary)' }}
+                          style={{ background: 'var(--btn-gradient)' }}
                         >
                           {u.username[0].toUpperCase()}
                         </div>
@@ -147,11 +156,8 @@ export default function AdminUsers(): JSX.Element {
                           </div>
                           {u.is_admin && (
                             <span
-                              className="text-xs px-1.5 py-0.5 rounded"
-                              style={{
-                                background: 'rgba(59,130,246,0.15)',
-                                color: 'var(--accent-primary)',
-                              }}
+                              className="text-xs px-1.5 py-0.5 rounded-full"
+                              style={{ background: 'rgba(59,130,246,0.15)', color: '#3b82f6' }}
                             >
                               管理员
                             </span>
@@ -159,7 +165,7 @@ export default function AdminUsers(): JSX.Element {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-secondary)' }}>
+                    <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-muted)' }}>
                       {u.email}
                     </td>
                     <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -167,7 +173,7 @@ export default function AdminUsers(): JSX.Element {
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
                         style={
                           u.is_active
                             ? { background: 'rgba(34,197,94,0.15)', color: '#22c55e' }
@@ -179,7 +185,8 @@ export default function AdminUsers(): JSX.Element {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
-                        {u.id !== currentUser?.id ? (
+                        {/* Can't modify yourself */}
+                        {u.id !== currentUser?.id && (
                           <>
                             <button
                               title={u.is_admin ? '取消管理员' : '设为管理员'}
@@ -187,12 +194,8 @@ export default function AdminUsers(): JSX.Element {
                                 adminMutation.mutate({ id: u.id, is_admin: !u.is_admin })
                               }
                               disabled={adminMutation.isPending}
-                              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
-                              style={{
-                                color: u.is_admin
-                                  ? 'var(--accent-primary)'
-                                  : 'var(--text-muted)',
-                              }}
+                              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
+                              style={{ color: u.is_admin ? '#3b82f6' : 'var(--text-muted)' }}
                             >
                               {u.is_admin ? <Shield size={14} /> : <ShieldOff size={14} />}
                             </button>
@@ -202,19 +205,17 @@ export default function AdminUsers(): JSX.Element {
                                 statusMutation.mutate({ id: u.id, is_active: !u.is_active })
                               }
                               disabled={statusMutation.isPending}
-                              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
+                              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
                               style={{ color: u.is_active ? '#ef4444' : '#22c55e' }}
                             >
                               {u.is_active ? <UserX size={14} /> : <UserCheck size={14} />}
                             </button>
                           </>
-                        ) : (
+                        )}
+                        {u.id === currentUser?.id && (
                           <span
                             className="text-xs px-2 py-0.5 rounded"
-                            style={{
-                              color: 'var(--text-muted)',
-                              background: 'var(--bg-hover)',
-                            }}
+                            style={{ color: 'var(--text-muted)', background: 'var(--card-border)' }}
                           >
                             当前用户
                           </span>
@@ -239,8 +240,8 @@ export default function AdminUsers(): JSX.Element {
             <button
               onClick={() => setSkip((s) => Math.max(0, s - PAGE_SIZE))}
               disabled={skip === 0}
-              className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40 transition-colors hover:bg-[var(--bg-hover)]"
-              style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}
+              className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40"
+              style={{ border: '1px solid var(--card-border)', color: 'var(--text-muted)' }}
             >
               上一页
             </button>
@@ -250,8 +251,8 @@ export default function AdminUsers(): JSX.Element {
             <button
               onClick={() => setSkip((s) => s + PAGE_SIZE)}
               disabled={skip + PAGE_SIZE >= total}
-              className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40 transition-colors hover:bg-[var(--bg-hover)]"
-              style={{ border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}
+              className="px-3 py-1.5 rounded-lg text-sm disabled:opacity-40"
+              style={{ border: '1px solid var(--card-border)', color: 'var(--text-muted)' }}
             >
               下一页
             </button>

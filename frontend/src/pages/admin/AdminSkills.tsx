@@ -109,6 +109,14 @@ export default function AdminSkills(): JSX.Element {
     },
   })
 
+  const cardStyle = {
+    background: 'var(--card-bg)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    border: '1px solid var(--card-border)',
+    boxShadow: 'var(--card-shadow)',
+  }
+
   const items = tab === 'active' ? (activeData?.items ?? []) : (deletedData?.items ?? [])
   const total = tab === 'active' ? (activeData?.total ?? 0) : (deletedData?.total ?? 0)
   const isLoading = tab === 'active' ? activeLoading : deletedLoading
@@ -117,7 +125,14 @@ export default function AdminSkills(): JSX.Element {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+        <h1
+          className="text-2xl font-bold mb-1"
+          style={{
+            background: 'var(--btn-gradient)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
           Skill 管理
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -126,10 +141,7 @@ export default function AdminSkills(): JSX.Element {
       </div>
 
       {/* Tabs */}
-      <div
-        className="flex gap-1 p-1 rounded-xl w-fit"
-        style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border-subtle)' }}
-      >
+      <div className="flex gap-1 p-1 rounded-xl w-fit" style={cardStyle}>
         {(['active', 'deleted'] as const).map((t) => (
           <button
             key={t}
@@ -137,11 +149,11 @@ export default function AdminSkills(): JSX.Element {
               setTab(t)
               setPage(1)
             }}
-            className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
             style={
               tab === t
-                ? { background: 'var(--accent-primary)', color: '#fff' }
-                : { color: 'var(--text-secondary)' }
+                ? { background: 'var(--btn-gradient)', color: '#fff' }
+                : { color: 'var(--text-muted)' }
             }
           >
             {t === 'active' ? '正常' : '已删除'}
@@ -150,13 +162,7 @@ export default function AdminSkills(): JSX.Element {
       </div>
 
       {/* Table */}
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{
-          background: 'var(--bg-elevated)',
-          border: '1px solid var(--border-subtle)',
-        }}
-      >
+      <div className="rounded-2xl overflow-hidden" style={cardStyle}>
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 size={28} className="animate-spin" style={{ color: 'var(--text-muted)' }} />
@@ -174,8 +180,8 @@ export default function AdminSkills(): JSX.Element {
               <thead>
                 <tr
                   style={{
-                    borderBottom: '1px solid var(--border-subtle)',
-                    background: 'var(--bg-hover)',
+                    borderBottom: '1px solid var(--card-border)',
+                    background: 'var(--card-border)',
                   }}
                 >
                   {['Skill', '作者', '下载', '评分', '创建时间', '操作'].map((h) => (
@@ -195,9 +201,9 @@ export default function AdminSkills(): JSX.Element {
                     key={skill.id}
                     style={{
                       borderBottom:
-                        i < items.length - 1 ? '1px solid var(--border-subtle)' : undefined,
+                        i < items.length - 1 ? '1px solid var(--card-border)' : undefined,
                     }}
-                    className="hover:bg-[var(--bg-hover)] transition-colors"
+                    className="hover:opacity-80 transition-opacity"
                   >
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -209,7 +215,7 @@ export default function AdminSkills(): JSX.Element {
                           >
                             {skill.name}
                             {skill.is_pinned && (
-                              <span className="ml-1 text-xs text-yellow-500">📌</span>
+                              <span className="ml-1 text-xs text-yellow-400">📌</span>
                             )}
                           </div>
                           <div
@@ -221,13 +227,13 @@ export default function AdminSkills(): JSX.Element {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
+                    <td className="px-4 py-3" style={{ color: 'var(--text-muted)' }}>
                       {skill.author_username ?? '—'}
                     </td>
-                    <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
+                    <td className="px-4 py-3" style={{ color: 'var(--text-muted)' }}>
                       {skill.download_count}
                     </td>
-                    <td className="px-4 py-3" style={{ color: 'var(--text-secondary)' }}>
+                    <td className="px-4 py-3" style={{ color: 'var(--text-muted)' }}>
                       {parseFloat(skill.rating_avg ?? '0').toFixed(1)} ⭐
                     </td>
                     <td className="px-4 py-3 text-xs" style={{ color: 'var(--text-muted)' }}>
@@ -241,23 +247,22 @@ export default function AdminSkills(): JSX.Element {
                               title="置顶/取消置顶"
                               onClick={() => pinMutation.mutate(skill.id)}
                               disabled={pinMutation.isPending}
-                              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
-                              style={{ color: skill.is_pinned ? '#eab308' : 'var(--text-muted)' }}
+                              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
+                              style={{ color: skill.is_pinned ? '#facc15' : 'var(--text-muted)' }}
                             >
                               <Pin size={14} />
                             </button>
                             <button
                               title="编辑"
                               onClick={() => navigate(`/skills/${skill.id}/edit`)}
-                              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
-                              style={{ color: 'var(--accent-primary)' }}
+                              className="p-1.5 rounded-lg text-blue-400 hover:opacity-80 transition-opacity"
                             >
                               <Edit size={14} />
                             </button>
                             <button
                               title="查看下载用户"
                               onClick={() => setDownloadsId(skill.id)}
-                              className="p-1.5 rounded-lg transition-colors hover:bg-[var(--bg-hover)]"
+                              className="p-1.5 rounded-lg hover:opacity-80 transition-opacity"
                               style={{ color: 'var(--text-muted)' }}
                             >
                               <Users size={14} />
@@ -265,8 +270,7 @@ export default function AdminSkills(): JSX.Element {
                             <button
                               title="强制删除"
                               onClick={() => setDeletingId(skill.id)}
-                              className="p-1.5 rounded-lg transition-colors hover:bg-red-500/10"
-                              style={{ color: '#ef4444' }}
+                              className="p-1.5 rounded-lg text-red-400 hover:opacity-80 transition-opacity"
                             >
                               <Trash2 size={14} />
                             </button>
@@ -276,8 +280,7 @@ export default function AdminSkills(): JSX.Element {
                             title="恢复"
                             onClick={() => restoreMutation.mutate(skill.id)}
                             disabled={restoreMutation.isPending}
-                            className="p-1.5 rounded-lg transition-colors hover:bg-green-500/10"
-                            style={{ color: '#22c55e' }}
+                            className="p-1.5 rounded-lg text-green-400 hover:opacity-80 transition-opacity"
                           >
                             <RotateCcw size={14} />
                           </button>
@@ -302,8 +305,8 @@ export default function AdminSkills(): JSX.Element {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="p-1.5 rounded-lg disabled:opacity-40 transition-colors hover:bg-[var(--bg-hover)]"
-              style={{ color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}
+              className="p-1.5 rounded-lg disabled:opacity-40"
+              style={{ color: 'var(--text-muted)', border: '1px solid var(--card-border)' }}
             >
               <ChevronLeft size={16} />
             </button>
@@ -313,8 +316,8 @@ export default function AdminSkills(): JSX.Element {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
-              className="p-1.5 rounded-lg disabled:opacity-40 transition-colors hover:bg-[var(--bg-hover)]"
-              style={{ color: 'var(--text-muted)', border: '1px solid var(--border-subtle)' }}
+              className="p-1.5 rounded-lg disabled:opacity-40"
+              style={{ color: 'var(--text-muted)', border: '1px solid var(--card-border)' }}
             >
               <ChevronRight size={16} />
             </button>
@@ -326,35 +329,32 @@ export default function AdminSkills(): JSX.Element {
       {deletingId !== null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={() => setDeletingId(null)}
         >
           <div
-            className="w-full max-w-sm p-6 rounded-xl"
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-subtle)',
-            }}
+            className="w-full max-w-sm p-6 rounded-2xl"
+            style={cardStyle}
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
               确认强制删除
             </h3>
-            <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-sm mb-5" style={{ color: 'var(--text-muted)' }}>
               此操作将物理删除 Skill，无法恢复。
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeletingId(null)}
-                className="px-4 py-2 rounded-lg text-sm transition-colors hover:bg-[var(--bg-hover)]"
-                style={{ color: 'var(--text-secondary)' }}
+                className="px-4 py-2 rounded-xl text-sm"
+                style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
               >
                 取消
               </button>
               <button
                 onClick={() => deleteMutation.mutate(deletingId)}
                 disabled={deleteMutation.isPending}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm text-white bg-red-500 hover:bg-red-600 disabled:opacity-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white bg-red-500 hover:bg-red-600 disabled:opacity-50"
               >
                 {deleteMutation.isPending && <Loader2 size={14} className="animate-spin" />}
                 删除
@@ -368,15 +368,12 @@ export default function AdminSkills(): JSX.Element {
       {downloadsId !== null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ background: 'rgba(0,0,0,0.5)' }}
+          style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
           onClick={() => setDownloadsId(null)}
         >
           <div
-            className="w-full max-w-md p-6 rounded-xl max-h-[80vh] overflow-y-auto"
-            style={{
-              background: 'var(--bg-elevated)',
-              border: '1px solid var(--border-subtle)',
-            }}
+            className="w-full max-w-md p-6 rounded-2xl max-h-[80vh] overflow-y-auto"
+            style={cardStyle}
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
@@ -399,8 +396,8 @@ export default function AdminSkills(): JSX.Element {
                 {downloadsData.items.map((u) => (
                   <div
                     key={u.user_id}
-                    className="flex items-center justify-between py-2 px-3 rounded-lg"
-                    style={{ background: 'var(--bg-hover)' }}
+                    className="flex items-center justify-between py-2 px-3 rounded-xl"
+                    style={{ background: 'var(--card-border)' }}
                   >
                     <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                       {u.username}
@@ -414,8 +411,8 @@ export default function AdminSkills(): JSX.Element {
             )}
             <button
               onClick={() => setDownloadsId(null)}
-              className="mt-4 w-full py-2 rounded-lg text-sm transition-colors hover:bg-[var(--bg-hover)]"
-              style={{ color: 'var(--text-secondary)' }}
+              className="mt-4 w-full py-2 rounded-xl text-sm"
+              style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
             >
               关闭
             </button>
