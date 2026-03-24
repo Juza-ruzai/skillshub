@@ -422,7 +422,7 @@ export default function SkillEdit() {
   // 封面图片状态
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
-  const [coverRemoved, setCoverRemoved] = useState(false)
+  const [isRemovingCover, setIsRemovingCover] = useState(false)
   const coverInputRef = useRef<HTMLInputElement>(null)
 
   // 保存状态和 Toast
@@ -481,7 +481,6 @@ export default function SkillEdit() {
     }
 
     setCoverFile(file)
-    setCoverRemoved(false)
 
     // 创建预览
     const reader = new FileReader()
@@ -491,13 +490,23 @@ export default function SkillEdit() {
     reader.readAsDataURL(file)
   }
 
-  // 清除封面预览（标记为已删除，保存时会调用 API 删除）
-  const handleRemoveCover = () => {
-    setCoverFile(null)
-    setCoverPreview(null)
-    setCoverRemoved(true)
-    if (coverInputRef.current) {
-      coverInputRef.current.value = ''
+  // 立即删除封面（调用 API）
+  const handleRemoveCover = async () => {
+    if (!id || isRemovingCover) return
+
+    setIsRemovingCover(true)
+    try {
+      await deleteCover(id)
+      setCoverFile(null)
+      setCoverPreview(null)
+      if (coverInputRef.current) {
+        coverInputRef.current.value = ''
+      }
+    } catch (error) {
+      console.error('Remove cover error:', error)
+      alert('删除封面失败，请重试')
+    } finally {
+      setIsRemovingCover(false)
     }
   }
 
@@ -539,17 +548,12 @@ export default function SkillEdit() {
     setSaveError(null)
 
     try {
-      // 1. 如果删除了封面，先调用删除 API
-      if (coverRemoved) {
-        await deleteCover(id)
-      }
-
-      // 2. 如果有新封面，上传封面
+      // 1. 如果有新封面，上传封面
       if (coverFile) {
         await uploadCover(id, coverFile)
       }
 
-      // 3. 更新元数据
+      // 2. 更新元数据
       await apiClient.put(`/skills/${id}`, {
         name: metadata.name,
         description: metadata.description,
@@ -1121,14 +1125,15 @@ export default function SkillEdit() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    opacity: 0,
+                    opacity: isRemovingCover ? 1 : 0,
                     transition: 'opacity 0.2s',
-                    cursor: 'pointer',
+                    cursor: isRemovingCover ? 'wait' : 'pointer',
                   }}
-                  onClick={handleRemoveCover}
+                  onClick={isRemovingCover ? undefined : handleRemoveCover}
                 >
                   <button
                     type="button"
+                    disabled={isRemovingCover}
                     style={{
                       padding: '12px 24px',
                       borderRadius: '8px',
@@ -1137,14 +1142,19 @@ export default function SkillEdit() {
                       color: 'white',
                       fontSize: '14px',
                       fontWeight: 500,
-                      cursor: 'pointer',
+                      cursor: isRemovingCover ? 'wait' : 'pointer',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
+                      opacity: isRemovingCover ? 0.7 : 1,
                     }}
                   >
-                    <X size={16} />
-                    移除封面
+                    {isRemovingCover ? (
+                      <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                    ) : (
+                      <X size={16} />
+                    )}
+                    {isRemovingCover ? '删除中...' : '移除封面'}
                   </button>
                 </div>
               </div>

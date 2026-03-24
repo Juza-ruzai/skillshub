@@ -47,6 +47,15 @@ favorite_service = FavoriteService()
 notification_service = NotificationService()
 
 
+def _add_cover_timestamp(cover_url: str | None) -> str | None:
+    """为 cover_url 添加时间戳防止浏览器缓存."""
+    if not cover_url:
+        return None
+    import time
+    separator = "&" if "?" in cover_url else "?"
+    return f"{cover_url}{separator}t={int(time.time())}"
+
+
 async def _get_author_usernames(
     db_session: AsyncSession,
     author_ids: set[UUID],
@@ -117,7 +126,7 @@ async def list_skills(
                 id=skill.id,
                 name=skill.name,
                 description=skill.description,
-                cover_url=skill.cover_url,
+                cover_url=_add_cover_timestamp(skill.cover_url),
                 tags=skill.tags,
                 author_id=skill.author_id,
                 author_username=author_map.get(skill.author_id, "未知用户"),
@@ -156,7 +165,7 @@ async def get_trending_skills(
             id=skill.id,
             name=skill.name,
             description=skill.description,
-            cover_url=skill.cover_url,
+            cover_url=_add_cover_timestamp(skill.cover_url),
             tags=skill.tags,
             author_id=skill.author_id,
             author_username=author_map.get(skill.author_id, "未知用户"),
@@ -190,7 +199,7 @@ async def get_top_rated_skills(
             id=skill.id,
             name=skill.name,
             description=skill.description,
-            cover_url=skill.cover_url,
+            cover_url=_add_cover_timestamp(skill.cover_url),
             tags=skill.tags,
             author_id=skill.author_id,
             author_username=author_map.get(skill.author_id, "未知用户"),
@@ -224,7 +233,7 @@ async def get_most_downloaded_skills(
             id=skill.id,
             name=skill.name,
             description=skill.description,
-            cover_url=skill.cover_url,
+            cover_url=_add_cover_timestamp(skill.cover_url),
             tags=skill.tags,
             author_id=skill.author_id,
             author_username=author_map.get(skill.author_id, "未知用户"),
@@ -368,7 +377,7 @@ async def get_skill_detail(
         usage_scenario=skill.usage_scenario,
         usage_method=skill.usage_method,
         demo_images=skill.demo_images,
-        cover_url=skill.cover_url,
+        cover_url=_add_cover_timestamp(skill.cover_url),
         file_path=skill.file_path,
         file_size=skill.file_size,
         file_tree=skill.file_tree,
