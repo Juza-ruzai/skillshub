@@ -68,7 +68,7 @@ function StepIndicator({
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '16px',
+        gap: '12px',
         marginBottom: '32px',
       }}
     >
@@ -82,14 +82,14 @@ function StepIndicator({
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div
                 style={{
-                  width: '40px',
-                  height: '40px',
+                  width: '36px',
+                  height: '36px',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   background: isActive
-                    ? 'var(--btn-gradient)'
+                    ? 'var(--accent-primary)'
                     : isCompleted
                       ? 'var(--accent-primary)'
                       : 'var(--card-bg)',
@@ -98,16 +98,16 @@ function StepIndicator({
                   }`,
                   color: isActive || isCompleted ? 'white' : 'var(--text-tertiary)',
                   fontWeight: 600,
-                  fontSize: '16px',
-                  transition: 'all 0.3s ease',
+                  fontSize: '14px',
+                  transition: 'all 0.2s ease',
                 }}
               >
-                {isCompleted && !isActive ? <Check size={20} /> : step.num}
+                {isCompleted && !isActive ? <Check size={18} /> : step.num}
               </div>
               <span
                 style={{
-                  marginTop: '8px',
-                  fontSize: '13px',
+                  marginTop: '6px',
+                  fontSize: '12px',
                   color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
                   fontWeight: isActive ? 500 : 400,
                 }}
@@ -118,15 +118,15 @@ function StepIndicator({
             {!isLast && (
               <div
                 style={{
-                  width: '60px',
+                  width: '48px',
                   height: '2px',
                   background:
                     isCompleted || (currentStep === 2 && step.num === 1)
                       ? 'var(--accent-primary)'
                       : 'var(--card-border)',
-                  margin: '0 12px',
-                  marginBottom: '20px',
-                  transition: 'all 0.3s ease',
+                  margin: '0 8px',
+                  marginBottom: '18px',
+                  transition: 'all 0.2s ease',
                 }}
               />
             )}
@@ -220,18 +220,17 @@ function UploadZone({
       <div
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
-          borderRadius: '16px',
-          padding: '24px',
+          borderRadius: '12px',
+          padding: '20px',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
+              width: '44px',
+              height: '44px',
+              borderRadius: '10px',
               background: 'var(--tab-active-bg)',
               display: 'flex',
               alignItems: 'center',
@@ -240,23 +239,23 @@ function UploadZone({
             }}
           >
             {selectedFile.name.endsWith('.zip') ? (
-              <FileArchive size={24} />
+              <FileArchive size={22} />
             ) : (
-              <FileText size={24} />
+              <FileText size={22} />
             )}
           </div>
           <div style={{ flex: 1 }}>
             <div
               style={{
-                fontSize: '15px',
+                fontSize: '14px',
                 fontWeight: 500,
                 color: 'var(--text-primary)',
-                marginBottom: '4px',
+                marginBottom: '2px',
               }}
             >
               {selectedFile.name}
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               {formatFileSize(selectedFile.size)}
             </div>
           </div>
@@ -266,7 +265,7 @@ function UploadZone({
               style={{
                 width: '32px',
                 height: '32px',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 border: 'none',
                 background: 'transparent',
                 cursor: 'pointer',
@@ -285,7 +284,7 @@ function UploadZone({
                 e.currentTarget.style.color = 'var(--text-tertiary)'
               }}
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           )}
         </div>
@@ -293,9 +292,9 @@ function UploadZone({
           <div style={{ marginTop: '16px' }}>
             <div
               style={{
-                height: '6px',
+                height: '4px',
                 background: 'var(--ring-bg)',
-                borderRadius: '3px',
+                borderRadius: '2px',
                 overflow: 'hidden',
               }}
             >
@@ -303,8 +302,8 @@ function UploadZone({
                 style={{
                   height: '100%',
                   width: `${uploadProgress}%`,
-                  background: 'var(--btn-gradient)',
-                  borderRadius: '3px',
+                  background: 'var(--accent-primary)',
+                  borderRadius: '2px',
                   transition: 'width 0.3s ease',
                 }}
               />
@@ -312,7 +311,7 @@ function UploadZone({
             <div
               style={{
                 marginTop: '8px',
-                fontSize: '13px',
+                fontSize: '12px',
                 color: 'var(--text-secondary)',
                 textAlign: 'center',
               }}
@@ -332,16 +331,15 @@ function UploadZone({
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
       style={{
-        background: isDragging ? 'rgba(59, 130, 246, 0.08)' : 'var(--card-bg)',
-        backdropFilter: 'blur(20px)',
+        background: isDragging ? 'rgba(59, 130, 246, 0.04)' : 'var(--card-bg)',
         border: `2px dashed ${
           isDragging ? 'var(--accent-primary)' : error ? '#ef4444' : 'var(--card-border)'
         }`,
-        borderRadius: '16px',
-        padding: '48px 24px',
+        borderRadius: '12px',
+        padding: '40px 24px',
         textAlign: 'center',
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.2s ease',
       }}
     >
       <input
@@ -353,42 +351,42 @@ function UploadZone({
       />
       <div
         style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '16px',
+          width: '48px',
+          height: '48px',
+          borderRadius: '10px',
           background: 'var(--tab-active-bg)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          margin: '0 auto 16px',
+          margin: '0 auto 12px',
           color: 'var(--accent-primary)',
         }}
       >
-        <Upload size={28} />
+        <Upload size={24} />
       </div>
       <div
         style={{
-          fontSize: '16px',
+          fontSize: '14px',
           fontWeight: 500,
           color: 'var(--text-primary)',
-          marginBottom: '8px',
+          marginBottom: '4px',
         }}
       >
         拖拽文件到此处 或 点击选择文件
       </div>
-      <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+      <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
         支持 .zip 压缩包或 .md 单文件，最大 50MB
       </div>
       {error && (
         <div
           style={{
             marginTop: '12px',
-            fontSize: '13px',
+            fontSize: '12px',
             color: '#ef4444',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '6px',
+            gap: '4px',
           }}
         >
           <AlertCircle size={14} />
@@ -428,15 +426,14 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
   return (
     <div
       style={{
-        background: 'var(--card-bg)',
-        backdropFilter: 'blur(20px)',
+        background: 'var(--input-bg)',
         border: '1px solid var(--card-border)',
-        borderRadius: '12px',
+        borderRadius: '8px',
         padding: '8px 12px',
         display: 'flex',
         flexWrap: 'wrap',
-        gap: '8px',
-        minHeight: '44px',
+        gap: '6px',
+        minHeight: '40px',
         alignItems: 'center',
       }}
     >
@@ -447,11 +444,11 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
             display: 'inline-flex',
             alignItems: 'center',
             gap: '4px',
-            padding: '4px 10px',
+            padding: '3px 8px',
             background: 'var(--tab-active-bg)',
             border: '1px solid var(--tab-active-border)',
-            borderRadius: '20px',
-            fontSize: '13px',
+            borderRadius: '4px',
+            fontSize: '12px',
             color: 'var(--accent-primary)',
           }}
         >
@@ -1419,20 +1416,20 @@ export default function SkillUpload() {
   )
 
   return (
-    <div style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ padding: '32px 20px', maxWidth: '800px', margin: '0 auto' }}>
       {/* 页面标题 */}
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
         <h1
           style={{
-            fontSize: '28px',
-            fontWeight: 700,
+            fontSize: '24px',
+            fontWeight: 600,
             color: 'var(--text-primary)',
-            marginBottom: '8px',
+            marginBottom: '6px',
           }}
         >
           上传 Skill
         </h1>
-        <p style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
           分享你的 AI Skill，帮助团队提升效率
         </p>
       </div>
@@ -1444,10 +1441,9 @@ export default function SkillUpload() {
       <div
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
-          borderRadius: '20px',
-          padding: '32px',
+          borderRadius: '12px',
+          padding: '24px',
           boxShadow: 'var(--card-shadow)',
         }}
       >
@@ -1461,8 +1457,8 @@ export default function SkillUpload() {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            marginTop: '32px',
-            paddingTop: '24px',
+            marginTop: '24px',
+            paddingTop: '20px',
             borderTop: '1px solid var(--card-border)',
           }}
         >
@@ -1476,7 +1472,7 @@ export default function SkillUpload() {
               color: 'var(--text-secondary)',
             }}
           >
-            <ChevronLeft size={18} style={{ marginRight: '6px' }} />
+            <ChevronLeft size={16} style={{ marginRight: '4px' }} />
             上一步
           </Button>
 
@@ -1487,27 +1483,27 @@ export default function SkillUpload() {
               style={{
                 background: 'var(--btn-gradient)',
                 color: 'white',
-                padding: '12px 32px',
+                padding: '10px 24px',
               }}
             >
               {isSubmitting ? (
                 <>
                   <div
                     style={{
-                      width: '16px',
-                      height: '16px',
+                      width: '14px',
+                      height: '14px',
                       border: '2px solid rgba(255,255,255,0.3)',
                       borderTopColor: 'white',
                       borderRadius: '50%',
                       animation: 'spin 1s linear infinite',
-                      marginRight: '8px',
+                      marginRight: '6px',
                     }}
                   />
                   提交中...
                 </>
               ) : (
                 <>
-                  <Check size={18} style={{ marginRight: '8px' }} />
+                  <Check size={16} style={{ marginRight: '6px' }} />
                   确认提交
                 </>
               )}
@@ -1519,11 +1515,11 @@ export default function SkillUpload() {
               style={{
                 background: 'var(--btn-gradient)',
                 color: 'white',
-                padding: '12px 32px',
+                padding: '10px 24px',
               }}
             >
               下一步
-              <ChevronRight size={18} style={{ marginLeft: '6px' }} />
+              <ChevronRight size={16} style={{ marginLeft: '4px' }} />
             </Button>
           )}
         </div>

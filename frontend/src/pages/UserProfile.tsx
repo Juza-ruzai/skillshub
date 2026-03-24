@@ -99,29 +99,22 @@ function StatsPanel({ stats }: { stats: UserStats }): JSX.Element {
   ]
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-3">
       {/* Metric cards */}
       <div className="grid grid-cols-2 gap-2">
         {metrics.map((m) => (
           <div
             key={m.label}
-            className="flex flex-col items-center gap-1 p-3 rounded-xl"
+            className="flex flex-col items-center gap-1 p-3 rounded-lg"
             style={{
               background: 'var(--card-bg)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid var(--card-border)',
-              boxShadow: 'var(--card-shadow)',
             }}
           >
             <span style={{ color: 'var(--text-muted)' }}>{m.icon}</span>
             <span
-              className="text-lg font-bold"
-              style={{
-                background: 'var(--btn-gradient)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
+              className="text-lg font-semibold"
+              style={{ color: 'var(--text-primary)' }}
             >
               {m.value}
             </span>
@@ -134,13 +127,10 @@ function StatsPanel({ stats }: { stats: UserStats }): JSX.Element {
 
       {/* Rating distribution */}
       <div
-        className="p-4 rounded-xl"
+        className="p-4 rounded-lg"
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
-          boxShadow: 'var(--card-shadow)',
         }}
       >
         <div className="flex items-center gap-2 mb-3">
@@ -154,13 +144,10 @@ function StatsPanel({ stats }: { stats: UserStats }): JSX.Element {
 
       {/* Trend chart */}
       <div
-        className="p-4 rounded-xl"
+        className="p-4 rounded-lg"
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
-          boxShadow: 'var(--card-shadow)',
         }}
       >
         <div className="flex items-center justify-between mb-2">
@@ -175,10 +162,10 @@ function StatsPanel({ stats }: { stats: UserStats }): JSX.Element {
               <button
                 key={m}
                 onClick={() => setTrendMode(m)}
-                className="px-2 py-0.5 rounded text-xs transition-all"
+                className="px-2 py-0.5 rounded text-xs transition-colors"
                 style={
                   trendMode === m
-                    ? { background: 'var(--btn-gradient)', color: '#fff' }
+                    ? { background: 'var(--accent-primary)', color: '#fff' }
                     : { color: 'var(--text-muted)', background: 'transparent' }
                 }
               >
@@ -237,21 +224,19 @@ export default function UserProfile(): JSX.Element {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* User info card */}
       <div
-        className="flex flex-col sm:flex-row items-center sm:items-start gap-5 p-6 rounded-2xl mb-6"
+        className="flex flex-col sm:flex-row items-center sm:items-start gap-5 p-6 rounded-xl mb-6"
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
           boxShadow: 'var(--card-shadow)',
         }}
       >
         {/* Avatar */}
         <div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-          style={{ background: 'var(--btn-gradient)' }}
+          className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ background: 'var(--accent-primary)' }}
         >
-          <User size={32} className="text-white" />
+          <User size={28} className="text-white" />
         </div>
 
         {/* Info */}
@@ -263,7 +248,7 @@ export default function UserProfile(): JSX.Element {
             </>
           ) : (
             <>
-              <h1 className="text-xl font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>
+              <h1 className="text-xl font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
                 {user?.username}
               </h1>
               <p className="text-sm mb-2" style={{ color: 'var(--text-muted)' }}>
@@ -298,11 +283,9 @@ export default function UserProfile(): JSX.Element {
         <div className="flex-1 min-w-0">
           {/* Tab navigation */}
           <div
-            className="flex gap-1 p-1 rounded-xl mb-5"
+            className="flex gap-1 p-1 rounded-lg mb-5"
             style={{
               background: 'var(--card-bg)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
               border: '1px solid var(--card-border)',
             }}
           >
@@ -311,11 +294,11 @@ export default function UserProfile(): JSX.Element {
                 key={tab.to}
                 to={tab.to}
                 className={({ isActive }) =>
-                  `flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-sm font-medium transition-all ${isActive ? 'text-white' : ''}`
+                  `flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-sm font-medium transition-colors ${isActive ? '' : ''}`
                 }
                 style={({ isActive }) =>
                   isActive
-                    ? { background: 'var(--btn-gradient)', color: '#fff' }
+                    ? { background: 'var(--accent-primary)', color: '#fff' }
                     : { color: 'var(--text-muted)' }
                 }
               >

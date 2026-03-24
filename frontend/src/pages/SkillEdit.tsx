@@ -72,15 +72,14 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
   return (
     <div
       style={{
-        background: 'var(--card-bg)',
-        backdropFilter: 'blur(20px)',
+        background: 'var(--input-bg)',
         border: '1px solid var(--card-border)',
-        borderRadius: '12px',
+        borderRadius: '8px',
         padding: '8px 12px',
         display: 'flex',
         flexWrap: 'wrap',
-        gap: '8px',
-        minHeight: '44px',
+        gap: '6px',
+        minHeight: '40px',
         alignItems: 'center',
       }}
     >
@@ -91,11 +90,11 @@ function TagInput({ tags, onChange }: { tags: string[]; onChange: (tags: string[
             display: 'inline-flex',
             alignItems: 'center',
             gap: '4px',
-            padding: '4px 10px',
+            padding: '3px 8px',
             background: 'var(--tab-active-bg)',
             border: '1px solid var(--tab-active-border)',
-            borderRadius: '20px',
-            fontSize: '13px',
+            borderRadius: '4px',
+            fontSize: '12px',
             color: 'var(--accent-primary)',
           }}
         >
@@ -218,18 +217,17 @@ function UploadZone({
       <div
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
-          borderRadius: '16px',
-          padding: '24px',
+          borderRadius: '10px',
+          padding: '16px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div
             style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
+              width: '40px',
+              height: '40px',
+              borderRadius: '8px',
               background: 'var(--tab-active-bg)',
               display: 'flex',
               alignItems: 'center',
@@ -238,23 +236,23 @@ function UploadZone({
             }}
           >
             {selectedFile.name.endsWith('.zip') ? (
-              <FileArchive size={24} />
+              <FileArchive size={20} />
             ) : (
-              <FileText size={24} />
+              <FileText size={20} />
             )}
           </div>
           <div style={{ flex: 1 }}>
             <div
               style={{
-                fontSize: '15px',
+                fontSize: '14px',
                 fontWeight: 500,
                 color: 'var(--text-primary)',
-                marginBottom: '4px',
+                marginBottom: '2px',
               }}
             >
               {selectedFile.name}
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
               {formatFileSize(selectedFile.size)}
             </div>
           </div>
@@ -262,9 +260,9 @@ function UploadZone({
             <button
               onClick={onClearFile}
               style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '8px',
+                width: '28px',
+                height: '28px',
+                borderRadius: '6px',
                 border: 'none',
                 background: 'transparent',
                 cursor: 'pointer',
@@ -283,7 +281,7 @@ function UploadZone({
                 e.currentTarget.style.color = 'var(--text-tertiary)'
               }}
             >
-              <X size={18} />
+              <X size={16} />
             </button>
           )}
         </div>
@@ -298,16 +296,15 @@ function UploadZone({
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
       style={{
-        background: isDragging ? 'rgba(59, 130, 246, 0.08)' : 'var(--card-bg)',
-        backdropFilter: 'blur(20px)',
+        background: isDragging ? 'rgba(59, 130, 246, 0.04)' : 'var(--card-bg)',
         border: `2px dashed ${
           isDragging ? 'var(--accent-primary)' : error ? '#ef4444' : 'var(--card-border)'
         }`,
-        borderRadius: '16px',
-        padding: '32px 24px',
+        borderRadius: '10px',
+        padding: '28px 20px',
         textAlign: 'center',
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
+        transition: 'all 0.2s ease',
       }}
     >
       <input
@@ -319,22 +316,22 @@ function UploadZone({
       />
       <div
         style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: '12px',
+          width: '40px',
+          height: '40px',
+          borderRadius: '8px',
           background: 'var(--tab-active-bg)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          margin: '0 auto 12px',
+          margin: '0 auto 10px',
           color: 'var(--accent-primary)',
         }}
       >
-        <Upload size={24} />
+        <Upload size={20} />
       </div>
       <div
         style={{
-          fontSize: '14px',
+          fontSize: '13px',
           fontWeight: 500,
           color: 'var(--text-primary)',
           marginBottom: '4px',
@@ -342,7 +339,7 @@ function UploadZone({
       >
         拖拽文件到此处 或 点击选择文件
       </div>
-      <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+      <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>
         支持 .zip 压缩包或 .md 单文件，最大 50MB
       </div>
     </div>
@@ -634,14 +631,14 @@ export default function SkillEdit() {
   // 加载骨架屏
   if (isLoadingSkill) {
     return (
-      <div style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+      <div style={{ padding: '32px 20px', maxWidth: '800px', margin: '0 auto' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
           <h1
             style={{
-              fontSize: '28px',
-              fontWeight: 700,
+              fontSize: '24px',
+              fontWeight: 600,
               color: 'var(--text-primary)',
-              marginBottom: '8px',
+              marginBottom: '6px',
             }}
           >
             编辑 Skill
@@ -650,20 +647,19 @@ export default function SkillEdit() {
         <div
           style={{
             background: 'var(--card-bg)',
-            backdropFilter: 'blur(20px)',
             border: '1px solid var(--card-border)',
-            borderRadius: '20px',
-            padding: '32px',
+            borderRadius: '12px',
+            padding: '24px',
             boxShadow: 'var(--card-shadow)',
           }}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {[1, 2, 3, 4].map((i) => (
               <div key={i}>
                 <div
                   style={{
                     width: '100px',
-                    height: '16px',
+                    height: '14px',
                     background: 'var(--skeleton-bg)',
                     borderRadius: '4px',
                     marginBottom: '8px',
@@ -672,9 +668,9 @@ export default function SkillEdit() {
                 <div
                   style={{
                     width: '100%',
-                    height: '44px',
+                    height: '40px',
                     background: 'var(--skeleton-bg)',
-                    borderRadius: '8px',
+                    borderRadius: '6px',
                   }}
                 />
               </div>
@@ -689,29 +685,28 @@ export default function SkillEdit() {
   if (skillError) {
     return (
       <div
-        style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}
+        style={{ padding: '32px 20px', maxWidth: '800px', margin: '0 auto', textAlign: 'center' }}
       >
         <div
           style={{
             background: 'var(--card-bg)',
-            backdropFilter: 'blur(20px)',
             border: '1px solid var(--card-border)',
-            borderRadius: '16px',
-            padding: '48px 32px',
+            borderRadius: '12px',
+            padding: '40px 32px',
           }}
         >
-          <AlertCircle size={48} style={{ color: '#ef4444', marginBottom: '16px' }} />
+          <AlertCircle size={40} style={{ color: '#ef4444', marginBottom: '12px' }} />
           <h2
             style={{
-              fontSize: '20px',
+              fontSize: '18px',
               fontWeight: 600,
               color: 'var(--text-primary)',
-              marginBottom: '8px',
+              marginBottom: '6px',
             }}
           >
             加载失败
           </h2>
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
             无法加载 Skill 信息
           </p>
           <Button
@@ -726,7 +721,7 @@ export default function SkillEdit() {
   }
 
   return (
-    <div style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto' }}>
+    <div style={{ padding: '32px 20px', maxWidth: '800px', margin: '0 auto' }}>
       {/* 成功 Toast */}
       {showSuccessToast && (
         <div
@@ -736,22 +731,21 @@ export default function SkillEdit() {
             left: '50%',
             transform: 'translateX(-50%)',
             background: 'var(--card-bg)',
-            backdropFilter: 'blur(20px)',
             border: '1px solid rgba(34, 197, 94, 0.3)',
-            borderRadius: '12px',
-            padding: '16px 24px',
+            borderRadius: '10px',
+            padding: '12px 20px',
             display: 'flex',
             alignItems: 'center',
-            gap: '12px',
-            boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+            gap: '10px',
+            boxShadow: 'var(--card-shadow)',
             zIndex: 1000,
             animation: 'slideDown 0.3s ease',
           }}
         >
           <div
             style={{
-              width: '24px',
-              height: '24px',
+              width: '20px',
+              height: '20px',
               borderRadius: '50%',
               background: 'rgba(34, 197, 94, 0.15)',
               display: 'flex',
@@ -759,37 +753,36 @@ export default function SkillEdit() {
               justifyContent: 'center',
             }}
           >
-            <Check size={16} style={{ color: '#22c55e' }} />
+            <Check size={14} style={{ color: '#22c55e' }} />
           </div>
-          <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-primary)' }}>
+          <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-primary)' }}>
             保存成功
           </span>
         </div>
       )}
 
       {/* 页面标题 */}
-      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+      <div style={{ textAlign: 'center', marginBottom: '28px' }}>
         <h1
           style={{
-            fontSize: '28px',
-            fontWeight: 700,
+            fontSize: '24px',
+            fontWeight: 600,
             color: 'var(--text-primary)',
-            marginBottom: '8px',
+            marginBottom: '6px',
           }}
         >
           编辑 Skill
         </h1>
-        <p style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>更新你的 Skill 信息</p>
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>更新你的 Skill 信息</p>
       </div>
 
       {/* 主表单卡片 */}
       <div
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
-          borderRadius: '20px',
-          padding: '32px',
+          borderRadius: '12px',
+          padding: '24px',
           boxShadow: 'var(--card-shadow)',
         }}
       >
@@ -1280,8 +1273,8 @@ export default function SkillEdit() {
           style={{
             display: 'flex',
             justifyContent: 'space-between',
-            marginTop: '32px',
-            paddingTop: '24px',
+            marginTop: '24px',
+            paddingTop: '20px',
             borderTop: '1px solid var(--card-border)',
           }}
         >
@@ -1293,7 +1286,7 @@ export default function SkillEdit() {
               color: 'var(--text-secondary)',
             }}
           >
-            <ChevronLeft size={18} style={{ marginRight: '6px' }} />
+            <ChevronLeft size={16} style={{ marginRight: '4px' }} />
             取消
           </Button>
 
@@ -1303,20 +1296,20 @@ export default function SkillEdit() {
             style={{
               background: 'var(--btn-gradient)',
               color: 'white',
-              padding: '12px 32px',
+              padding: '10px 24px',
             }}
           >
             {isSaving ? (
               <>
                 <Loader2
-                  size={18}
-                  style={{ marginRight: '8px', animation: 'spin 1s linear infinite' }}
+                  size={16}
+                  style={{ marginRight: '6px', animation: 'spin 1s linear infinite' }}
                 />
                 保存中...
               </>
             ) : (
               <>
-                <Check size={18} style={{ marginRight: '8px' }} />
+                <Check size={16} style={{ marginRight: '6px' }} />
                 保存修改
               </>
             )}

@@ -102,28 +102,22 @@ export default function Login(): JSX.Element {
       {/* 主题切换按钮 */}
       <button
         onClick={toggleTheme}
-        className="fixed top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-xl border transition-all duration-300 hover:scale-110"
+        className="fixed top-4 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-lg border transition-colors"
         style={{
           background: 'var(--card-bg)',
           borderColor: 'var(--card-border)',
-          boxShadow: 'var(--card-shadow)',
+          color: 'var(--text-muted)',
         }}
         aria-label="切换主题"
       >
-        {theme === 'dark' ? (
-          <Sun className="h-5 w-5" style={{ color: 'var(--accent-primary)' }} />
-        ) : (
-          <Moon className="h-5 w-5" style={{ color: 'var(--accent-primary)' }} />
-        )}
+        {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
       </button>
 
-      {/* 玻璃拟态卡片 */}
+      {/* 登录卡片 */}
       <div
-        className="w-full max-w-md rounded-2xl p-8"
+        className="w-full max-w-md rounded-xl p-8"
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
           border: '1px solid var(--card-border)',
           boxShadow: 'var(--card-shadow)',
         }}
@@ -131,13 +125,13 @@ export default function Login(): JSX.Element {
         {/* 卡片头部 */}
         <div className="mb-8 text-center">
           <div
-            className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl"
-            style={{ background: 'var(--btn-gradient)' }}
+            className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg"
+            style={{ background: 'var(--accent-primary)' }}
           >
-            <LogIn className="h-7 w-7 text-white" />
+            <LogIn className="h-6 w-6 text-white" />
           </div>
           <h1
-            className="mb-1 text-2xl font-bold"
+            className="mb-1 text-xl font-semibold"
             style={{
               fontFamily: "'Space Grotesk', 'Noto Sans SC', sans-serif",
               color: 'var(--text-primary)',
@@ -177,23 +171,20 @@ export default function Login(): JSX.Element {
               disabled={isLoading}
               aria-invalid={!!errors.email}
               aria-describedby={errors.email ? 'email-error' : undefined}
-              className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 focus:ring-2 disabled:opacity-50"
+              className="w-full rounded-lg px-4 py-2.5 text-sm outline-none transition-colors disabled:opacity-50"
               style={{
-                background: 'rgba(255,255,255,0.1)',
+                background: 'var(--input-bg)',
                 border: errors.email ? '1px solid #ef4444' : '1px solid var(--card-border)',
                 color: 'var(--text-primary)',
-                backdropFilter: 'blur(10px)',
               }}
               onFocus={(e) => {
                 if (!errors.email) {
                   e.currentTarget.style.borderColor = 'var(--accent-primary)'
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'
                 }
               }}
               onBlur={(e) => {
                 if (!errors.email) {
                   e.currentTarget.style.borderColor = 'var(--card-border)'
-                  e.currentTarget.style.boxShadow = 'none'
                 }
               }}
             />
@@ -223,23 +214,20 @@ export default function Login(): JSX.Element {
               disabled={isLoading}
               aria-invalid={!!errors.password}
               aria-describedby={errors.password ? 'password-error' : undefined}
-              className="w-full rounded-xl px-4 py-3 text-sm outline-none transition-all duration-200 disabled:opacity-50"
+              className="w-full rounded-lg px-4 py-2.5 text-sm outline-none transition-colors disabled:opacity-50"
               style={{
-                background: 'rgba(255,255,255,0.1)',
+                background: 'var(--input-bg)',
                 border: errors.password ? '1px solid #ef4444' : '1px solid var(--card-border)',
                 color: 'var(--text-primary)',
-                backdropFilter: 'blur(10px)',
               }}
               onFocus={(e) => {
                 if (!errors.password) {
                   e.currentTarget.style.borderColor = 'var(--accent-primary)'
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'
                 }
               }}
               onBlur={(e) => {
                 if (!errors.password) {
                   e.currentTarget.style.borderColor = 'var(--card-border)'
-                  e.currentTarget.style.boxShadow = 'none'
                 }
               }}
             />
@@ -254,7 +242,7 @@ export default function Login(): JSX.Element {
           <button
             type="submit"
             disabled={isLoading}
-            className="btn-gradient w-full rounded-xl py-3 text-sm font-semibold text-white disabled:opacity-60"
+            className="w-full rounded-lg py-2.5 text-sm font-medium text-white transition-opacity disabled:opacity-60"
             style={{ background: 'var(--btn-gradient)' }}
           >
             {isLoading ? (
@@ -273,7 +261,7 @@ export default function Login(): JSX.Element {
           还没有账号？{' '}
           <Link
             to="/register"
-            className="font-semibold transition-colors hover:underline"
+            className="font-medium transition-colors hover:underline"
             style={{ color: 'var(--accent-primary)' }}
           >
             去注册

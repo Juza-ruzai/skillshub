@@ -52,6 +52,18 @@
 
 ---
 
+## Playwright使用规范
+1. 批量执行优先    
+用 browser_run_code 将多个测试步骤合并为单次调用，返回结构化结果对象，避免逐步交互。批量代码需要注意导航操作后不能直接用 page.evaluate，需要waitForNavigation 或拆开。
+1. 尽量少用截图作为验证手段 
+browser_take_screenshot 极耗token（图片编码），可以的话，尽量只在最终验收时留档用一次。日常验证一律用browser_evaluate 返回布尔值或文本。断言返回数据而非截图。
+1. 按需使用 browser_snapshot
+仅在需要获取元素 ref 进行交互、或遇到异常排查时调用，不要在每个测试步骤后都 snapshot。
+1. 失败时才深入排查
+批量脚本返回失败项后，只对失败项单独调用 browser_snapshot 或browser_evaluate 定位原因。 
+
+---
+
 ## Phase 0: 设计系统重构
 
 > **目标**：建立更精准、更有质感的设计系统，为后续页面优化打好基础
@@ -173,27 +185,27 @@
 
 > **目标**：登录、注册、个人中心需要简洁高效
 
-### 3.1 Login / Register 页面
+### 3.1 Login / Register 页面 ✅
 **优化目标**：
-- [ ] 简化表单设计
-- [ ] 优化错误提示样式
-- [ ] 添加表单验证动效
+- [x] 简化表单设计
+- [x] 优化错误提示样式
+- [x] 移除玻璃拟态效果
 
 **技能**：`/impeccable:frontend-design`
 
-### 3.2 UserProfile 页面
+### 3.2 UserProfile 页面 ✅
 **优化目标**：
-- [ ] 优化用户信息展示
-- [ ] 重新设计 Tab 切换
-- [ ] 优化列表展示
+- [x] 优化用户信息展示
+- [x] 重新设计 Tab 切换（纯色背景）
+- [x] 统计数字改用纯色（移除渐变文字）
 
 **技能**：`/impeccable:arrange`
 
-### 3.3 SkillUpload / SkillEdit 页面
+### 3.3 SkillUpload / SkillEdit 页面 ✅
 **优化目标**：
-- [ ] 优化表单布局
-- [ ] 添加步骤指引
-- [ ] 优化文件上传交互
+- [x] 优化表单布局
+- [x] 优化步骤指引
+- [x] 移除玻璃拟态效果
 
 **技能**：`/impeccable:clarify`
 
@@ -263,7 +275,7 @@
 | Phase 0 | ✅ 完成 | 2026-03-24 |
 | Phase 1 | ✅ 完成 | 2026-03-24 |
 | Phase 2 | ✅ 完成 | 2026-03-24 |
-| Phase 3 | 🔲 未开始 | - |
+| Phase 3 | ✅ 完成 | 2026-03-24 |
 | Phase 4 | 🔲 未开始 | - |
 | Phase 5 | 🔲 未开始 | - |
 
@@ -291,6 +303,7 @@
 
 | 日期 | 变更内容 |
 |------|---------|
+| 2026-03-24 | Phase 3 完成：Login、Register、UserProfile、SkillUpload、SkillEdit 页面优化 - 移除玻璃拟态、渐变文字，简化表单样式 |
 | 2026-03-24 | Phase 1 完成：Header、Home、SkillCard 优化 - 移除渐变文字、玻璃拟态，统一设计语言 |
 | 2026-03-24 | Phase 2 完成：SkillDetail 页面优化 - 移除玻璃拟态、渐变文字，优化文件树组件 |
 | 2026-03-24 | 初始版本，创建优化路线图 |
