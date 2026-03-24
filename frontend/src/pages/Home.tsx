@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import { Search, X, Pin, Sparkles, Download, Users } from 'lucide-react'
+import { Search, X, Pin } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { getPublicStats } from '@/lib/skillsApi'
 import { SkillList } from '@/components/skill/SkillList'
@@ -47,23 +47,6 @@ const fetchSkills = async (params: FetchSkillsParams): Promise<SkillListResponse
   })
 
   return response.data
-}
-
-// Stat card component
-interface StatCardProps {
-  value: string
-  label: string
-  icon: React.ReactNode
-}
-
-function StatCard({ value, label, icon }: StatCardProps): JSX.Element {
-  return (
-    <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-default)] shadow-sm min-w-[120px]">
-      <div className="text-[var(--accent-primary)]">{icon}</div>
-      <div className="text-2xl font-bold text-[var(--accent-primary)]">{value}</div>
-      <div className="text-xs text-[var(--text-secondary)]">{label}</div>
-    </div>
-  )
 }
 
 export function Home(): JSX.Element {
@@ -130,73 +113,217 @@ export function Home(): JSX.Element {
   const totalUsers = statsData?.total_users ?? '--'
 
   return (
-    <div>
-      {/* Hero Section */}
-      <div className="mb-10 text-center">
-        {/* Slogan */}
-        <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight text-[var(--text-primary)] animate-slide-up">
-          汇集中建智慧
-        </h1>
-        <p className="text-base md:text-lg mb-8 text-[var(--text-secondary)] animate-slide-up stagger-1">
-          发现、分享和复用 AI Skills，让工作效率倍增
-        </p>
+    <div className="-mx-4 md:-mx-10">
+      {/* Hero Section - Minimal & Refined (Full width) */}
+      <div
+        className="relative py-24 md:py-32 flex flex-col items-center overflow-hidden bg-[var(--bg-base)]"
+      >
+        {/* Subtle gradient blurs */}
+        <div
+          className="absolute rounded-full blur-[120px] pointer-events-none"
+          style={{
+            top: '-150px',
+            right: '-5%',
+            width: '600px',
+            height: '600px',
+            background: 'var(--accent-primary)',
+            opacity: 'var(--hero-glow-opacity, 0.15)',
+          }}
+        />
+        <div
+          className="absolute rounded-full blur-[100px] pointer-events-none"
+          style={{
+            bottom: '-100px',
+            left: '-5%',
+            width: '500px',
+            height: '500px',
+            background: 'var(--accent-primary)',
+            opacity: 'var(--hero-glow-opacity, 0.08)',
+          }}
+        />
 
-        {/* Stat Cards */}
-        <div className="flex items-center justify-center gap-4 md:gap-6 mb-8 flex-wrap">
-          <div className="animate-slide-up stagger-2">
-            <StatCard
-              value={String(totalSkills)}
-              label="AI Skills"
-              icon={<Sparkles className="h-6 w-6" />}
-            />
+        {/* Main content */}
+        <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
+          {/* Label - Small uppercase */}
+          <div
+            className="mb-8 animate-slide-up"
+            style={{
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--accent-primary)',
+              textTransform: 'uppercase',
+              letterSpacing: '2px',
+            }}
+          >
+            Enterprise AI Skills Platform
           </div>
-          <div className="animate-slide-up stagger-3">
-            <StatCard
-              value={totalDownloadsDisplay}
-              label="总下载"
-              icon={<Download className="h-6 w-6" />}
-            />
-          </div>
-          <div className="animate-slide-up stagger-4">
-            <StatCard
-              value={String(totalUsers)}
-              label="注册用户"
-              icon={<Users className="h-6 w-6" />}
-            />
-          </div>
-        </div>
 
-        {/* Search Box */}
-        <div className="max-w-xl mx-auto animate-slide-up stagger-5">
-          <div className="relative flex items-center rounded-lg p-1 bg-[var(--card-bg)] border border-[var(--border-default)] shadow-sm transition-all duration-200 focus-within:shadow-md focus-within:border-[var(--border-emphasis)]">
-            <Search className="absolute left-4 w-5 h-5 text-[var(--text-tertiary)]" />
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              placeholder="搜索 Skills 名称、描述或标签..."
-              className="flex-1 pl-11 pr-4 py-2.5 bg-transparent outline-none text-sm text-[var(--text-primary)]"
-            />
-            {searchInput && (
+          {/* Title - Large & Bold with accent color on "中建" */}
+          <h1
+            className="mb-5 animate-slide-up stagger-1"
+            style={{
+              fontSize: 'clamp(40px, 8vw, 64px)',
+              fontWeight: 600,
+              letterSpacing: '-2px',
+              lineHeight: 1.1,
+              color: 'var(--text-primary)',
+            }}
+          >
+            汇集<span style={{ color: 'var(--accent-primary)' }}>中建</span>智慧
+          </h1>
+
+          {/* Subtitle - Relaxed */}
+          <p
+            className="mb-12 animate-slide-up stagger-2"
+            style={{
+              fontSize: '18px',
+              lineHeight: 1.6,
+              color: 'var(--text-secondary)',
+              maxWidth: '500px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            发现、分享和复用 AI Skills，让效率倍增
+          </p>
+
+          {/* Search Box - Larger, theme-aware */}
+          <div className="w-full max-w-xl mx-auto mb-16 animate-slide-up stagger-3">
+            <div
+              className="relative flex items-center rounded-2xl transition-all duration-200"
+              style={{
+                background: 'var(--card-bg)',
+                boxShadow: 'var(--shadow-lg)',
+                border: '1px solid var(--border-muted)',
+              }}
+            >
+              <Search
+                className="ml-6 w-5 h-5"
+                style={{ color: 'var(--text-tertiary)' }}
+              />
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="搜索技能、作者或标签..."
+                aria-label="搜索技能"
+                className="flex-1 px-5 py-5 bg-transparent outline-none"
+                style={{
+                  fontSize: '16px',
+                  color: 'var(--text-primary)',
+                }}
+              />
+              {searchInput && (
+                <button
+                  type="button"
+                  onClick={() => setSearchInput('')}
+                  className="p-2 mr-1 rounded-lg transition-all hover:bg-[var(--bg-subtle)]"
+                  style={{ color: 'var(--text-tertiary)' }}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
               <button
                 type="button"
-                onClick={() => setSearchInput('')}
-                className="p-1 mr-1 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
+                onClick={handleSearch}
+                className="flex items-center mr-4 px-6 py-3 rounded-xl font-medium transition-all active:scale-[0.98]"
+                style={{
+                  fontSize: '15px',
+                  color: '#ffffff',
+                  background: 'var(--accent-primary)',
+                }}
               >
-                <X className="h-4 w-4" />
+                搜索
               </button>
-            )}
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="px-4 py-2.5 rounded-md text-sm font-medium text-white bg-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary-hover)] active:scale-95 min-h-[44px]"
-            >
-              搜索
-            </button>
+            </div>
+          </div>
+
+          {/* Stats - Horizontal with dividers */}
+          <div className="flex justify-center items-center gap-12 md:gap-16 animate-slide-up stagger-4">
+            <div style={{ textAlign: 'left' }}>
+              <div
+                style={{
+                  fontSize: '48px',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  lineHeight: 1,
+                }}
+              >
+                {totalSkills}
+              </div>
+              <div
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  marginTop: '4px',
+                }}
+              >
+                技能
+              </div>
+            </div>
+            <div
+              style={{
+                width: '1px',
+                height: '48px',
+                background: 'var(--border-default)',
+              }}
+            />
+            <div style={{ textAlign: 'left' }}>
+              <div
+                style={{
+                  fontSize: '48px',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  lineHeight: 1,
+                }}
+              >
+                {totalDownloadsDisplay}
+              </div>
+              <div
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  marginTop: '4px',
+                }}
+              >
+                下载
+              </div>
+            </div>
+            <div
+              style={{
+                width: '1px',
+                height: '48px',
+                background: 'var(--border-default)',
+              }}
+            />
+            <div style={{ textAlign: 'left' }}>
+              <div
+                style={{
+                  fontSize: '48px',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  lineHeight: 1,
+                }}
+              >
+                {totalUsers}
+              </div>
+              <div
+                style={{
+                  fontSize: '14px',
+                  color: 'var(--text-secondary)',
+                  marginTop: '4px',
+                }}
+              >
+                用户
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Content Section - With container padding */}
+      <div className="mx-4 md:mx-10">
 
       {/* Tabs */}
       <div
@@ -257,8 +384,8 @@ export function Home(): JSX.Element {
               </div>
             )}
 
-            {/* Cover image */}
-            <div className="h-28 rounded-t-xl flex items-center justify-center text-4xl overflow-hidden bg-[var(--bg-subtle)]">
+            {/* Cover image - Better aspect ratio for visual appeal */}
+            <div className="aspect-[16/10] rounded-t-xl flex items-center justify-center text-5xl overflow-hidden bg-[var(--bg-subtle)]">
               {skill.cover_url ? (
                 <img
                   src={skill.cover_url}
@@ -270,20 +397,20 @@ export function Home(): JSX.Element {
                   }}
                 />
               ) : (
-                getSkillIcon(skill.id)
+                <span className="opacity-60">{getSkillIcon(skill.id)}</span>
               )}
             </div>
 
             <div className="p-4">
-              <h3 className="text-sm font-semibold mb-1.5 line-clamp-1 text-[var(--text-primary)]">
+              <h3 className="text-base font-semibold mb-1.5 line-clamp-1 text-[var(--text-primary)]">
                 {skill.name}
               </h3>
-              <p className="text-xs mb-3 line-clamp-2 text-[var(--text-secondary)]">
+              <p className="text-sm mb-3 line-clamp-2 text-[var(--text-secondary)]">
                 {skill.description}
               </p>
 
               {/* Stats row */}
-              <div className="flex items-center gap-3 text-xs mb-3 text-[var(--text-tertiary)]">
+              <div className="flex items-center gap-3 text-sm mb-3 text-[var(--text-tertiary)]">
                 <span title="评分">⭐ {(skill.rating_avg ?? 0).toFixed(1)}</span>
                 <span title="下载">↓ {skill.download_count ?? 0}</span>
                 <span title="收藏">♥ {skill.favorite_count ?? 0}</span>
@@ -291,11 +418,11 @@ export function Home(): JSX.Element {
 
               {/* Tags */}
               {(skill.tags ?? []).length > 0 && (
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   {(skill.tags ?? []).slice(0, 3).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 text-xs rounded-full bg-[var(--accent-subtle)] text-[var(--accent-primary)] border border-[var(--border-emphasis)]"
+                      className="px-2.5 py-0.5 text-xs rounded-full bg-[var(--accent-subtle)] text-[var(--accent-primary)] border border-[var(--border-emphasis)]"
                     >
                       {tag}
                     </span>
@@ -323,6 +450,7 @@ export function Home(): JSX.Element {
           <Pagination currentPage={page} totalPages={data.pages} onPageChange={handlePageChange} />
         </div>
       )}
+      </div>
     </div>
   )
 }

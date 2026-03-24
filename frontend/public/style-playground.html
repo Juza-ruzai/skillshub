@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenClaw Style Playground</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Space Grotesk', sans-serif; }
+
+    /* Style 1: Cyberpunk Neon */
+    .style-cyber {
+      --neon-cyan: #00fff5;
+      --neon-pink: #ff00ff;
+      --neon-purple: #bf00ff;
+      --dark-bg: #0a0a0f;
+      background: var(--dark-bg);
+      position: relative;
+      overflow: hidden;
+    }
+    .style-cyber::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 40%, rgba(0, 255, 245, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(255, 0, 255, 0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .style-cyber .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0, 255, 245, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 245, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+    }
+    .style-cyber .scan-line {
+      position: absolute;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      opacity: 0.3;
+      animation: scan 4s linear infinite;
+    }
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+    .style-cyber .neon-text {
+      text-shadow:
+        0 0 10px var(--neon-cyan),
+        0 0 20px var(--neon-cyan),
+        0 0 40px var(--neon-cyan);
+    }
+    .style-cyber .glow-border {
+      border: 1px solid var(--neon-cyan);
+      box-shadow:
+        0 0 10px rgba(0, 255, 245, 0.3),
+        inset 0 0 10px rgba(0, 255, 245, 0.1);
+    }
+    .style-cyber .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: var(--neon-cyan);
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+      50% { transform: translateY(-30px) translateX(10px); opacity: 1; }
+    }
+
+    /* Style 2: Modern Minimal */
+    .style-minimal {
+      --accent: #0066ff;
+      --text-primary: #0a0a0a;
+      --text-secondary: #666666;
+      --bg-subtle: #fafafa;
+      background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
+    }
+    .style-minimal .gradient-blur {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    /* Style 3: Bold Impact */
+    .style-bold {
+      --impact-red: #ff3366;
+      --impact-yellow: #ffcc00;
+      --impact-dark: #0a0a0a;
+      background: var(--impact-dark);
+      font-family: 'Syne', sans-serif;
+    }
+    .style-bold .marquee-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .style-bold .marquee-text {
+      position: absolute;
+      white-space: nowrap;
+      font-size: 20vw;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.03);
+      animation: marquee 20s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .style-bold .accent-line {
+      height: 8px;
+      background: linear-gradient(90deg, var(--impact-red), var(--impact-yellow));
+    }
+    .style-bold .split-text span {
+      display: inline-block;
+      transition: transform 0.3s ease;
+    }
+    .style-bold .split-text:hover span {
+      transform: translateY(-5px);
+    }
+
+    /* Style 4: Playful Young */
+    .style-playful {
+      --play-pink: #ff6b9d;
+      --play-purple: #c084fc;
+      --play-blue: #60a5fa;
+      --play-green: #34d399;
+      --play-yellow: #fbbf24;
+      --play-bg: #fefefe;
+      background: var(--play-bg);
+      font-family: 'Outfit', sans-serif;
+    }
+    .style-playful .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.6;
+      animation: blob 8s ease-in-out infinite;
+    }
+    @keyframes blob {
+      0%, 100% { transform: scale(1) translate(0, 0); }
+      33% { transform: scale(1.1) translate(20px, -20px); }
+      66% { transform: scale(0.9) translate(-10px, 10px); }
+    }
+    .style-playful .bouncy {
+      animation: bounce-soft 2s ease-in-out infinite;
+    }
+    @keyframes bounce-soft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .style-playful .tag {
+      display: inline-flex;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Navigation */
+    .nav-fixed {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      display: flex;
+      gap: 8px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .nav-btn {
+      padding: 10px 20px;
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .nav-btn.active {
+      background: white;
+      color: black;
+    }
+
+    .section {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 40px 40px;
+      position: relative;
+    }
+    .hidden { display: none; }
+
+    /* Search boxes */
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+    .search-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: inherit;
+      font-family: inherit;
+      width: 400px;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 24px 32px;
+      border-radius: 16px;
+    }
+    .stat-number {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .stat-label {
+      margin-top: 8px;
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    /* Skill cards */
+    .cards-preview {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 48px;
+      max-width: 900px;
+    }
+    .preview-card {
+      padding: 20px;
+      border-radius: 16px;
+      transition: transform 0.2s ease;
+    }
+    .preview-card:hover {
+      transform: translateY(-4px);
+    }
+    .preview-card h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .preview-card p {
+      margin: 0;
+      font-size: 13px;
+      opacity: 0.7;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav-fixed">
+    <button class="nav-btn active" data-style="cyber">赛博未来</button>
+    <button class="nav-btn" data-style="minimal">极简高级</button>
+    <button class="nav-btn" data-style="bold">大胆冲击</button>
+    <button class="nav-btn" data-style="playful">活泼年轻</button>
+  </nav>
+
+  <!-- Style 1: Cyberpunk Neon -->
+  <section id="cyber" class="section style-cyber">
+    <div class="grid-overlay"></div>
+    <div class="scan-line"></div>
+    <div class="particle" style="left: 10%; top: 20%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 25%; top: 60%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 70%; top: 30%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 85%; top: 70%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 50%; top: 80%; animation-delay: 4s;"></div>
+
+    <div style="position: relative; z-index: 1; text-align: center;">
+      <div style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: rgba(0, 255, 245, 0.1); border: 1px solid rgba(0, 255, 245, 0.3); border-radius: 20px; margin-bottom: 32px;">
+        <span style="color: var(--neon-cyan); font-size: 14px;">// SKILL REPOSITORY</span>
+      </div>
+
+      <h1 style="font-size: 72px; font-weight: 700; margin: 0 0 16px; letter-spacing: -2px;">
+        <span class="neon-text" style="color: var(--neon-cyan);">OpenClaw</span>
+        <span style="color: white;">Skills</span>
+      </h1>
+
+      <p style="font-size: 20px; color: rgba(255, 255, 255, 0.6); margin: 0 0 48px; max-width: 500px;">
+        企业级 AI 技能共享平台<br>
+        <span style="color: var(--neon-pink);">发现 · 下载 · 创造</span>
+      </p>
+
+      <div class="search-box glow-border" style="background: rgba(0, 255, 245, 0.05); max-width: 500px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="搜索技能..." style="color: white;">
+        <button style="background: var(--neon-cyan); color: #0a0a0f; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;">搜索</button>
+      </div>
+
+      <div class="stats-grid" style="margin-top: 64px;">
+        <div class="stat-card glow-border" style="background: rgba(0, 255, 245, 0.05);">
+          <div class="stat-number" style="color: var(--neon-cyan);">128</div>
+          <div class="stat-label" style="color: rgba(255, 255, 255, 0.6);">技能数量</div>
+        </div>
+        <div class="stat-card glow-border" style="background: rgba(255, 0, 255, 0.05); border-color: var(--neon-pink);">
+          <div class="stat-number" style="color: var(--neon-pink);">2.4K</div>
+          <div class="stat-label" style="color: rgba(255, 255, 255, 0.6);">总下载量</div>
+        </div>
+        <div class="stat-card glow-border" style="background: rgba(191, 0, 255, 0.05); border-color: var(--neon-purple);">
+          <div class="stat-number" style="color: var(--neon-purple);">56</div>
+          <div class="stat-label" style="color: rgba(255, 255, 255, 0.6);">活跃作者</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Style 2: Modern Minimal -->
+  <section id="minimal" class="section style-minimal hidden">
+    <div class="gradient-blur" style="background: #0066ff; top: -200px; right: -100px;"></div>
+    <div class="gradient-blur" style="background: #00ccff; bottom: -200px; left: -100px;"></div>
+
+    <div style="position: relative; z-index: 1; text-align: center; max-width: 700px;">
+      <div style="font-size: 13px; font-weight: 500; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px;">
+        Enterprise AI Skills Platform
+      </div>
+
+      <h1 style="font-size: 64px; font-weight: 600; margin: 0 0 20px; letter-spacing: -2px; color: var(--text-primary); line-height: 1.1;">
+        发现更好的<br>
+        <span style="color: var(--accent);">AI 工作流</span>
+      </h1>
+
+      <p style="font-size: 18px; color: var(--text-secondary); margin: 0 0 40px; line-height: 1.6;">
+        OpenClaw Skills Hub 汇聚企业内部的 AI 技能，<br>
+        让每个团队都能快速找到并复用优秀的自动化方案。
+      </p>
+
+      <div class="search-box" style="background: white; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08); border: 1px solid rgba(0, 0, 0, 0.06);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="搜索技能、作者或标签..." style="color: var(--text-primary);">
+        <button style="background: var(--accent); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 500; cursor: pointer;">搜索</button>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 48px; margin-top: 64px;">
+        <div style="text-align: left;">
+          <div style="font-size: 48px; font-weight: 600; color: var(--text-primary); line-height: 1;">128</div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">技能</div>
+        </div>
+        <div style="width: 1px; background: rgba(0, 0, 0, 0.1);"></div>
+        <div style="text-align: left;">
+          <div style="font-size: 48px; font-weight: 600; color: var(--text-primary); line-height: 1;">2.4K</div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">下载</div>
+        </div>
+        <div style="width: 1px; background: rgba(0, 0, 0, 0.1);"></div>
+        <div style="text-align: left;">
+          <div style="font-size: 48px; font-weight: 600; color: var(--text-primary); line-height: 1;">56</div>
+          <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">作者</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Style 3: Bold Impact -->
+  <section id="bold" class="section style-bold hidden">
+    <div class="marquee-bg">
+      <div class="marquee-text" style="top: 10%;">OPENSRC OPENSRC OPENSRC OPENSRC OPENSRC</div>
+      <div class="marquee-text" style="bottom: 10%; animation-direction: reverse;">SKILLS SKILLS SKILLS SKILLS SKILLS SKILLS</div>
+    </div>
+
+    <div style="position: relative; z-index: 1; width: 100%; max-width: 1100px;">
+      <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 40px;">
+        <div class="accent-line" style="width: 60px;"></div>
+        <span style="color: rgba(255, 255, 255, 0.5); font-size: 14px; text-transform: uppercase; letter-spacing: 3px;">AI Skills Repository</span>
+      </div>
+
+      <h1 style="font-size: clamp(48px, 10vw, 96px); font-weight: 800; margin: 0 0 24px; line-height: 0.95; color: white;">
+        <span class="split-text">
+          <span style="color: var(--impact-red);">O</span><span style="color: var(--impact-yellow);">p</span><span style="color: white;">e</span><span style="color: var(--impact-red);">n</span>
+        </span>
+        <span class="split-text">
+          <span style="color: white;">C</span><span style="color: var(--impact-yellow);">l</span><span style="color: var(--impact-red);">a</span><span style="color: white);">w</span>
+        </span>
+      </h1>
+
+      <p style="font-size: 24px; color: rgba(255, 255, 255, 0.7); margin: 0 0 48px; max-width: 500px; line-height: 1.4;">
+        释放 AI 的力量<br>
+        <span style="color: var(--impact-yellow);">一个技能，无限可能</span>
+      </p>
+
+      <div style="display: flex; gap: 16px; margin-bottom: 64px;">
+        <div class="search-box" style="background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 255, 255, 0.2); flex: 1; max-width: 500px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+          <input type="text" placeholder="搜索你的下一个技能..." style="color: white;">
+        </div>
+        <button style="background: var(--impact-red); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; font-family: inherit;">
+          开始探索
+        </button>
+      </div>
+
+      <div class="cards-preview">
+        <div class="preview-card" style="background: rgba(255, 51, 102, 0.1); border: 1px solid rgba(255, 51, 102, 0.3);">
+          <h4 style="color: white;">PDF 处理器</h4>
+          <p style="color: rgba(255, 255, 255, 0.6);">智能解析 PDF 文档结构</p>
+          <div style="margin-top: 12px; color: var(--impact-red); font-size: 12px; font-weight: 600;">1.2K 下载</div>
+        </div>
+        <div class="preview-card" style="background: rgba(255, 204, 0, 0.1); border: 1px solid rgba(255, 204, 0, 0.3);">
+          <h4 style="color: white;">数据分析</h4>
+          <p style="color: rgba(255, 255, 255, 0.6);">自动化报表生成工具</p>
+          <div style="margin-top: 12px; color: var(--impact-yellow); font-size: 12px; font-weight: 600;">890 下载</div>
+        </div>
+        <div class="preview-card" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2);">
+          <h4 style="color: white;">代码生成</h4>
+          <p style="color: rgba(255, 255, 255, 0.6);">AI 辅助编程助手</p>
+          <div style="margin-top: 12px; color: white; font-size: 12px; font-weight: 600;">756 下载</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Style 4: Playful Young -->
+  <section id="playful" class="section style-playful hidden">
+    <div class="blob" style="width: 400px; height: 400px; background: var(--play-pink); top: -100px; left: -100px;"></div>
+    <div class="blob" style="width: 300px; height: 300px; background: var(--play-purple); top: 50%; right: -50px; animation-delay: -2s;"></div>
+    <div class="blob" style="width: 350px; height: 350px; background: var(--play-blue); bottom: -100px; left: 30%; animation-delay: -4s;"></div>
+
+    <div style="position: relative; z-index: 1; text-align: center; max-width: 700px;">
+      <div class="bouncy" style="display: inline-flex; gap: 8px; margin-bottom: 24px;">
+        <span class="tag" style="background: rgba(255, 107, 157, 0.15); color: var(--play-pink);">新技能</span>
+        <span class="tag" style="background: rgba(96, 165, 250, 0.15); color: var(--play-blue);">热门</span>
+        <span class="tag" style="background: rgba(52, 211, 153, 0.15); color: var(--play-green);">推荐</span>
+      </div>
+
+      <h1 style="font-size: 56px; font-weight: 700; margin: 0 0 16px; color: #1a1a2e;">
+        探索 AI 技能宝库 ✨
+      </h1>
+
+      <p style="font-size: 20px; color: #666; margin: 0 0 40px; line-height: 1.6;">
+        在这里发现、分享、使用各种有趣的 AI 技能<br>
+        让工作变得更轻松，更有趣！🚀
+      </p>
+
+      <div class="search-box" style="background: white; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); border: 2px solid rgba(192, 132, 252, 0.3);">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2.5">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input type="text" placeholder="搜索你想要的技能..." style="color: #1a1a2e;">
+        <button style="background: linear-gradient(135deg, var(--play-pink), var(--play-purple)); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; font-family: inherit;">搜一下 🔍</button>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 24px; margin-top: 56px; flex-wrap: wrap;">
+        <div style="background: white; padding: 20px 28px; border-radius: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);">
+          <div style="font-size: 36px; font-weight: 700; color: var(--play-pink);">128</div>
+          <div style="font-size: 14px; color: #888; margin-top: 4px;">技能数 📦</div>
+        </div>
+        <div style="background: white; padding: 20px 28px; border-radius: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);">
+          <div style="font-size: 36px; font-weight: 700; color: var(--play-purple);">2.4K</div>
+          <div style="font-size: 14px; color: #888; margin-top: 4px;">下载量 ⬇️</div>
+        </div>
+        <div style="background: white; padding: 20px 28px; border-radius: 20px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);">
+          <div style="font-size: 36px; font-weight: 700; color: var(--play-blue);">56</div>
+          <div style="font-size: 14px; color: #888; margin-top: 4px;">创作者 👨‍💻</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const navBtns = document.querySelectorAll('.nav-btn');
+    const sections = document.querySelectorAll('.section');
+
+    navBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const style = btn.dataset.style;
+
+        // Update active button
+        navBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        // Show corresponding section
+        sections.forEach(s => {
+          if (s.id === style) {
+            s.classList.remove('hidden');
+          } else {
+            s.classList.add('hidden');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

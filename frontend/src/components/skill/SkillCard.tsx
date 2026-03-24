@@ -30,8 +30,8 @@ export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
       onClick={handleClick}
       className="w-full text-left rounded-xl overflow-hidden border border-[var(--border-default)] bg-[var(--card-bg)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1"
     >
-      {/* Cover Image */}
-      <div className="aspect-video bg-[var(--bg-subtle)] flex items-center justify-center overflow-hidden text-4xl">
+      {/* Cover Image - Better aspect ratio for visual appeal */}
+      <div className="aspect-[16/10] bg-[var(--bg-subtle)] flex items-center justify-center overflow-hidden text-5xl">
         {skill.cover_url && !imageError ? (
           <img
             src={skill.cover_url}
@@ -40,7 +40,7 @@ export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
             onError={() => setImageError(true)}
           />
         ) : (
-          <span>{getSkillIcon(skill.id)}</span>
+          <span className="opacity-60">{getSkillIcon(skill.id)}</span>
         )}
       </div>
 
