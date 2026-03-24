@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Download, Heart, Star, Package } from 'lucide-react'
 import type { Skill } from '@/types/skill'
 
@@ -7,6 +8,8 @@ export interface SkillCardProps {
 }
 
 export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
+  const [imageError, setImageError] = useState(false)
+
   const handleClick = () => {
     if (onClick) {
       onClick(skill)
@@ -19,9 +22,18 @@ export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
       onClick={handleClick}
       className="w-full text-left bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200"
     >
-      {/* Cover Image Placeholder */}
-      <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-        <Package data-testid="skill-placeholder" className="w-16 h-16 text-gray-400" />
+      {/* Cover Image */}
+      <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
+        {skill.cover_url && !imageError ? (
+          <img
+            src={skill.cover_url}
+            alt={skill.name}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <Package data-testid="skill-placeholder" className="w-16 h-16 text-gray-400" />
+        )}
       </div>
 
       {/* Content */}

@@ -8,6 +8,7 @@ export interface Skill {
   usage_scenario: string
   usage_method: string
   demo_images?: { url: string; caption?: string }[]
+  cover_url?: string
   file_path: string
   file_size: number
   file_tree?: FileTreeNode[]

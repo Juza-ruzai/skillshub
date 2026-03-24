@@ -16,9 +16,10 @@ class SkillBase(SQLModel):
     usage_scenario: str
     usage_method: str
     demo_images: list[dict] = Field(default_factory=list, sa_column=Column(JSON))
+    cover_url: str | None = Field(default=None, max_length=500)
     file_path: str = Field(max_length=500)
     file_size: int
-    file_tree: dict | None = Field(default=None, sa_column=Column(JSON))
+    file_tree: list | None = Field(default=None, sa_column=Column(JSON))
     tags: list[str] = Field(default_factory=list, sa_column=Column(JSON))
     is_deleted: bool = Field(default=False)
     is_pinned: bool = Field(default=False)

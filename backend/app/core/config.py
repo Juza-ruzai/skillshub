@@ -28,7 +28,8 @@ class Settings(BaseSettings):
     max_file_size: int = 52428800
 
     # CORS (逗号分隔字符串，兼容 .env 文件格式)
-    allowed_origins: str = "http://localhost:5173,http://localhost:5174"
+    # 开发环境默认允许所有来源，生产环境应配置具体域名
+    allowed_origins: str = "*"
 
     # Environment
     environment: str = "development"
@@ -41,6 +42,8 @@ class Settings(BaseSettings):
     @property
     def cors_origins(self) -> list[str]:
         """返回 CORS 允许的来源列表."""
+        if self.allowed_origins == "*":
+            return ["*"]
         return [origin.strip() for origin in self.allowed_origins.split(",")]
 
 

@@ -320,6 +320,26 @@ export default function SkillDetail(): JSX.Element {
         </div>
       </div>
 
+      {/* 封面图片 */}
+      {skill.cover_url && (
+        <div
+          className="rounded-2xl overflow-hidden mb-6"
+          style={{
+            border: '1px solid var(--card-border)',
+            boxShadow: 'var(--card-shadow)',
+          }}
+        >
+          <img
+            src={skill.cover_url}
+            alt={skill.name}
+            className="w-full aspect-video object-cover"
+            onError={(e) => {
+              e.currentTarget.style.display = 'none'
+            }}
+          />
+        </div>
+      )}
+
       {/* 主要内容区 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* 左侧：详情内容 */}

@@ -7,3 +7,31 @@ node_modules/
 
 # User uploaded files
 uploads/skills/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.coverage
+htmlcov/
+*.log
+.env
+.env.local
+.env.*.local
+
+# Frontend
+frontend/.env
+frontend/.env.local
+frontend/test-results/
+frontend/tests/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

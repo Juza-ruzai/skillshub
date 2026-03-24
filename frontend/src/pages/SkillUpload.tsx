@@ -1,7 +1,7 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiClient } from '../lib/api'
-import { uploadContentImage } from '../lib/skillsApi'
+import { uploadContentImage, uploadCover } from '../lib/skillsApi'
 import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
@@ -18,10 +18,15 @@ import {
   AlertCircle,
   Eye,
   Package,
+  ImagePlus,
 } from 'lucide-react'
 import type EasyMDE from 'easymde'
 import 'easymde/dist/easymde.min.css'
 import { MarkdownPreview } from '../components/common/MarkdownPreview'
+
+// 封面图片配置常量
+const COVER_IMAGE_MAX_SIZE = 2 * 1024 * 1024 // 2MB
+const COVER_IMAGE_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 // 上传步骤类型
 type UploadStep = 1 | 2 | 3
@@ -547,6 +552,21 @@ export default function SkillUpload() {
   })
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
 
+  // 封面上传状态
+  const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [coverError, setCoverError] = useState<string | null>(null)
+  const coverInputRef = useRef<HTMLInputElement>(null)
+
+  // 清理封面预览的 blob URL
+  useEffect(() => {
+    return () => {
+      if (coverPreview && coverPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(coverPreview)
+      }
+    }
+  }, [coverPreview])
+
   // Step 3 状态
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -649,6 +669,45 @@ export default function SkillUpload() {
     return Object.keys(errors).length === 0
   }
 
+  // 封面图片处理
+  const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setCoverError(null)
+
+    // 验证文件类型
+    if (!COVER_IMAGE_ALLOWED_TYPES.includes(file.type)) {
+      setCoverError('只支持 jpg、png、webp 格式的图片')
+      return
+    }
+
+    // 验证文件大小
+    if (file.size > COVER_IMAGE_MAX_SIZE) {
+      setCoverError('图片大小不能超过 2MB')
+      return
+    }
+
+    setCoverFile(file)
+
+    // 使用 blob URL 代替 data URL（内存效率更高）
+    const blobUrl = URL.createObjectURL(file)
+    setCoverPreview(blobUrl)
+  }
+
+  const handleRemoveCover = () => {
+    // 清理 blob URL
+    if (coverPreview && coverPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(coverPreview)
+    }
+    setCoverFile(null)
+    setCoverPreview(null)
+    setCoverError(null)
+    if (coverInputRef.current) {
+      coverInputRef.current.value = ''
+    }
+  }
+
   // Step 3: 提交最终数据
   const handleSubmit = async () => {
     if (!createdSkillId) return
@@ -657,6 +716,12 @@ export default function SkillUpload() {
     setSubmitError(null)
 
     try {
+      // 1. 如果有封面，先上传封面
+      if (coverFile) {
+        await uploadCover(createdSkillId, coverFile)
+      }
+
+      // 2. 更新元数据
       await apiClient.put(`/skills/${createdSkillId}`, {
         name: metadata.name,
         description: metadata.description,
@@ -1024,6 +1089,156 @@ export default function SkillUpload() {
         >
           最多 10 个标签，用于搜索和分类
         </div>
+      </div>
+
+      {/* 封面图片 */}
+      <div>
+        <Label
+          style={{
+            display: 'block',
+            marginBottom: '8px',
+            color: 'var(--text-primary)',
+            fontSize: '14px',
+            fontWeight: 500,
+          }}
+        >
+          封面图片 <span style={{ color: 'var(--text-tertiary)', fontWeight: 400 }}>(可选)</span>
+        </Label>
+        <input
+          ref={coverInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={handleCoverSelect}
+          style={{ display: 'none' }}
+        />
+        {coverPreview ? (
+          <div
+            style={{
+              position: 'relative',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              border: '1px solid var(--card-border)',
+            }}
+          >
+            <img
+              src={coverPreview}
+              alt="封面预览"
+              style={{
+                width: '100%',
+                aspectRatio: '16/9',
+                objectFit: 'cover',
+              }}
+            />
+            {/* 悬浮操作层 */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(0, 0, 0, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                opacity: 0,
+                transition: 'opacity 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '0'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => coverInputRef.current?.click()}
+                style={{
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  color: 'var(--text-primary)',
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <ImagePlus size={16} />
+                更换封面
+              </button>
+              <button
+                type="button"
+                onClick={handleRemoveCover}
+                style={{
+                  padding: '10px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: 'rgba(239, 68, 68, 0.95)',
+                  color: 'white',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                title="移除封面"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => coverInputRef.current?.click()}
+            style={{
+              width: '100%',
+              aspectRatio: '16/9',
+              borderRadius: '12px',
+              border: '2px dashed var(--card-border)',
+              background: 'var(--card-bg)',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              color: 'var(--text-tertiary)',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--accent-primary)'
+              e.currentTarget.style.color = 'var(--accent-primary)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--card-border)'
+              e.currentTarget.style.color = 'var(--text-tertiary)'
+            }}
+          >
+            <ImagePlus size={32} />
+            <span style={{ fontSize: '14px' }}>点击上传封面图片</span>
+            <span style={{ fontSize: '12px', opacity: 0.7 }}>
+              支持 jpg、png、webp，建议 16:9 比例，最大 2MB
+            </span>
+          </button>
+        )}
+        {coverError && (
+          <div
+            style={{
+              marginTop: '8px',
+              fontSize: '13px',
+              color: '#ef4444',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            <AlertCircle size={14} />
+            {coverError}
+          </div>
+        )}
       </div>
     </div>
   )

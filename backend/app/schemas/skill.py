@@ -76,9 +76,10 @@ class SkillResponse(BaseModel):
     usage_scenario: str
     usage_method: str
     demo_images: list[dict] = []
+    cover_url: str | None = None
     file_path: str
     file_size: int
-    file_tree: dict | None = None
+    file_tree: list | None = None
     tags: list[str] = []
     author_id: UUID
     is_deleted: bool = False
@@ -99,6 +100,7 @@ class SkillListResponse(BaseModel):
     id: UUID
     name: str
     description: str
+    cover_url: str | None = None
     tags: list[str] = []
     author_id: UUID
     author_username: str
@@ -120,9 +122,10 @@ class SkillDetailResponse(BaseModel):
     usage_scenario: str
     usage_method: str
     demo_images: list[dict] = []
+    cover_url: str | None = None
     file_path: str
     file_size: int
-    file_tree: dict | None = None
+    file_tree: list | None = None
     tags: list[str] = []
     author_id: UUID
     author_username: str
