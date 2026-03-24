@@ -49,75 +49,19 @@ const fetchSkills = async (params: FetchSkillsParams): Promise<SkillListResponse
   return response.data
 }
 
-// SVG Ring stat card
-interface StatRingProps {
+// Stat card component
+interface StatCardProps {
   value: string
   label: string
   icon: React.ReactNode
-  progress: number // 0-1
 }
 
-function StatRing({ value, label, icon, progress }: StatRingProps): JSX.Element {
-  const r = 36
-  const circumference = 2 * Math.PI * r
-  const offset = circumference * (1 - progress)
-
+function StatCard({ value, label, icon }: StatCardProps): JSX.Element {
   return (
-    <div
-      className="flex flex-col items-center gap-3 px-6 py-5 rounded-2xl"
-      style={{
-        background: 'var(--card-bg)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid var(--card-border)',
-        boxShadow: 'var(--card-shadow)',
-        minWidth: 130,
-      }}
-    >
-      <div className="relative flex items-center justify-center" style={{ width: 90, height: 90 }}>
-        <svg width="90" height="90" viewBox="0 0 90 90" style={{ transform: 'rotate(-90deg)' }}>
-          <defs>
-            <linearGradient id="statGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="var(--accent-primary)" />
-              <stop offset="100%" stopColor="var(--accent-secondary)" />
-            </linearGradient>
-          </defs>
-          {/* Track */}
-          <circle cx="45" cy="45" r={r} fill="none" stroke="var(--ring-bg)" strokeWidth="6" />
-          {/* Fill */}
-          <circle
-            cx="45"
-            cy="45"
-            r={r}
-            fill="none"
-            stroke="url(#statGradient)"
-            strokeWidth="6"
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            style={{ transition: 'stroke-dashoffset 1s ease' }}
-          />
-        </svg>
-        {/* Center icon */}
-        <div className="absolute inset-0 flex items-center justify-center">{icon}</div>
-      </div>
-      <div className="text-center">
-        <div
-          className="text-xl font-bold"
-          style={{
-            background: 'var(--btn-gradient)',
-            WebkitBackgroundClip: 'text',
-            backgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            fontFamily: "'Space Grotesk', sans-serif",
-          }}
-        >
-          {value}
-        </div>
-        <div className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>
-          {label}
-        </div>
-      </div>
+    <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-xl bg-[var(--card-bg)] border border-[var(--border-default)] shadow-sm min-w-[120px]">
+      <div className="text-[var(--accent-primary)]">{icon}</div>
+      <div className="text-2xl font-bold text-[var(--accent-primary)]">{value}</div>
+      <div className="text-xs text-[var(--text-secondary)]">{label}</div>
     </div>
   )
 }
@@ -187,83 +131,52 @@ export function Home(): JSX.Element {
 
   return (
     <div>
-      {/* ===== Hero Section ===== */}
+      {/* Hero Section */}
       <div className="mb-10 text-center">
         {/* Slogan */}
-        <h1
-          className="text-4xl md:text-5xl font-bold mb-3 leading-tight"
-          style={{
-            fontFamily: "'Space Grotesk', 'Noto Sans SC', sans-serif",
-            color: 'var(--text-primary)',
-          }}
-        >
-          汇集
-          <span
-            style={{
-              background: 'var(--btn-gradient)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            中建
-          </span>
-          智慧
+        <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight text-[var(--text-primary)]">
+          汇集中建智慧
         </h1>
-        <p className="text-base md:text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>
+        <p className="text-base md:text-lg mb-8 text-[var(--text-secondary)]">
           发现、分享和复用 AI Skills，让工作效率倍增
         </p>
 
-        {/* Stat Rings */}
+        {/* Stat Cards */}
         <div className="flex items-center justify-center gap-4 md:gap-6 mb-8 flex-wrap">
-          <StatRing
+          <StatCard
             value={String(totalSkills)}
             label="AI Skills"
-            progress={0.75}
-            icon={<Sparkles className="h-6 w-6" style={{ color: 'var(--accent-primary)' }} />}
+            icon={<Sparkles className="h-6 w-6" />}
           />
-          <StatRing
+          <StatCard
             value={totalDownloadsDisplay}
             label="总下载"
-            progress={0.6}
-            icon={<Download className="h-6 w-6" style={{ color: 'var(--accent-primary)' }} />}
+            icon={<Download className="h-6 w-6" />}
           />
-          <StatRing
+          <StatCard
             value={String(totalUsers)}
             label="注册用户"
-            progress={0.9}
-            icon={<Users className="h-6 w-6" style={{ color: 'var(--accent-primary)' }} />}
+            icon={<Users className="h-6 w-6" />}
           />
         </div>
 
         {/* Search Box */}
         <div className="max-w-xl mx-auto">
-          <div
-            className="relative flex items-center rounded-2xl p-1.5"
-            style={{
-              background: 'var(--card-bg)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid var(--card-border)',
-              boxShadow: 'var(--card-shadow)',
-            }}
-          >
-            <Search className="absolute left-4 w-5 h-5" style={{ color: 'var(--text-tertiary)' }} />
+          <div className="relative flex items-center rounded-lg p-1 bg-[var(--card-bg)] border border-[var(--border-default)] shadow-sm">
+            <Search className="absolute left-4 w-5 h-5 text-[var(--text-tertiary)]" />
             <input
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="搜索 Skills 名称、描述或标签..."
-              className="flex-1 pl-11 pr-4 py-2.5 bg-transparent outline-none text-sm"
-              style={{ color: 'var(--text-primary)' }}
+              className="flex-1 pl-11 pr-4 py-2.5 bg-transparent outline-none text-sm text-[var(--text-primary)]"
             />
             {searchInput && (
               <button
                 type="button"
                 onClick={() => setSearchInput('')}
-                className="p-1 mr-1 rounded-lg transition-colors"
-                style={{ color: 'var(--text-tertiary)' }}
+                className="p-1 mr-1 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -271,8 +184,7 @@ export function Home(): JSX.Element {
             <button
               type="button"
               onClick={handleSearch}
-              className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all duration-300 hover:scale-105 hover:shadow-lg"
-              style={{ background: 'var(--btn-gradient)' }}
+              className="px-4 py-2 rounded-md text-sm font-medium text-white bg-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary-hover)]"
             >
               搜索
             </button>
@@ -280,18 +192,12 @@ export function Home(): JSX.Element {
         </div>
       </div>
 
-      {/* ===== Tabs ===== */}
+      {/* Tabs */}
       <div
-        className="flex gap-1 mb-6 p-1 rounded-xl w-full overflow-x-auto"
-        style={{
-          background: 'var(--card-bg)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          border: '1px solid var(--card-border)',
-          scrollbarWidth: 'none',
-        }}
+        className="flex gap-1 mb-6 p-1 rounded-lg w-full overflow-x-auto bg-[var(--bg-subtle)] border border-[var(--border-muted)]"
         role="tablist"
         aria-label="排序方式"
+        style={{ scrollbarWidth: 'none' }}
       >
         {(Object.keys(TAB_LABELS) as TabType[]).map((tab) => {
           const isActive = activeTab === tab
@@ -302,12 +208,11 @@ export function Home(): JSX.Element {
               onClick={() => handleTabChange(tab)}
               role="tab"
               aria-selected={isActive}
-              className="flex-1 shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap"
+              className="flex-1 shrink-0 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
               style={{
-                background: isActive ? 'var(--tab-active-bg)' : 'transparent',
+                background: isActive ? 'var(--card-bg)' : 'transparent',
                 color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                border: isActive ? '1px solid var(--tab-active-border)' : '1px solid transparent',
-                boxShadow: isActive ? '0 2px 8px rgba(59,130,246,0.08)' : 'none',
+                boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
               }}
             >
               {TAB_LABELS[tab]}
@@ -316,7 +221,7 @@ export function Home(): JSX.Element {
         })}
       </div>
 
-      {/* ===== Skill List ===== */}
+      {/* Skill List */}
       <SkillList
         skills={sortedSkills}
         loading={isLoading}
@@ -328,59 +233,32 @@ export function Home(): JSX.Element {
             key={skill.id}
             data-testid="skill-card"
             data-pinned={skill.is_pinned}
-            className="relative rounded-2xl cursor-pointer group"
-            style={{
-              background: 'var(--card-bg)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: `1px solid ${skill.is_pinned ? 'rgba(59,130,246,0.3)' : 'var(--card-border)'}`,
-              boxShadow: 'var(--card-shadow)',
-              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            }}
+            className="relative rounded-xl cursor-pointer group bg-[var(--card-bg)] border border-[var(--border-default)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1"
             onClick={() => handleSkillClick(skill)}
             role="button"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleSkillClick(skill)
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-6px)'
-              e.currentTarget.style.boxShadow = '0 16px 40px rgba(59,130,246,0.15)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = 'var(--card-shadow)'
-            }}
           >
             {/* Pin badge */}
             {skill.is_pinned && (
               <div className="absolute top-3 right-3 z-10">
-                <span
-                  className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full text-white"
-                  style={{ background: 'var(--btn-gradient)' }}
-                >
+                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full text-white bg-[var(--accent-primary)]">
                   <Pin className="h-3 w-3" />
                   置顶
                 </span>
               </div>
             )}
 
-            {/* Card image area — cover image or gradient bg + emoji fallback */}
-            <div
-              className="h-28 rounded-t-2xl flex items-center justify-center text-4xl overflow-hidden"
-              style={{
-                background: skill.cover_url
-                  ? 'transparent'
-                  : 'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(6,182,212,0.08) 100%)',
-              }}
-            >
+            {/* Cover image */}
+            <div className="h-28 rounded-t-xl flex items-center justify-center text-4xl overflow-hidden bg-[var(--bg-subtle)]">
               {skill.cover_url ? (
                 <img
                   src={skill.cover_url}
                   alt={skill.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    // 加载失败时隐藏图片，显示 emoji
                     e.currentTarget.style.display = 'none'
                     e.currentTarget.parentElement!.innerHTML = getSkillIcon(skill.id)
                   }}
@@ -391,21 +269,15 @@ export function Home(): JSX.Element {
             </div>
 
             <div className="p-4">
-              <h3
-                className="text-sm font-semibold mb-1.5 line-clamp-1"
-                style={{ color: 'var(--text-primary)' }}
-              >
+              <h3 className="text-sm font-semibold mb-1.5 line-clamp-1 text-[var(--text-primary)]">
                 {skill.name}
               </h3>
-              <p className="text-xs mb-3 line-clamp-2" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-xs mb-3 line-clamp-2 text-[var(--text-secondary)]">
                 {skill.description}
               </p>
 
               {/* Stats row */}
-              <div
-                className="flex items-center gap-3 text-xs mb-3"
-                style={{ color: 'var(--text-tertiary)' }}
-              >
+              <div className="flex items-center gap-3 text-xs mb-3 text-[var(--text-tertiary)]">
                 <span title="评分">⭐ {(skill.rating_avg ?? 0).toFixed(1)}</span>
                 <span title="下载">↓ {skill.download_count ?? 0}</span>
                 <span title="收藏">♥ {skill.favorite_count ?? 0}</span>
@@ -417,12 +289,7 @@ export function Home(): JSX.Element {
                   {(skill.tags ?? []).slice(0, 3).map((tag) => (
                     <span
                       key={tag}
-                      className="px-2 py-0.5 text-xs rounded-full"
-                      style={{
-                        background: 'rgba(59,130,246,0.08)',
-                        color: 'var(--accent-primary)',
-                        border: '1px solid rgba(59,130,246,0.15)',
-                      }}
+                      className="px-2 py-0.5 text-xs rounded-full bg-[var(--accent-subtle)] text-[var(--accent-primary)] border border-[var(--border-emphasis)]"
                     >
                       {tag}
                     </span>
@@ -432,17 +299,8 @@ export function Home(): JSX.Element {
 
               {/* Author */}
               {skill.author_username && (
-                <div
-                  className="mt-3 pt-3 text-xs flex items-center gap-1"
-                  style={{
-                    borderTop: '1px solid var(--card-border)',
-                    color: 'var(--text-tertiary)',
-                  }}
-                >
-                  <span
-                    className="inline-flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-bold"
-                    style={{ background: 'var(--btn-gradient)' }}
-                  >
+                <div className="mt-3 pt-3 text-xs flex items-center gap-1 border-t border-[var(--border-default)] text-[var(--text-tertiary)]">
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full text-white text-xs font-bold bg-[var(--accent-primary)]">
                     {skill.author_username.charAt(0).toUpperCase()}
                   </span>
                   <span>{skill.author_username}</span>
@@ -453,7 +311,7 @@ export function Home(): JSX.Element {
         )}
       />
 
-      {/* ===== Pagination ===== */}
+      {/* Pagination */}
       {data && data.pages > 1 && (
         <div className="mt-8 flex justify-center" data-testid="pagination-container">
           <Pagination currentPage={page} totalPages={data.pages} onPageChange={handlePageChange} />

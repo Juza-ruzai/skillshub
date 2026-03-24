@@ -1,10 +1,18 @@
 import { useState } from 'react'
-import { Download, Heart, Star, Package } from 'lucide-react'
+import { Download, Heart, Star } from 'lucide-react'
 import type { Skill } from '@/types/skill'
 
 export interface SkillCardProps {
   skill: Skill
   onClick?: (skill: Skill) => void
+}
+
+// Emoji icons pool for skill cards
+const SKILL_ICONS = ['🤖', '📊', '📝', '🔍', '⚡', '🎯', '🛠️', '📈', '🔮', '💡', '🧠', '🚀']
+
+const getSkillIcon = (id: string): string => {
+  const index = id.charCodeAt(0) % SKILL_ICONS.length
+  return SKILL_ICONS[index]
 }
 
 export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
@@ -20,10 +28,10 @@ export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
     <button
       type="button"
       onClick={handleClick}
-      className="w-full text-left bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200"
+      className="w-full text-left rounded-xl overflow-hidden border border-[var(--border-default)] bg-[var(--card-bg)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-1"
     >
       {/* Cover Image */}
-      <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center overflow-hidden">
+      <div className="aspect-video bg-[var(--bg-subtle)] flex items-center justify-center overflow-hidden text-4xl">
         {skill.cover_url && !imageError ? (
           <img
             src={skill.cover_url}
@@ -32,28 +40,32 @@ export function SkillCard({ skill, onClick }: SkillCardProps): JSX.Element {
             onError={() => setImageError(true)}
           />
         ) : (
-          <Package data-testid="skill-placeholder" className="w-16 h-16 text-gray-400" />
+          <span>{getSkillIcon(skill.id)}</span>
         )}
       </div>
 
       {/* Content */}
       <div className="p-4">
         {/* Title */}
-        <h3 className="font-semibold text-gray-900 truncate">{skill.name}</h3>
+        <h3 className="font-semibold text-[var(--text-primary)] truncate">{skill.name}</h3>
 
         {/* Description */}
-        <p className="mt-1 text-sm text-gray-600 line-clamp-2">{skill.description}</p>
+        <p className="mt-1 text-sm text-[var(--text-secondary)] line-clamp-2">
+          {skill.description}
+        </p>
 
         {/* Author */}
-        <p className="mt-2 text-xs text-gray-500">by {skill.author_username || 'Unknown'}</p>
+        <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+          by {skill.author_username || 'Unknown'}
+        </p>
 
         {/* Stats */}
-        <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+        <div className="mt-3 flex items-center gap-4 text-sm text-[var(--text-secondary)]">
           {/* Rating */}
           <div className="flex items-center gap-1">
-            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+            <Star className="w-4 h-4 text-[var(--accent-primary)]" />
             <span>{skill.rating_avg.toFixed(1)}</span>
-            <span className="text-gray-400">({skill.rating_count})</span>
+            <span className="text-[var(--text-tertiary)]">({skill.rating_count})</span>
           </div>
 
           {/* Downloads */}
