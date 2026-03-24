@@ -14,42 +14,35 @@ function StatCard({
   label,
   value,
   icon,
-  gradient = false,
+  accent = false,
 }: {
   label: string
   value: number | string
   icon: React.ReactNode
-  gradient?: boolean
+  accent?: boolean
 }): JSX.Element {
   return (
     <div
-      className="flex flex-col gap-3 p-5 rounded-2xl"
+      className="flex flex-col gap-3 p-5 rounded-xl"
       style={{
-        background: 'var(--card-bg)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid var(--card-border)',
-        boxShadow: 'var(--card-shadow)',
+        background: 'var(--bg-elevated)',
+        border: '1px solid var(--border-subtle)',
       }}
     >
       <div className="flex items-center justify-between">
-        <span style={{ color: 'var(--text-muted)' }}>{icon}</span>
+        <span
+          style={accent ? { color: 'var(--accent-primary)' } : { color: 'var(--text-muted)' }}
+        >
+          {icon}
+        </span>
         <span
           className="text-2xl font-bold"
-          style={
-            gradient
-              ? {
-                  background: 'var(--btn-gradient)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }
-              : { color: 'var(--text-primary)' }
-          }
+          style={accent ? { color: 'var(--accent-primary)' } : { color: 'var(--text-primary)' }}
         >
           {value}
         </span>
       </div>
-      <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
+      <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
         {label}
       </span>
     </div>
@@ -74,16 +67,9 @@ export default function AdminDashboard(): JSX.Element {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <div>
-        <h1
-          className="text-2xl font-bold mb-1"
-          style={{
-            background: 'var(--btn-gradient)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
+        <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
           平台概览
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -97,9 +83,14 @@ export default function AdminDashboard(): JSX.Element {
           label="Skill 总数"
           value={data.total_skills}
           icon={<BookOpen size={20} />}
-          gradient
+          accent
         />
-        <StatCard label="注册用户" value={data.total_users} icon={<Users size={20} />} gradient />
+        <StatCard
+          label="注册用户"
+          value={data.total_users}
+          icon={<Users size={20} />}
+          accent
+        />
         <StatCard label="今日下载" value={data.today_downloads} icon={<Download size={20} />} />
         <StatCard label="今日评论" value={data.today_comments} icon={<MessageCircle size={20} />} />
         <StatCard label="今日上传" value={data.today_uploads} icon={<Upload size={20} />} />

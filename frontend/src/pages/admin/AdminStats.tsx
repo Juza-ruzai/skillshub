@@ -48,18 +48,11 @@ export default function AdminStats(): JSX.Element {
   const handleExportTags = () => downloadCSV('/admin/export/tags', 'tags.csv')
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1
-            className="text-2xl font-bold mb-1"
-            style={{
-              background: 'var(--btn-gradient)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
+          <h1 className="text-2xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
             数据统计
           </h1>
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
@@ -70,24 +63,36 @@ export default function AdminStats(): JSX.Element {
         <div className="flex gap-2">
           <button
             onClick={handleExportSkills}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all"
-            style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--bg-hover)]"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
           >
             <Download size={14} />
             导出 Skills
           </button>
           <button
             onClick={handleExportUsers}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all"
-            style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--bg-hover)]"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
           >
             <Download size={14} />
             导出用户
           </button>
           <button
             onClick={handleExportTags}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all"
-            style={{ background: 'var(--card-border)', color: 'var(--text-muted)' }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--bg-hover)]"
+            style={{
+              background: 'var(--bg-elevated)',
+              border: '1px solid var(--border-subtle)',
+              color: 'var(--text-secondary)',
+            }}
           >
             <Download size={14} />
             导出标签
@@ -97,22 +102,19 @@ export default function AdminStats(): JSX.Element {
 
       {/* Active Users Leaderboard */}
       <div
-        className="rounded-2xl overflow-hidden"
+        className="rounded-xl overflow-hidden"
         style={{
-          background: 'var(--card-bg)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid var(--card-border)',
-          boxShadow: 'var(--card-shadow)',
+          background: 'var(--bg-elevated)',
+          border: '1px solid var(--border-subtle)',
         }}
       >
         {/* Card header */}
         <div
           className="flex items-center justify-between p-4 border-b"
-          style={{ borderColor: 'var(--card-border)' }}
+          style={{ borderColor: 'var(--border-subtle)' }}
         >
           <div className="flex items-center gap-2">
-            <TrendingUp size={16} style={{ color: 'var(--text-muted)' }} />
+            <TrendingUp size={16} style={{ color: 'var(--accent-primary)' }} />
             <span className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
               活跃用户榜单
             </span>
@@ -123,10 +125,10 @@ export default function AdminStats(): JSX.Element {
               <button
                 key={d}
                 onClick={() => setDays(d)}
-                className="px-2 py-1 rounded-lg text-xs font-medium transition-all"
+                className="px-2 py-1 rounded-lg text-xs font-medium transition-colors"
                 style={
                   days === d
-                    ? { background: 'var(--btn-gradient)', color: '#fff' }
+                    ? { background: 'var(--accent-primary)', color: '#fff' }
                     : { background: 'transparent', color: 'var(--text-muted)' }
                 }
               >
@@ -149,7 +151,8 @@ export default function AdminStats(): JSX.Element {
               style={{
                 color: 'var(--text-muted)',
                 gridTemplateColumns: '2rem 1fr 5rem 5rem 5rem 5rem',
-                borderBottom: '1px solid var(--card-border)',
+                borderBottom: '1px solid var(--border-subtle)',
+                background: 'var(--bg-hover)',
               }}
             >
               <span>#</span>
@@ -160,7 +163,7 @@ export default function AdminStats(): JSX.Element {
               <span className="text-center">总分</span>
             </div>
 
-            <div className="divide-y" style={{ borderColor: 'var(--card-border)' }}>
+            <div className="divide-y" style={{ borderColor: 'var(--border-subtle)' }}>
               {data?.items.length === 0 ? (
                 <div className="py-12 text-center text-sm" style={{ color: 'var(--text-muted)' }}>
                   暂无数据
@@ -169,13 +172,14 @@ export default function AdminStats(): JSX.Element {
                 data?.items.map((user, idx) => (
                   <div
                     key={user.user_id}
-                    className="grid gap-2 px-4 py-3 items-center text-sm"
+                    className="grid gap-2 px-4 py-3 items-center text-sm hover:bg-[var(--bg-hover)] transition-colors"
                     style={{ gridTemplateColumns: '2rem 1fr 5rem 5rem 5rem 5rem' }}
                   >
                     <span
                       className="font-bold text-xs"
                       style={{
-                        color: idx < 3 ? 'var(--btn-gradient-start, #6366f1)' : 'var(--text-muted)',
+                        color:
+                          idx < 3 ? 'var(--accent-primary)' : 'var(--text-muted)',
                       }}
                     >
                       {idx + 1}
@@ -183,22 +187,18 @@ export default function AdminStats(): JSX.Element {
                     <span className="font-medium truncate" style={{ color: 'var(--text-primary)' }}>
                       {user.username}
                     </span>
-                    <span className="text-center" style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-center" style={{ color: 'var(--text-secondary)' }}>
                       {user.download_count}
                     </span>
-                    <span className="text-center" style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-center" style={{ color: 'var(--text-secondary)' }}>
                       {user.comment_count}
                     </span>
-                    <span className="text-center" style={{ color: 'var(--text-muted)' }}>
+                    <span className="text-center" style={{ color: 'var(--text-secondary)' }}>
                       {user.upload_count}
                     </span>
                     <span
                       className="text-center font-semibold"
-                      style={{
-                        background: 'var(--btn-gradient)',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                      }}
+                      style={{ color: 'var(--accent-primary)' }}
                     >
                       {user.total_score}
                     </span>

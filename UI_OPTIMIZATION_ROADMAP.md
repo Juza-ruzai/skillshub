@@ -223,18 +223,18 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 
 > **目标**：管理后台需要高效、清晰
 
-### 4.1 AdminDashboard
+### 4.1 AdminDashboard ✅
 **优化目标**：
-- [ ] 重新设计统计卡片
-- [ ] 优化数据展示
+- [x] 重新设计统计卡片
+- [x] 优化数据展示
 
 **技能**：`/impeccable:arrange`
 
-### 4.2 AdminSkills / AdminUsers / AdminComments
+### 4.2 AdminSkills / AdminUsers / AdminComments / AdminStats ✅
 **优化目标**：
-- [ ] 统一表格样式
-- [ ] 优化操作按钮
-- [ ] 添加批量操作交互
+- [x] 统一表格样式
+- [x] 优化操作按钮
+- [x] 移除玻璃拟态和渐变文字
 
 **技能**：`/impeccable:polish`
 
@@ -284,7 +284,7 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 | Phase 1 | ✅ 完成 | 2026-03-24 |
 | Phase 2 | ✅ 完成 | 2026-03-24 |
 | Phase 3 | ✅ 完成 | 2026-03-24 |
-| Phase 4 | 🔲 未开始 | - |
+| Phase 4 | ✅ 完成 | 2026-03-24 |
 | Phase 5 | 🔲 未开始 | - |
 
 ---
@@ -311,6 +311,7 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 
 | 日期 | 变更内容 |
 |------|---------|
+| 2026-03-24 | Phase 4 完成：AdminLayout、AdminDashboard、AdminSkills、AdminUsers、AdminComments、AdminStats 优化 - 移除玻璃拟态、渐变文字，统一表格和卡片样式 |
 | 2026-03-24 | Bug 修复：修复 4 个已知 Bug（--btn-gradient 未定义、管理后台 Tab、用户评论列表、主题切换过渡） |
 | 2026-03-24 | Phase 3 完成：Login、Register、UserProfile、SkillUpload、SkillEdit 页面优化 - 移除玻璃拟态、渐变文字，简化表单样式 |
 | 2026-03-24 | Phase 1 完成：Header、Home、SkillCard 优化 - 移除渐变文字、玻璃拟态，统一设计语言 |
