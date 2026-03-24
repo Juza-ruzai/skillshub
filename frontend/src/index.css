@@ -187,6 +187,22 @@
   --input: 214 32% 91%;
   --ring: 221 83% 53%;
   --radius: 0.5rem;
+
+  /* === 动效系统 === */
+  /* 时长 - 按用途分类 */
+  --duration-instant: 100ms; /* 即时反馈：按钮点击 */
+  --duration-fast: 150ms; /* 快速反馈：hover */
+  --duration-normal: 200ms; /* 标准过渡：状态变化 */
+  --duration-slow: 300ms; /* 慢速过渡：布局变化 */
+  --duration-slower: 500ms; /* 入场动画 */
+
+  /* Easing curves - 自然减速 */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1); /* 精致平滑 */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1); /* 略快 */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1); /* 果断 */
+
+  /* 入场动画延迟 */
+  --stagger-delay: 80ms;
 }
 
 /* ===== 深色模式 - 午夜蓝调 ===== */
@@ -663,4 +679,172 @@
   --tw-prose-pre-bg: var(--bg-subtle);
   --tw-prose-th-borders: var(--border-default);
   --tw-prose-td-borders: var(--border-muted);
+}
+
+/* ===== 动效 Keyframes ===== */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== 动效工具类 ===== */
+@layer utilities {
+  /* 入场动画 */
+  .animate-fade-in {
+    animation: fade-in var(--duration-slow) var(--ease-out-quart) both;
+  }
+
+  .animate-slide-up {
+    animation: slide-up var(--duration-slower) var(--ease-out-quart) both;
+  }
+
+  .animate-slide-down {
+    animation: slide-down var(--duration-slower) var(--ease-out-quart) both;
+  }
+
+  .animate-scale-in {
+    animation: scale-in var(--duration-slow) var(--ease-out-quart) both;
+  }
+
+  /* Stagger delays */
+  .stagger-1 {
+    animation-delay: calc(var(--stagger-delay) * 1);
+  }
+  .stagger-2 {
+    animation-delay: calc(var(--stagger-delay) * 2);
+  }
+  .stagger-3 {
+    animation-delay: calc(var(--stagger-delay) * 3);
+  }
+  .stagger-4 {
+    animation-delay: calc(var(--stagger-delay) * 4);
+  }
+  .stagger-5 {
+    animation-delay: calc(var(--stagger-delay) * 5);
+  }
+
+  /* 加载状态 */
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  /* 过渡工具类 */
+  .transition-fast {
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-out-quart);
+  }
+
+  .transition-normal {
+    transition-duration: var(--duration-normal);
+    transition-timing-function: var(--ease-out-quart);
+  }
+
+  .transition-slow {
+    transition-duration: var(--duration-slow);
+    transition-timing-function: var(--ease-out-quart);
+  }
+
+  /* 交互反馈 */
+  .interactive-scale {
+    transition: transform var(--duration-instant) var(--ease-out-quart);
+  }
+
+  .interactive-scale:active {
+    transform: scale(0.97);
+  }
+
+  /* Hover lift */
+  .hover-lift {
+    transition: transform var(--duration-normal) var(--ease-out-quart),
+      box-shadow var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+  }
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-fade-in,
+  .animate-slide-up,
+  .animate-slide-down,
+  .animate-scale-in,
+  .animate-pulse-soft,
+  .animate-spin {
+    animation: none !important;
+  }
+
+  .hover-lift:hover {
+    transform: none !important;
+  }
 }

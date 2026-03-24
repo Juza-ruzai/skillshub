@@ -2,7 +2,8 @@ import type { Skill } from '@/types/skill'
 import type { ReactNode } from 'react'
 import { useState, useCallback } from 'react'
 import { SkillCard } from './SkillCard'
-import { Loader2, LayoutGrid, List } from 'lucide-react'
+import { LayoutGrid, List } from 'lucide-react'
+import { LoadingState, EmptyState, ErrorState } from '@/components/common/UIState'
 
 export interface SkillListProps {
   skills: Skill[]
@@ -19,7 +20,7 @@ export function SkillList({
   skills,
   loading,
   error,
-  emptyText = 'No skills found',
+  emptyText = '暂无 Skill',
   onSkillClick,
   renderSkillCard,
 }: SkillListProps): JSX.Element {
@@ -29,27 +30,15 @@ export function SkillList({
   const handleListClick = useCallback(() => setViewMode('list'), [])
 
   if (loading) {
-    return (
-      <div data-testid="skill-skeleton" className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    )
+    return <LoadingState data-testid="skill-skeleton" />
   }
 
   if (error) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-red-600">{error}</p>
-      </div>
-    )
+    return <ErrorState message={error} />
   }
 
   if (skills.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">{emptyText}</p>
-      </div>
-    )
+    return <EmptyState message={emptyText} />
   }
 
   const containerClasses =

@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from './Header'
 import { Footer } from './Footer'
+import { PageTransition } from '@/components/common/PageTransition'
 
 interface LayoutProps {
   unreadCount?: number
@@ -51,7 +52,9 @@ export const Layout = ({ unreadCount = 0 }: LayoutProps): JSX.Element => {
         <Header unreadCount={unreadCount} />
 
         <main className="flex-1 container mx-auto px-4 md:px-10 pt-24 pb-8">
-          <Outlet />
+          <PageTransition>
+            <Outlet />
+          </PageTransition>
         </main>
 
         <Footer />

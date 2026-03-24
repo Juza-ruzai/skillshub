@@ -134,35 +134,41 @@ export function Home(): JSX.Element {
       {/* Hero Section */}
       <div className="mb-10 text-center">
         {/* Slogan */}
-        <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight text-[var(--text-primary)]">
+        <h1 className="text-4xl md:text-5xl font-bold mb-3 leading-tight text-[var(--text-primary)] animate-slide-up">
           汇集中建智慧
         </h1>
-        <p className="text-base md:text-lg mb-8 text-[var(--text-secondary)]">
+        <p className="text-base md:text-lg mb-8 text-[var(--text-secondary)] animate-slide-up stagger-1">
           发现、分享和复用 AI Skills，让工作效率倍增
         </p>
 
         {/* Stat Cards */}
         <div className="flex items-center justify-center gap-4 md:gap-6 mb-8 flex-wrap">
-          <StatCard
-            value={String(totalSkills)}
-            label="AI Skills"
-            icon={<Sparkles className="h-6 w-6" />}
-          />
-          <StatCard
-            value={totalDownloadsDisplay}
-            label="总下载"
-            icon={<Download className="h-6 w-6" />}
-          />
-          <StatCard
-            value={String(totalUsers)}
-            label="注册用户"
-            icon={<Users className="h-6 w-6" />}
-          />
+          <div className="animate-slide-up stagger-2">
+            <StatCard
+              value={String(totalSkills)}
+              label="AI Skills"
+              icon={<Sparkles className="h-6 w-6" />}
+            />
+          </div>
+          <div className="animate-slide-up stagger-3">
+            <StatCard
+              value={totalDownloadsDisplay}
+              label="总下载"
+              icon={<Download className="h-6 w-6" />}
+            />
+          </div>
+          <div className="animate-slide-up stagger-4">
+            <StatCard
+              value={String(totalUsers)}
+              label="注册用户"
+              icon={<Users className="h-6 w-6" />}
+            />
+          </div>
         </div>
 
         {/* Search Box */}
-        <div className="max-w-xl mx-auto">
-          <div className="relative flex items-center rounded-lg p-1 bg-[var(--card-bg)] border border-[var(--border-default)] shadow-sm">
+        <div className="max-w-xl mx-auto animate-slide-up stagger-5">
+          <div className="relative flex items-center rounded-lg p-1 bg-[var(--card-bg)] border border-[var(--border-default)] shadow-sm transition-all duration-200 focus-within:shadow-md focus-within:border-[var(--border-emphasis)]">
             <Search className="absolute left-4 w-5 h-5 text-[var(--text-tertiary)]" />
             <input
               type="text"
@@ -176,7 +182,7 @@ export function Home(): JSX.Element {
               <button
                 type="button"
                 onClick={() => setSearchInput('')}
-                className="p-1 mr-1 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+                className="p-1 mr-1 rounded-md text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -184,7 +190,7 @@ export function Home(): JSX.Element {
             <button
               type="button"
               onClick={handleSearch}
-              className="px-4 py-2 rounded-md text-sm font-medium text-white bg-[var(--accent-primary)] transition-colors hover:bg-[var(--accent-primary-hover)]"
+              className="px-4 py-2.5 rounded-md text-sm font-medium text-white bg-[var(--accent-primary)] transition-all hover:bg-[var(--accent-primary-hover)] active:scale-95 min-h-[44px]"
             >
               搜索
             </button>
@@ -208,7 +214,7 @@ export function Home(): JSX.Element {
               onClick={() => handleTabChange(tab)}
               role="tab"
               aria-selected={isActive}
-              className="flex-1 shrink-0 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
+              className="flex-1 shrink-0 px-3 py-2.5 rounded-md text-sm font-medium transition-colors whitespace-nowrap min-h-[44px]"
               style={{
                 background: isActive ? 'var(--card-bg)' : 'transparent',
                 color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
