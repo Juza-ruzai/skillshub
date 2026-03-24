@@ -61,7 +61,7 @@
 - 修改顺序：Grep 确认所有位置 → 一次性全改 → 再测试
 
 ## 进度控制
-带有checkbox的进度控制类文档，例如PROGRESS.md和TEST_CHECKLIST.md，当完成对应任务后需要自主自动更新进度类文档，时刻保持文档处于最新状态
+带有checkbox的进度控制类文档，例如PROGRESS.md（进度文档）、TEST_CHECKLIST.md（自动化测试阶段）、UI_OPTIMIZATION_ROADMAP（UI优化路线），当完成对应任务后需要自主自动更新进度类文档，时刻保持文档处于最新状态
 
 ## 热重载规范
 - 后端使用 uvicorn `--reload`，**禁止** 擅自 kill Python 进程后重启
@@ -98,6 +98,7 @@ powershell -Command "Get-Process -Name python | Stop-Process -Force"
 powershell -Command "netstat -ano | findstr :8000"
 ```
 ### 启动服务器
+- 当需要启动服务时，先检查是否有运行中的前后端服务，如果有就直接使用，不再重复启动
 - 前端默认端口：**5173**（`cd frontend && npm run dev`）
 - 后端默认端口：**8000**（`cd backend && python -m app.main`）
 - 启动前先确认端口未被占用，**不允许自动换端口**，如有占用先关闭被占用的端口
@@ -111,4 +112,4 @@ powershell -Command "netstat -ano | findstr :8000"
 <type>(<scope>): <subject>
 - 类型：feat(新功能)、fix(修复)、docs(文档)、refactor(重构)、test(测试)、chore(构建)
 - 内容：用中文描述
-- 修复bug时必填：根因：XXX 修复：XXX 
+- 修复bug时必填：根因：XXX 修复：XXX
