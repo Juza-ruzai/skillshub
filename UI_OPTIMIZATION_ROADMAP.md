@@ -299,6 +299,49 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 | Phase 3 | ✅ 完成 | 2026-03-24 |
 | Phase 4 | ✅ 完成 | 2026-03-24 |
 | Phase 5 | ✅ 完成 | 2026-03-24 |
+| **Phase 6** | 🔄 进行中 | - |
+
+---
+
+## Phase 6: 首页 Hero 区域重设计
+
+> **目标**：让首页更有视觉吸引力和亮点
+
+### 6.1 Hero 区域重设计（第一版）✅
+**优化内容**：
+- [x] 背景视觉效果增强（渐变光晕 + 网格图案 + 浮动光斑）
+- [x] 标题更有冲击力（text-5xl~7xl / font-extrabold）
+- [x] 统计卡片大气展示（图标 + 大数字 + 标签）
+- [x] 搜索框增大变长，位置靠下（max-w-2xl / py-4）
+- [x] Hero 区域占据 80vh，引导向下浏览
+
+**技能**：`/impeccable:bolder` + `/impeccable:colorize`
+
+### 6.2 Hero 区域重设计（极简高级版）✅
+**设计方向**：参考 Linear/Vercel 的极简高级风格
+
+**优化内容**：
+- [x] 标题"中建"使用主题蓝色高亮
+- [x] 搜索框增大（rounded-2xl、更大内边距、max-w-xl）
+- [x] 统计区横排布局 + 竖线分隔，数字左对齐
+- [x] 完整适配暗色模式（所有颜色使用 CSS 变量）
+- [x] 背景铺满全宽（负边距突破容器限制）
+- [x] 标签：13px uppercase letter-spacing: 2px
+- [x] 标题：clamp(40px, 8vw, 64px) font-weight: 600
+- [x] 副标题：18px line-height: 1.6
+- [x] 统计数字：48px font-weight: 600
+
+**工具**：添加 `style-playground.html` 风格预览工具
+
+### 6.3 卡片优化 ✅
+- [x] 封面比例优化（aspect-[16/10]）
+- [x] 字体增大（标题 text-base / 描述 text-sm）
+- [x] 移除视图切换，仅保留卡片网格
+
+### 6.4 管理后台优化 ⏳
+- [ ] 参考个人中心风格，增加设计感
+- [ ] 添加数据可视化图表
+- [ ] 优化统计卡片样式
 
 ---
 
@@ -324,6 +367,8 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 
 | 日期 | 变更内容 |
 |------|---------|
+| 2026-03-24 | **Phase 6.2 完成**：首页 Hero 区域极简高级风格重构 - 标题"中建"蓝色高亮、搜索框增大（rounded-2xl）、统计区横排+竖线分隔、完整暗色模式适配、背景铺满全宽、添加 style-playground.html 风格预览工具 |
+| 2026-03-24 | **Phase 6.1 完成**：首页 Hero 区域重设计 - 背景视觉效果（渐变光晕 + 网格图案 + 浮动光斑）、标题冲击力、统计卡片大气展示、搜索框增大变长、卡片优化 |
 | 2026-03-24 | **Phase 5 完成**：动效系统（CSS 变量、keyframes、PageTransition）、响应式适配（触摸目标 44px）、细节打磨（UIState 组件）、最终审计（可访问性 2、性能 1、响应式 8） |
 | 2026-03-24 | Phase 5 进行中：5.1 动效系统完成（CSS 变量、keyframes、PageTransition、按钮反馈、reduced-motion 支持）；5.2 响应式适配完成（修复触摸目标大小）；5.3 细节打磨完成（统一 UIState 组件） |
 | 2026-03-24 | Phase 4 完成：AdminLayout、AdminDashboard、AdminSkills、AdminUsers、AdminComments、AdminStats 优化 - 移除玻璃拟态、渐变文字，统一表格和卡片样式 |
