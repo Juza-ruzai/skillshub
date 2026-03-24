@@ -12,7 +12,7 @@ const NAV_ITEMS = [
 
 export default function AdminLayout(): JSX.Element {
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
+    <div className="min-h-screen" style={{ background: 'var(--bg-base)' }}>
       <Header />
       <div className="flex pt-16 min-h-screen">
         {/* Desktop sidebar */}
