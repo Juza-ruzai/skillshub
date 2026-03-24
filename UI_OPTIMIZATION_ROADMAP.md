@@ -310,4 +310,55 @@ browser_take_screenshot 极耗token（图片编码），可以的话，尽量只
 
 ---
 
+## 🐛 已知 Bug 列表
+
+> 优先级：🔴 高 | 🟡 中 | 🟢 低
+
+### 🔴 高优先级
+
+#### BUG-001: `--btn-gradient` CSS 变量未定义
+- **现象**：亮色模式下登录/注册按钮不显示（背景透明 + 白色文字）
+- **根因**：`--btn-gradient` 变量在 `index.css` 中未定义，但多处组件使用
+- **影响范围**：Login、Register、UserProfile、SkillUpload、SkillEdit、AdminDashboard、AdminSkills、AdminUsers、AdminComments、AdminStats 等所有使用 `var(--btn-gradient)` 的按钮
+- **修复方案**：在 `index.css` 的 `:root` 和 `[data-theme='dark']` 中定义 `--btn-gradient` 变量
+
+#### BUG-002: 管理后台亮色模式下选中板块颜色不显示
+- **现象**：管理后台 Tab 切换时，"正常"和"已删除"选中状态在亮色模式下不可见
+- **根因**：待排查（可能与 Tab 组件的激活态颜色有关）
+- **影响范围**：AdminSkills、AdminUsers、AdminComments、AdminStats
+- **修复方案**：待定
+
+#### BUG-003: 个人中心"我的评论"列表不显示
+- **现象**：UserComments 页面中评论所属的 Skill 列表不显示（亮色和暗色均不显示）
+- **根因**：待排查
+- **影响范围**：UserComments.tsx
+- **修复方案**：待定
+
+### 🟡 中优先级
+
+#### BUG-004: 主题切换时文字颜色缓慢过渡
+- **现象**：切换主题时，所有文字颜色会有 0.2s 的过渡动画，视觉上不流畅
+- **根因**：`index.css` 第 262-271 行的全局 transition 设置了 `color 0.2s ease`
+- **影响范围**：全局所有文字
+- **修复方案**：移除 `color` 的 transition，只保留 `background-color` 和 `border-color`
+
+```css
+/* 当前代码（有问题） */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.2s ease,  /* ← 移除这行 */
+    box-shadow 0.3s ease;
+}
+```
+
+---
+
+*Bug 列表持续更新中，修复后请标记为 ✅ 已修复*
+
+---
+
 *本文档用于指导 OpenClaw Skills Hub 的前端 UI 优化工作，持续更新中。*
