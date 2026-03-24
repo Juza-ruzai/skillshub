@@ -1,5 +1,14 @@
 import { useState, useCallback } from 'react'
-import { Folder, FolderOpen, File } from 'lucide-react'
+import {
+  Folder,
+  FolderOpen,
+  File,
+  FileCode,
+  FileJson,
+  FileText,
+  FileType,
+  Braces,
+} from 'lucide-react'
 
 export interface FileTreeNode {
   name: string
@@ -19,6 +28,37 @@ interface FileTreeItemProps {
   onFileClick?: (path: string) => void
   isClickable?: boolean
   highlightPattern?: string
+}
+
+// 根据文件扩展名返回对应的图标
+function getFileIcon(filename: string, isClickable: boolean): JSX.Element {
+  const ext = filename.toLowerCase().split('.').pop() || ''
+
+  const iconClass = isClickable ? 'text-[var(--accent-primary)]' : 'text-[var(--text-tertiary)]'
+  const size = 16
+
+  switch (ext) {
+    case 'md':
+      return <FileText size={size} className={iconClass} data-testid="file-icon-md" />
+    case 'json':
+      return <FileJson size={size} className={iconClass} data-testid="file-icon-json" />
+    case 'py':
+    case 'js':
+    case 'ts':
+    case 'tsx':
+    case 'jsx':
+      return <FileCode size={size} className={iconClass} data-testid="file-icon-code" />
+    case 'yaml':
+    case 'yml':
+      return <FileType size={size} className={iconClass} data-testid="file-icon-yaml" />
+    case 'toml':
+    case 'ini':
+    case 'cfg':
+    case 'conf':
+      return <Braces size={size} className={iconClass} data-testid="file-icon-config" />
+    default:
+      return <File size={size} className={iconClass} data-testid="file-icon" />
+  }
 }
 
 function FileTreeItem({
@@ -51,59 +91,43 @@ function FileTreeItem({
       <button
         type="button"
         onClick={handleClick}
-        className={`flex items-center gap-2 py-1.5 px-2 rounded-lg w-full text-left transition-all duration-150 ${isClickableFile ? 'hover:translate-x-1 cursor-pointer' : isDirectory ? 'cursor-pointer' : 'cursor-default'}`}
+        className={`flex items-center gap-2 py-1.5 px-2 rounded-md w-full text-left transition-colors ${
+          isClickableFile
+            ? 'hover:bg-[var(--accent-subtle)] cursor-pointer group'
+            : isDirectory
+              ? 'hover:bg-[var(--bg-muted)] cursor-pointer'
+              : 'cursor-default'
+        }`}
         style={{
           color: isHighlighted ? 'var(--accent-primary)' : 'var(--text-secondary)',
-          background: isHighlighted ? 'rgba(59,130,246,0.1)' : 'transparent',
           fontWeight: isHighlighted ? 500 : 400,
-        }}
-        onMouseEnter={(e) => {
-          if (isDirectory || isClickableFile) {
-            e.currentTarget.style.background = 'rgba(59,130,246,0.08)'
-            e.currentTarget.style.color = 'var(--accent-primary)'
-          }
-        }}
-        onMouseLeave={(e) => {
-          if (isHighlighted) {
-            e.currentTarget.style.background = 'rgba(59,130,246,0.1)'
-            e.currentTarget.style.color = 'var(--accent-primary)'
-          } else {
-            e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = 'var(--text-secondary)'
-          }
         }}
         aria-label={node.name}
         title={isClickableFile ? '点击预览' : isDirectory ? '点击展开/收起' : undefined}
       >
         {isDirectory ? (
-          <>
-            {isExpanded ? (
-              <FolderOpen
-                size={16}
-                style={{ color: 'var(--accent-primary)' }}
-                data-testid="folder-icon"
-              />
-            ) : (
-              <Folder
-                size={16}
-                style={{ color: 'var(--accent-secondary)' }}
-                data-testid="folder-icon"
-              />
-            )}
-          </>
+          isExpanded ? (
+            <FolderOpen
+              size={16}
+              className="text-[var(--accent-primary)]"
+              data-testid="folder-icon"
+            />
+          ) : (
+            <Folder size={16} className="text-[var(--text-tertiary)]" data-testid="folder-icon" />
+          )
         ) : (
-          <File
-            size={16}
-            style={{ color: isClickableFile ? 'var(--accent-primary)' : 'var(--text-tertiary)' }}
-            data-testid="file-icon"
-          />
+          getFileIcon(node.name, isClickableFile ?? false)
         )}
         <span className="text-sm">{node.name}</span>
-        {isClickableFile && <span className="ml-auto text-xs opacity-50">预览</span>}
+        {isClickableFile && (
+          <span className="ml-auto text-xs text-[var(--text-tertiary)] group-hover:text-[var(--accent-primary)] transition-colors">
+            预览
+          </span>
+        )}
       </button>
 
       {isDirectory && isExpanded && node.children && (
-        <div className="ml-4 pl-2" style={{ borderLeft: '1px solid var(--card-border)' }}>
+        <div className="ml-4 pl-2 border-l border-[var(--border-muted)]">
           {node.children.map((child, index) => (
             <FileTreeItem
               key={`${child.name}-${index}`}
