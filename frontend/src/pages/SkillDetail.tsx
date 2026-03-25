@@ -91,15 +91,24 @@ export default function SkillDetail(): JSX.Element {
 
   // 下载 mutation
   const downloadMutation = useMutation({
-    mutationFn: () => downloadSkill(id!),
-    onSuccess: (data) => {
-      const fullUrl = `${new URL(API_BASE_URL).origin}${data.download_url}`
+    mutationFn: async () => {
+      const data = await downloadSkill(id!)
+      // 使用相对路径，通过 Vite 代理访问后端，避免 CORS 问题
+      // data.download_url 格式: /uploads/{skill_id}/{filename}
+      const downloadUrl = data.download_url
+
+      // 创建隐藏的 <a> 标签触发下载
       const link = document.createElement('a')
-      link.href = fullUrl
-      link.setAttribute('download', '')
+      link.href = downloadUrl
+      link.download = '' // 让浏览器使用服务器提供的文件名
+      link.style.display = 'none'
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+
+      return data
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['skill', id] })
     },
   })
