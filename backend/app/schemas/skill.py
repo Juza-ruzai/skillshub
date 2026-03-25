@@ -108,6 +108,7 @@ class SkillListResponse(BaseModel):
     favorite_count: int = 0
     rating_avg: float = 0.0
     rating_count: int = 0
+    is_pinned: bool = False
     created_at: datetime
 
 

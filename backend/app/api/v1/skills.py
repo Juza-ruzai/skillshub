@@ -134,6 +134,7 @@ async def list_skills(
                 favorite_count=favorite_map.get(skill.id, 0),
                 rating_avg=float(skill.rating_avg),
                 rating_count=skill.rating_count,
+                is_pinned=skill.is_pinned,
                 created_at=skill.created_at,
             )
         )
@@ -173,6 +174,7 @@ async def get_trending_skills(
             favorite_count=favorite_map.get(skill.id, 0),
             rating_avg=float(skill.rating_avg),
             rating_count=skill.rating_count,
+            is_pinned=skill.is_pinned,
             created_at=skill.created_at,
         )
         for skill in skills
@@ -207,6 +209,7 @@ async def get_top_rated_skills(
             favorite_count=favorite_map.get(skill.id, 0),
             rating_avg=float(skill.rating_avg),
             rating_count=skill.rating_count,
+            is_pinned=skill.is_pinned,
             created_at=skill.created_at,
         )
         for skill in skills
