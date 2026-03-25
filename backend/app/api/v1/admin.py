@@ -152,7 +152,6 @@ async def export_skills_csv(
             "id",
             "name",
             "description",
-            "usage_scenario",
             "author_id",
             "tags",
             "download_count",
@@ -171,7 +170,6 @@ async def export_skills_csv(
                 str(skill.id),
                 skill.name,
                 skill.description,
-                skill.usage_scenario,
                 str(skill.author_id),
                 ",".join(skill.tags) if skill.tags else "",
                 skill.download_count,
@@ -959,7 +957,7 @@ async def export_tags_csv(
     db: DbDep,
     current_admin: CurrentAdmin,
 ) -> StreamingResponse:
-    """导出标签统计 CSV.
+    """导出标签统计 CSV，包含每个标签下的 Skill 列表.
 
     Args:
         db: 数据库会话
@@ -968,25 +966,38 @@ async def export_tags_csv(
     Returns:
         CSV 文件流
     """
-    # 查询所有标签
-    result = await db.execute(select(Tag).order_by(Tag.usage_count.desc()))
-    tags = result.scalars().all()
+    from collections import defaultdict
+
+    # 查询所有 Skill（未删除）
+    result = await db.execute(
+        select(Skill).where(Skill.is_deleted == False)  # noqa: E712
+    )
+    skills = result.scalars().all()
+
+    # 按标签聚合 Skills
+    tag_skills: dict[str, list[str]] = defaultdict(list)
+    for skill in skills:
+        if skill.tags:
+            for tag in skill.tags:
+                tag_skills[tag.lower()].append(skill.name)
+
+    # 按 Skill 数量排序
+    sorted_tags = sorted(tag_skills.items(), key=lambda x: len(x[1]), reverse=True)
 
     # 创建 CSV 内容
     output = io.StringIO()
     writer = csv.writer(output)
 
     # 写入表头
-    writer.writerow(["id", "name", "usage_count", "created_at"])
+    writer.writerow(["tag_name", "skill_count", "skills"])
 
     # 写入数据
-    for tag in tags:
+    for tag_name, skill_list in sorted_tags:
         writer.writerow(
             [
-                str(tag.id),
-                tag.name,
-                tag.usage_count,
-                tag.created_at.isoformat() if tag.created_at else "",
+                tag_name,
+                len(skill_list),
+                "; ".join(skill_list),  # 使用分号分隔，避免与 CSV 逗号冲突
             ]
         )
 

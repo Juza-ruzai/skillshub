@@ -129,8 +129,8 @@ AdminService 服务层；Skill 管理（编辑/强制删除/软删除/恢复/下
 | B28 | 🔴 高 | 下载功能无法触发 | ✅ 已修复 | 根因：原代码使用 `<a download>` 属性触发下载，但对于跨域资源（localhost:5173 → localhost:8000）此属性不生效；后续尝试 fetch + Blob 方式但遇到 CORS 限制；修复：使用相对路径 `/uploads/...` 通过 Vite 代理访问，创建隐藏 `<a>` 标签触发下载 |
 | B29 | 🟡 中 | 搜索页卡片封面显示不一致 | ✅ 已修复 | 搜索页 SkillCard 未与首页保持一致；修复：添加 cover_url 条件判断和图片显示逻辑，使用 aspect-[16/10] 比例与首页一致 |
 | B30 | 🟡 中 | 管理员后台置顶功能无法使用 | ✅ 已修复 | 根因：`SkillListResponse` schema 缺少 `is_pinned` 字段，导致前端无法获取置顶状态；修复：在 schema 中添加 `is_pinned` 字段，并在所有返回 `SkillListResponse` 的 API 中补充该字段 |
-| B31 | 🟢 低 | 导出 Skill 字段过多 | 🔴 待修复 | 管理员后台数据统计导出 Skill 时包含使用场景字段，导致导出内容过于复杂，需移除该字段 |
-| B32 | 🟡 中 | 导出标签功能不符合预期 | 🔴 待修复 | 当前导出标签只导出标签本身，应改为导出每个标签下对应的 Skill 列表 |
+| B31 | 🟢 低 | 导出 Skill 字段过多 | ✅ 已修复 | 移除导出 Skill 中的 `usage_scenario` 字段，简化导出内容 |
+| B32 | 🟡 中 | 导出标签功能不符合预期 | ✅ 已修复 | 改为导出每个标签下对应的 Skill 列表，格式：tag_name, skill_count, skills（分号分隔） |
 
 > 新 Bug 在联调过程中持续补充此表。
 
@@ -282,8 +282,7 @@ cd frontend && npm run dev
 ```
 
 ### 测试账户
-- 普通用户：`test@test.com` / `Test1234`
-- 管理员：见本地 `.env` 配置
+- 管理员：`test@test.com` / `Test1234`
 
 ### Playwright 联调注意事项
 `useAuth` 的 `initAuth` 是异步的，每次 `browser_navigate` 后需等待初始化：
