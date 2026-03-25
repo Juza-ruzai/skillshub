@@ -309,14 +309,21 @@ export function SearchResults(): JSX.Element {
                     </span>
                   </div>
                 )}
-                <div
-                  className="h-28 rounded-t-2xl flex items-center justify-center text-4xl"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(6,182,212,0.08) 100%)',
-                  }}
-                >
-                  {getSkillIcon(skill.id)}
+                {/* Cover image - 与首页保持一致 */}
+                <div className="aspect-[16/10] rounded-t-2xl flex items-center justify-center text-5xl overflow-hidden bg-[var(--bg-subtle)]">
+                  {skill.cover_url ? (
+                    <img
+                      src={skill.cover_url}
+                      alt={skill.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none'
+                        e.currentTarget.parentElement!.innerHTML = getSkillIcon(skill.id)
+                      }}
+                    />
+                  ) : (
+                    <span className="opacity-60">{getSkillIcon(skill.id)}</span>
+                  )}
                 </div>
                 <div className="p-4">
                   <h3
