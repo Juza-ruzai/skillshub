@@ -8,7 +8,10 @@ interface BaseStateProps {
 /**
  * 加载状态组件
  */
-export function LoadingState({ message = '加载中...', className = '' }: BaseStateProps): JSX.Element {
+export function LoadingState({
+  message = '加载中...',
+  className = '',
+}: BaseStateProps): JSX.Element {
   return (
     <div className={`flex flex-col items-center justify-center py-12 ${className}`}>
       <Loader2 className="w-8 h-8 animate-spin text-[var(--accent-primary)]" />

@@ -112,10 +112,7 @@ function StatsPanel({ stats }: { stats: UserStats }): JSX.Element {
             }}
           >
             <span style={{ color: 'var(--text-muted)' }}>{m.icon}</span>
-            <span
-              className="text-lg font-semibold"
-              style={{ color: 'var(--text-primary)' }}
-            >
+            <span className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
               {m.value}
             </span>
             <span className="text-xs" style={{ color: 'var(--text-muted)' }}>

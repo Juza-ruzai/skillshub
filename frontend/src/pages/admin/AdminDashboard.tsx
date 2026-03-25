@@ -99,18 +99,9 @@ export default function AdminDashboard(): JSX.Element {
           icon={<BookOpen size={20} />}
           gradient
         />
-        <StatCard
-          label="注册用户"
-          value={data.total_users}
-          icon={<Users size={20} />}
-          gradient
-        />
+        <StatCard label="注册用户" value={data.total_users} icon={<Users size={20} />} gradient />
         <StatCard label="今日下载" value={data.today_downloads} icon={<Download size={20} />} />
-        <StatCard
-          label="今日评论"
-          value={data.today_comments}
-          icon={<MessageCircle size={20} />}
-        />
+        <StatCard label="今日评论" value={data.today_comments} icon={<MessageCircle size={20} />} />
         <StatCard label="今日上传" value={data.today_uploads} icon={<Upload size={20} />} />
       </div>
     </div>
