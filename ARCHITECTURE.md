@@ -1,7 +1,7 @@
 # OpenClaw Skills Hub - 架构设计文档
 
-> 版本：v1.1
-> 日期：2026-03-18
+> 版本：v1.2
+> 日期：2026-03-25
 > 状态：已更新，匹配 PRD v1.2
 
 ---
@@ -135,10 +135,12 @@ openclaw-project/
 │   │   │   └── v1/
 │   │   │       ├── __init__.py
 │   │   │       ├── auth.py         # 认证接口
-│   │   │       ├── skills.py       # Skill CRUD + 榜单
+│   │   │       ├── skills.py       # Skill CRUD + 榜单 + 文件访问
 │   │   │       ├── comments.py     # 评论系统
 │   │   │       ├── users.py        # 用户相关
-│   │   │       ├── files.py        # 文件访问
+│   │   │       ├── notifications.py # 通知系统
+│   │   │       ├── tags.py         # 标签管理
+│   │   │       ├── stats.py        # 公开统计
 │   │   │       └── admin.py        # 管理员功能
 │   │   └── services/               # 业务逻辑层
 │   │       ├── __init__.py
@@ -247,6 +249,7 @@ openclaw-project/
 | id | UUID | PK | 主键 |
 | name | VARCHAR(100) | NOT NULL | Skill 名称 |
 | description | TEXT | NOT NULL | 简介描述 |
+| cover_url | VARCHAR(255) | NULL | 封面图片 URL |
 | usage_scenario | TEXT | NOT NULL | 使用场景 |
 | usage_method | TEXT | NOT NULL | 使用方法（Markdown） |
 | demo_images | JSONB | DEFAULT '[]' | 效果演示图片数组 `[{url, caption}]` |
@@ -523,6 +526,10 @@ ORDER BY hot_score DESC
 | POST | `/{id}/download` | 下载 Skill 包 | 否（增加下载计数） |
 | POST | `/{id}/rate` | 评分（1-5星） | 是 |
 | POST | `/{id}/favorite` | 收藏/取消收藏 | 是 |
+| POST | `/{id}/cover` | 上传封面图片 | 是（作者） |
+| DELETE | `/{id}/cover` | 删除封面图片 | 是（作者） |
+| POST | `/{id}/content-images` | 上传编辑器内图片 | 是（作者） |
+| GET | `/{id}/files/{file_path:path}` | 获取 Skill 包内指定文件内容 | 否 |
 
 ### 7.3 评论接口 (`/api/v1/skills/{skill_id}/comments`)
 
@@ -540,15 +547,18 @@ ORDER BY hot_score DESC
 | GET | `/me/favorites` | 我收藏的 Skills | 是 |
 | GET | `/me/comments` | 我的评论 | 是 |
 | GET | `/me/stats` | 作者统计面板 | 是 |
-| GET | `/me/notifications` | 站内通知列表 | 是 |
-| PATCH | `/notifications/{id}/read` | 标记通知已读 | 是 |
+| GET | `/me/notifications/` | 站内通知列表 | 是 |
+| PATCH | `/me/notifications/{id}/read` | 标记通知已读 | 是 |
 | POST | `/me/notifications/read-all` | 一键标记所有通知已读 | 是 |
 
-### 7.5 文件接口 (`/api/v1/files`)
+### 7.5 静态文件服务 (`/uploads`)
 
-| 方法 | 路径 | 说明 | 认证 |
-|------|------|------|------|
-| GET | `/{filename}` | 获取上传的文件 | 否 |
+> **注意**：原 `/api/v1/files` 接口已被废弃，文件访问改为静态文件服务方式。
+
+| 类型 | URL 示例 | 说明 |
+|------|----------|------|
+| 演示图片 | `GET /uploads/{skill_id}/images/0.png` | 静态文件服务 |
+| Skill 包内文件 | `GET /api/v1/skills/{id}/files/{file_path}` | API 端点 |
 
 ### 7.6 管理员接口 (`/api/v1/admin`)
 
@@ -693,11 +703,13 @@ uploads/
 
 ### 9.2 文件访问 URL
 
-| 类型 | URL 示例 |
-|------|----------|
-| Skill 包下载 | `GET /api/v1/skills/{id}/download` |
-| 演示图片 | `GET /api/v1/files/{skill_id}/images/0.png` |
-| 解压文件预览 | `GET /api/v1/files/{skill_id}/extracted/SKILL.md` |
+| 类型 | URL 示例 | 说明 |
+|------|----------|------|
+| Skill 包下载 | `GET /api/v1/skills/{id}/download` | API 端点，增加下载计数 |
+| 演示图片 | `GET /uploads/{skill_id}/images/0.png` | 静态文件服务 |
+| 封面图片 | `GET /uploads/{skill_id}/cover.png` | 静态文件服务 |
+| 编辑器内图片 | `GET /uploads/{skill_id}/content-images/{filename}` | 静态文件服务 |
+| Skill 包内文件预览 | `GET /api/v1/skills/{id}/files/{file_path}` | API 端点，返回文件内容 |
 
 ### 9.3 安全措施
 
@@ -923,6 +935,7 @@ VITE_FILE_BASE_URL=http://localhost:8000/api/v1/files
 |------|------|----------|
 | v1.0 | 2026-03-17 | 初始版本，完成基础架构设计 |
 | v1.1 | 2026-03-18 | 更新匹配 PRD v1.2：更新热度算法（去掉时间衰减）、扩展管理员 API、添加下载日志表、更新权限矩阵、添加管理员后台路由 |
+| v1.2 | 2026-03-25 | 架构漂移同步：添加 Skill 表 `cover_url` 字段；添加封面/内容图片上传删除接口；更新通知接口路径；更新文件访问为静态服务；更新 API 目录结构 |
 
 ---
 
