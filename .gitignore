@@ -35,3 +35,4 @@ frontend/tests/
 # OS
 .DS_Store
 Thumbs.db
+.gstack/

@@ -77,7 +77,24 @@
       "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(''''搜索\"\"test\"\"结果:'''', d[''''total''''], ''''个''''\\)\")",
       "Bash(curl -s http://localhost:8000/openapi.json)",
       "Bash(ruff check:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(:)",
+      "Bash(xargs wc:*)",
+      "Bash(git add:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_response.filePath // .tool_input.file_path'); if [[ \"$f\" == *.py ]]; then (cd backend && ./venv/Scripts/python.exe -m ruff check \"$f\" && ./venv/Scripts/python.exe -m mypy \"$f\") 2>/dev/null || true; elif [[ \"$f\" == */frontend/* ]] && [[ \"$f\" =~ \\.(ts|tsx|js|jsx)$ ]]; then (cd frontend && npm run lint 2>&1 && npm run type-check 2>&1) || true; fi",
+            "statusMessage": "Running code quality checks..."
+          }
+        ]
+      }
     ]
   }
 }

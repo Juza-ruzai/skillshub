@@ -38,6 +38,9 @@
 **执行动作**：
 - 当触发上述条件时，你必须在当前子任务完成（并在 git commit 之前），主动静默修改并覆写 `ARCHITECTURE.md` 或 `PRD.md` 中对应的陈旧章节，其他部分严格保持不变，使其与当前代码现状保持绝对一致。
 - 同步完成后，你必须在向我汇报，明确提醒
+  
+## 进度控制
+带有checkbox的进度控制类文档，例如PROGRESS.md（进度文档）、TEST_CHECKLIST.md（自动化测试阶段）、UI_OPTIMIZATION_ROADMAP（UI优化路线），当完成对应任务后需要自主自动更新进度类文档，时刻保持文档处于最新状态
 
 ## 开发方法
 ### 后端开发
@@ -45,10 +48,10 @@
 1. 告诉我准备了哪些测试用例，是否考虑边界条件？
 2. 完成验收标准，全部完成后给我汇报
 ### 前端开发
-采用"开发一个页面 → 验收一个页面 → 确认后再继续"的方式，确保每一步都符合 Design.md规范。
-1. 开发页面前，你先和我说一下这个页面的开发计划，大致的页面是如何设计的？我需要确认你的想法是否符合我的意图
-2. 复杂 UI 变更前，让我先描述设计意图
-3. 开发页面后，使用dev-browser进行验证
+在UI风格设计时，首先创建一个playground html文档辅助我确定设计风格特点。
+采用"开发一个页面 → 验收一个页面 → 确认后再继续"的方式，确保每一步都符合规范。
+1. 开发页面前，你先和我说一下这个页面的开发计划，大致的页面是如何设计的？我需要确认你的想法是否符合我的意图。
+2. 开发页面后，使用dev-browser进行验证
 ### 前后端联调测试
 1. 可以使用fastapi的openapi.json查看精准接口文档
 2. 先测试核心路径（API 返回正确性），再测 UI 交互  
@@ -56,13 +59,10 @@
  - 使用superpowers 的 superpowers:systematic-debugging 技能进行修复
  - 修复后需要进行验证，确保修复成功
 ### 联动修改规范
-- 修改任何字段类型、函数签名、接口定义前，必须先 Grep 全局搜索所有引用位置
-- 后端字段类型变更时，必须同步检查：models/、schemas/、services/（一次改完，不允许分轮修复）
-- 前端类型变更时，必须同步检查：types/、相关组件、API 客户端函数
-- 修改顺序：Grep 确认所有位置 → 一次性全改 → 再测试
-
-## 进度控制
-带有checkbox的进度控制类文档，例如PROGRESS.md（进度文档）、TEST_CHECKLIST.md（自动化测试阶段）、UI_OPTIMIZATION_ROADMAP（UI优化路线），当完成对应任务后需要自主自动更新进度类文档，时刻保持文档处于最新状态
+1. 修改任何字段类型、函数签名、接口定义前，必须先 Grep 全局搜索所有引用位置
+2. 后端字段类型变更时，必须同步检查：models/、schemas/、services/（一次改完，不允许分轮修复）
+3. 前端类型变更时，必须同步检查：types/、相关组件、API 客户端函数
+4. 修改顺序：Grep 确认所有位置 → 一次性全改 → 再测试
 
 ## 热重载规范
 - 后端使用 uvicorn `--reload`，**禁止** 擅自 kill Python 进程后重启
@@ -80,8 +80,6 @@ ruff check app
 ruff format app --check
 mypy app
 ```
-- 测试覆盖率 ≥ 80%
-- 提交前必须运行 `ruff format app` 格式化代码
 ### 前端
 运行以下命令无错误：
 ```bash
@@ -99,10 +97,9 @@ powershell -Command "Get-Process -Name python | Stop-Process -Force"
 powershell -Command "netstat -ano | findstr :8000"
 ```
 ### 启动服务器
-- 当需要启动服务时，先检查是否有运行中的前后端服务，如果有就直接使用，不再重复启动
+- 总是使用现存的服务，在启动新的服务前一定要检查是否已经存在，如果需要启动新的服务，启动前先确认端口未被占用，**不允许自动换端口**，如有占用先关闭被占用的端口
 - 前端默认端口：**5173**（`cd frontend && npm run dev`）
 - 后端默认端口：**8000**（`cd backend && python -m app.main`）
-- 启动前先确认端口未被占用，**不允许自动换端口**，如有占用先关闭被占用的端口
 
 ## Git 提交规范
 ### 提交时机（原子化提交）
@@ -114,3 +111,37 @@ powershell -Command "netstat -ano | findstr :8000"
 - 类型：feat(新功能)、fix(修复)、docs(文档)、refactor(重构)、test(测试)、chore(构建)
 - 内容：用中文描述
 - 修复bug时必填：根因：XXX 修复：XXX
+
+## gstack
+
+**网页浏览**：使用 gstack 的 `/browse` skill 进行所有网页浏览，**禁止使用** `mcp__claude-in-chrome__*` 工具。
+
+### 可用技能列表
+
+- `/office-hours` - 规划和管理办公时间
+- `/plan-ceo-review` - CEO 评审规划
+- `/plan-eng-review` - 工程评审规划
+- `/plan-design-review` - 设计评审规划
+- `/design-consultation` - 设计咨询
+- `/review` - 代码/设计评审
+- `/ship` - 发布流程
+- `/land-and-deploy` - 部署落地
+- `/canary` - 金丝雀发布
+- `/benchmark` - 性能基准测试
+- `/browse` - 网页浏览和测试（**所有浏览任务使用此技能**）
+- `/qa` - 质量保证测试
+- `/qa-only` - 纯 QA 模式
+- `/design-review` - 设计评审流程
+- `/setup-browser-cookies` - 浏览器 Cookie 配置
+- `/setup-deploy` - 部署配置
+- `/retro` - 项目回顾
+- `/investigate` - 问题调查
+- `/document-release` - 发布文档
+- `/codex` - Codex 相关操作
+- `/cso` - CSO 功能
+- `/autoplan` - 自动规划
+- `/careful` - 谨慎模式
+- `/freeze` - 冻结/锁定
+- `/guard` - 保护模式
+- `/unfreeze` - 解除冻结
+- `/gstack-upgrade` - gstack 升级
